@@ -1,46 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.HBox?>
 
-<VBox alignment="TOP_LEFT" maxHeight="600.0" maxWidth="100.0" minHeight="600.0" minWidth="100.0" prefHeight="600.0" prefWidth="100.0" spacing="0" style="-fx-padding: 0; -fx-background-color: #9a4cce;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.MenuController">
-
-    <!-- Contenedor para la imagen 1 -->
-    <StackPane prefHeight="100" prefWidth="100">
-        <ImageView fx:id="imgView1" fitHeight="100" fitWidth="100" preserveRatio="true" />
-        <Region onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-background-color: transparent;" />
-    </StackPane>
-
-    <!-- Contenedor para la imagen 2 -->
-    <StackPane prefHeight="100" prefWidth="100">
-        <ImageView fx:id="imgView2" fitHeight="100" fitWidth="100" preserveRatio="true" />
-        <Region onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-background-color: transparent;" />
-    </StackPane>
-
-    <!-- Contenedor para la imagen 3 -->
-    <StackPane prefHeight="100" prefWidth="100">
-        <ImageView fx:id="imgView3" fitHeight="100" fitWidth="100" preserveRatio="true" />
-        <Region onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-background-color: transparent;" />
-    </StackPane>
-
-    <!-- Contenedor para la imagen 4 -->
-    <StackPane prefHeight="100" prefWidth="100">
-        <ImageView fx:id="imgView4" fitHeight="100" fitWidth="100" preserveRatio="true" />
-        <Region onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-background-color: transparent;" />
-    </StackPane>
-
-    <!-- Contenedor para la imagen 5 -->
-    <StackPane prefHeight="100" prefWidth="100">
-        <ImageView fx:id="imgView5" fitHeight="100" fitWidth="100" preserveRatio="true" />
-        <Region onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-background-color: transparent;" />
-    </StackPane>
-
-    <!-- Contenedor para la imagen 6 -->
-    <StackPane prefHeight="100" prefWidth="100">
-        <ImageView fx:id="imgView6" fitHeight="100" fitWidth="100" preserveRatio="true" />
-        <Region onMouseEntered="#handleMouseEntered" onMouseExited="#handleMouseExited" style="-fx-background-color: transparent;" />
-    </StackPane>
-
-</VBox>
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="1114.0">
+        <menus>
+            <Menu fx:id="menuGoTo" mnemonicParsing="false" text="Go to">
+              <items>
+                  <MenuItem fx:id="menuItemPaquete" mnemonicParsing="false" text="Paquete" />
+                  <MenuItem fx:id="menuItemEnvio" mnemonicParsing="false" text="Envio" />
+                <MenuItem fx:id="menuItemRuta" mnemonicParsing="false" text="Ruta" />
+                  <MenuItem fx:id="menuItemVehiculo" mnemonicParsing="false" text="Vehiculo" />
+                  <MenuItem fx:id="menuItemCambiarPasswd" mnemonicParsing="false" text="Cambiar contraseña" />
+              </items>
+            </Menu>
+          <Menu fx:id="menuView" mnemonicParsing="false" text="View">
+            <items>
+              <MenuItem fx:id="menuItemDarkMode" mnemonicParsing="false" text="Dark mode" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="menuItemLightMode" mnemonicParsing="false" text="Light mode" />
+            </items>
+          </Menu>
+          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
+            <items>
+                  <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" text="AboutPaquete" />
+              <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" text="AboutRuta" />
+                  <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" text="AboutEnvio" />
+                  <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" text="AboutVehiculo" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</HBox>
