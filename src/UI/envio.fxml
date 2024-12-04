@@ -9,6 +9,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -83,6 +85,17 @@
                     <Hyperlink fx:id="rmRow" text="Remove row" />
                 </children>
             </HBox>
+         <Separator opacity="0.0" prefHeight="21.0" prefWidth="1024.0" />
+         <HBox prefHeight="58.0" prefWidth="1024.0">
+            <children>
+               <Separator opacity="0.0" orientation="VERTICAL" prefHeight="58.0" prefWidth="963.0" />
+               <ImageView fx:id="logOut" fitHeight="58.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#handleLogOutClick">
+                    <image>
+                        <Image url="@../Images/logout.png" />
+                    </image>
+                </ImageView>
+            </children>
+         </HBox>
         </VBox>
     </center>
 

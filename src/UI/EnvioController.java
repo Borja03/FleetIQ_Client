@@ -190,4 +190,15 @@ public class EnvioController {
             }
         });
     }
+    
+      @FXML
+    private void handleLogOutClick(MouseEvent event) {
+        // Aquí puedes implementar lo que quieres que pase cuando se haga clic en el logOut
+        System.out.println("Clic en el LogOut!");
+        
+        // Ejemplo: cerrar la ventana o hacer logout
+        // Stage stage = (Stage) logOut.getScene().getWindow();
+        // stage.close();
+    }
+    
 }
