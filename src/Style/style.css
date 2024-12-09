@@ -46,7 +46,8 @@
 /* Estilo del hipervínculo */
 .hyperlink {
     -fx-text-fill: #9a4cce;
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
+    -fx-text-alignment: right;
 }
 
 .hyperlink:hover {
