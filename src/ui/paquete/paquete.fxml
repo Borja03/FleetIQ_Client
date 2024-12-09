@@ -19,7 +19,7 @@
 <top>
         <VBox>
             
-              
+              <fx:include source="../menu.fxml" />
             
              <HBox alignment="CENTER_LEFT" spacing="15">
                 <padding>

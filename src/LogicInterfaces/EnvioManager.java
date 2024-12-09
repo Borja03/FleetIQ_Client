@@ -3,10 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package LogicInterfaces;
+package logicInterfaces;
 
+import exceptions.selectException;
+import exceptions.createException;
+import exceptions.updateException;
+import exceptions.deleteException;
 import java.util.Date;
-import Exceptions.*;
 
 /**
  *

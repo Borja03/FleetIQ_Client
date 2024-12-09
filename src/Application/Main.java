@@ -1,4 +1,4 @@
-package Application;
+package application;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +16,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML
-        Parent root = FXMLLoader.load(getClass().getResource("/UI/envio.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
 
         // Crear la escena
         Scene scene = new Scene(root);
