@@ -1,4 +1,4 @@
-package ui.paquete;
+package ui.vehicle;
 
 import model.Paquete;
 
@@ -38,19 +38,19 @@ import model.PaqueteSize;
  *
  * @author Omar
  */
-public class PaqueteController {
+public class VehicleController {
 
-    private static final Logger LOGGER = Logger.getLogger(PaqueteController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(VehicleController.class.getName());
 
     @FXML
     private JFXDatePicker fromDatePicker;
 
     @FXML
     private JFXDatePicker toDatePicker;
-    
+
     @FXML
     private JFXComboBox<PaqueteSize> sizeFilterComboBox;
-    
+
     @FXML
     private JFXTextField searchTextField;
 
@@ -73,17 +73,18 @@ public class PaqueteController {
     private TableColumn<Paquete, Boolean> fragileColumn;
 
     @FXML
-    private JFXButton addShipmentButton;
+    private JFXButton addShipmentBtn;
 
     @FXML
-    private JFXButton removeShipmentButton;
+    private JFXButton removeShipmentBtn;
 
+    @FXML
+    private JFXButton printReportBtn;
     @FXML
     private JFXButton searchButton;
-    
-     @FXML
-    private JFXButton applyFilterButton;
 
+    @FXML
+    private JFXButton applyFilterButton;
 
     private Stage stage;
 
@@ -123,8 +124,7 @@ public class PaqueteController {
         setUpTableColumns();
         // Fill table with example data
         fillTableWithExampleData();
-        
-        
+
         stage.show();
     }
 
@@ -209,30 +209,30 @@ public class PaqueteController {
     /**
      * Sets up the table columns with appropriate cell value factories.
      */
-   private void setUpTableColumns() {
-    idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-    senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-    receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
-    weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-    sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-    dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-    fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+    private void setUpTableColumns() {
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
+        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
+        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
+        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
 
-    // Optionally, set cell factories for formatting
-    dateColumn.setCellFactory(column -> new TableCell<Paquete, LocalDate>() {
-        private final DateTimeFormatter formatter = dateFormatter;
+        // Optionally, set cell factories for formatting
+        dateColumn.setCellFactory(column -> new TableCell<Paquete, LocalDate>() {
+            private final DateTimeFormatter formatter = dateFormatter;
 
-        @Override
-        protected void updateItem(LocalDate date, boolean empty) {
-            super.updateItem(date, empty);
-            if (empty || date == null) {
-                setText(null);
-            } else {
-                setText(formatter.format(date));
+            @Override
+            protected void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if (empty || date == null) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(date));
+                }
             }
-        }
-    });
-}
+        });
+    }
 
     /**
      * Fills the table with example data.
@@ -242,7 +242,13 @@ public class PaqueteController {
                         new Paquete(1, "Alice", "Bob", 2.5, PaqueteSize.SMALL, LocalDate.now(), true),
                         new Paquete(2, "Charlie", "Dave", 5.0, PaqueteSize.MEDIUM, LocalDate.now().minusDays(1), false),
                         new Paquete(3, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(4, "Grace", "Heidi", 20.0, PaqueteSize.EXTRA_LARGE, LocalDate.now().minusDays(3), false)
+                        new Paquete(4, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
+                        new Paquete(5, "Charlie", "Dave", 5.0, PaqueteSize.MEDIUM, LocalDate.now().minusDays(1), false),
+                        new Paquete(6, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
+                        new Paquete(7, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
+                        new Paquete(8, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
+                        new Paquete(9, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
+                        new Paquete(10, "Grace", "Heidi", 20.0, PaqueteSize.EXTRA_LARGE, LocalDate.now().minusDays(3), false)
         );
 
         paqueteTableView.setItems(data);

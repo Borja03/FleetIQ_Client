@@ -1,6 +1,6 @@
 package ui.splash;
 
-import ui.paquete.*;
+import ui.vehicle.VehicleController;
 import model.Paquete;
 
 import com.jfoenix.controls.JFXButton;
@@ -113,7 +113,7 @@ public class SplashController  {
         } catch (IOException ex) {
             Logger.getLogger(SplashController.class.getName()).log(Level.SEVERE, null, ex);
         }
-              PaqueteController controller = loader.getController();
+              VehicleController controller = loader.getController();
                 Stage newStage = new Stage();
                 controller.setStage(newStage);
                 controller.initStage(root);
