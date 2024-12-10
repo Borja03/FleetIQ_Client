@@ -1,40 +1,48 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package ui;
+package ui.ruta;
 
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-/**
- *
- * @author Borja
- */
-
+import javafx.scene.control.Label;
 
 public class RutaController {
 
-    
+    @FXML
+    private JFXComboBox<String> sizeFilterComboBox;
+
+    @FXML
+    private JFXComboBox<String> operatorComboBox;
+
+    @FXML
+    private JFXTextField filterValueField;
+
+    @FXML
+    private Label unitLabel;
+
     @FXML
     public void initialize() {
+        // Configurar opciones para el filtro
+        sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
+
+        // Configurar opciones para los operadores
+        operatorComboBox.setItems(FXCollections.observableArrayList(">", "<", "="));
+
+        // Configurar comportamiento dinámico para el filtro
+        sizeFilterComboBox.setOnAction(event -> updateUnitLabel());
+
+        // Establecer valor inicial del label
+        updateUnitLabel();
     }
-    
-         @FXML
-    private void handleLogOutClick(MouseEvent event) {
-        // Aquí puedes implementar lo que quieres que pase cuando se haga clic en el logOut
-        System.out.println("Clic en el LogOut!");
-        
-        // Ejemplo: cerrar la ventana o hacer logout
-        // Stage stage = (Stage) logOut.getScene().getWindow();
-        // stage.close();
+
+    private void updateUnitLabel() {
+        String selectedFilter = sizeFilterComboBox.getValue();
+        if ("Filter by Time".equals(selectedFilter)) {
+            unitLabel.setText("Horas");
+        } else if ("Filter by Distance".equals(selectedFilter)) {
+            unitLabel.setText("Km");
+        } else {
+            unitLabel.setText("Unit");
+        }
     }
-    
 }

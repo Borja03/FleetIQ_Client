@@ -1,76 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.scene.control.Hyperlink?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SplitMenuButton?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="ui.RutaController">
+<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/ruta.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.RutaController">
     <top>
-        <fx:include source="../menu.fxml" />
-    </top>
-    <center>
-        <VBox alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0">
-            <Region prefHeight="4.0" prefWidth="1024.0" />
-            <!-- Buscador -->
-            <HBox spacing="10.0">
-                <SplitMenuButton fx:id="filterMenu" mnemonicParsing="false" prefHeight="8.0" prefWidth="78.0" text="Filters">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Action 1" />
-                        <MenuItem mnemonicParsing="false" text="Action 2" />
-                    </items>
-                </SplitMenuButton>
-                <TextField fx:id="searchField" prefHeight="23.0" prefWidth="618.0" promptText="Buscar..." />
+        <VBox spacing="10">
+            <fx:include source="../menu.fxml" />
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <padding>
+                    <Insets bottom="15" left="15" right="15" top="15" />
+                </padding>
+                <Label text="From : " />
+                <JFXDatePicker fx:id="fromDatePicker" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="220.0" promptText="From Date" />
+                <Label text="To : " />
+                <JFXDatePicker fx:id="toDatePicker" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="220.0" promptText="To Date" />
+                <JFXButton fx:id="applyFilterButton" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="120.0" text="Apply" />
+                <JFXComboBox fx:id="sizeFilterComboBox" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="136.0" promptText="Filter by">
+                </JFXComboBox>
+                <JFXComboBox fx:id="operatorComboBox" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="94.0" promptText="Operator">
+                </JFXComboBox>
+                <JFXTextField fx:id="filterValueField" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="130.0" promptText="Value" />
+                <Label fx:id="unitLabel" prefHeight="18.0" prefWidth="95.0" text="Unit" />
+                <JFXTextField fx:id="searchField" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="174.0" promptText="Buscar..." HBox.hgrow="ALWAYS" />
+                <JFXButton fx:id="searchButton" minHeight="40.0" minWidth="70.0" prefHeight="40.0" prefWidth="70.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../../images/magnifying-glass.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </JFXButton>
             </HBox>
-            <Region prefHeight="18.0" prefWidth="1024.0" />
-
-            <!-- Tabla -->
-            <TableView fx:id="table" prefHeight="448.0" prefWidth="1024.0">
-                <columns>
-                    <TableColumn fx:id="idColumn" prefWidth="64.7999541759491" text="ID" />
-                    <TableColumn fx:id="origenColumn" prefWidth="182.4000244140625" text="Origen" />
-                    <TableColumn fx:id="destinoColumn" prefWidth="173.59999084472656" text="Destino" />
-                    <TableColumn fx:id="distanciaColumn" prefWidth="144.0" text="Distancia" />
-                    <TableColumn fx:id="tiempoColumn" prefWidth="156.79998779296875" text="Tiempo" />
-                    <TableColumn fx:id="localizadorColumn" prefWidth="134.39996337890625" text="Localizador" />
-                    <TableColumn fx:id="fechaColumn" prefWidth="172.79998779296875" text="Fecha" />
-                </columns>
-            </TableView>
-
-             <HBox prefHeight="16.0" prefWidth="1024.0">
-                <children>
-                    <Region prefHeight="33.0" prefWidth="28.0" />
-                    <Hyperlink fx:id="addRow" text="Add row" />
-                    <Separator orientation="VERTICAL" prefHeight="33.0" prefWidth="39.0" />
-                    <Hyperlink fx:id="rmRow" text="Remove row" />
-                </children>
-            </HBox>
-         <Separator opacity="0.0" prefHeight="21.0" prefWidth="1024.0" />
-         <HBox prefHeight="58.0" prefWidth="1024.0">
-            <children>
-               <Separator opacity="0.0" orientation="VERTICAL" prefHeight="58.0" prefWidth="963.0" />
-               <ImageView fx:id="logOut" fitHeight="58.0" fitWidth="58.0" onMouseClicked="#handleLogOutClick" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                     <Image url="@../Images/logout.png" />
-                    </image>
-                </ImageView>
-            </children>
-         </HBox>
         </VBox>
+    </top>
+    
+    <center>
+        <TableView fx:id="table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="localizadorColumn" minWidth="100.0" prefWidth="120.0" text="Localizador" />
+                <TableColumn fx:id="origenColumn" minWidth="200.0" prefWidth="220.0" text="Origen" />
+                <TableColumn fx:id="destinoColumn" minWidth="180.0" prefWidth="200.0" text="Destino" />
+                <TableColumn fx:id="distanciaColumn" minWidth="180.0" prefWidth="200.0" text="Distancia" />
+                <TableColumn fx:id="tiempoColumn" minWidth="180.0" prefWidth="200.0" text="Tiempo" />
+                <TableColumn fx:id="fechaColumn" minWidth="200.0" prefWidth="220.0" text="Fecha" />
+            </columns>
+        </TableView>
     </center>
     
-    <stylesheets>
-        <URL value="@Style/style.css" />
-        <URL value="@../Style/style.css" />
-    </stylesheets>
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+            <JFXButton fx:id="addRow" prefWidth="180.0" text="Add row" />
+            <JFXButton fx:id="rmRow" prefWidth="180.0" text="Remove row" />
+            <Pane HBox.hgrow="ALWAYS" />
+        </HBox>
+    </bottom>
 </BorderPane>
