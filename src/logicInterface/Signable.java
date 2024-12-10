@@ -1,4 +1,4 @@
-package LogicInterfaces;
+package logicInterface;
 
 
 import exception.ServerErrorException;

@@ -1,6 +1,6 @@
 package factories;
 
-import LogicInterfaces.Signable;
+import logicInterface.Signable;
 
 
 /**

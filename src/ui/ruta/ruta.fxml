@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -15,39 +16,73 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/ruta.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.RutaController">
+<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.ruta.RutaController">
     <top>
-        <VBox spacing="10">
+        <VBox>
             <fx:include source="../menu.fxml" />
-            <HBox alignment="CENTER_LEFT" spacing="20">
-                <padding>
-                    <Insets bottom="15" left="15" right="15" top="15" />
-                </padding>
-                <Label text="From : " />
-                <JFXDatePicker fx:id="fromDatePicker" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="220.0" promptText="From Date" />
-                <Label text="To : " />
-                <JFXDatePicker fx:id="toDatePicker" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="220.0" promptText="To Date" />
-                <JFXButton fx:id="applyFilterButton" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="120.0" text="Apply" />
-                <JFXComboBox fx:id="sizeFilterComboBox" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="136.0" promptText="Filter by">
-                </JFXComboBox>
-                <JFXComboBox fx:id="operatorComboBox" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="94.0" promptText="Operator">
-                </JFXComboBox>
-                <JFXTextField fx:id="filterValueField" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="130.0" promptText="Value" />
-                <Label fx:id="unitLabel" prefHeight="18.0" prefWidth="95.0" text="Unit" />
-                <JFXTextField fx:id="searchField" maxHeight="40.0" minHeight="40.0" prefHeight="40.0" prefWidth="174.0" promptText="Buscar..." HBox.hgrow="ALWAYS" />
-                <JFXButton fx:id="searchButton" minHeight="40.0" minWidth="70.0" prefHeight="40.0" prefWidth="70.0">
-                    <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../../images/magnifying-glass.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </JFXButton>
+
+            <HBox alignment="CENTER_LEFT" styleClass="filter-container">
+            
+
+                <VBox prefWidth="405.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter By Date" />
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="From: " />
+                        <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="From Date" scaleShape="false" />
+                        <Label text="To: " />
+                        <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="To Date" />
+                        <JFXButton fx:id="applyFilterButton" prefHeight="30.0" text="Apply" />
+                    </HBox>
+                </VBox>
+
+                <VBox prefHeight="93.0" prefWidth="355.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter By Size " />
+               <HBox prefHeight="100.0" prefWidth="271.0">
+                  <children>
+                          <JFXComboBox fx:id="sizeFilterComboBox" prefHeight="30.0" prefWidth="80.0" promptText="Filter by size" />
+                     <JFXComboBox fx:id="sizeFilterComboBox1" prefHeight="30.0" prefWidth="80.0" promptText="Filter by size" />
+                     <JFXTextField prefHeight="27.0" prefWidth="113.0" />
+                     <JFXButton fx:id="searchButton1" ellipsisString="" minWidth="60.0" prefHeight="30.0">
+                        <graphic>
+                           <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                              <image>
+                                 <Image url="@../../../../../GitRetos/FleetIQ_Client/src/images/magnifying-glass.png" />
+                              </image>
+                           </ImageView>
+                        </graphic>
+                        <tooltip>
+                           <Tooltip text="Search" />
+                        </tooltip>
+                     </JFXButton>
+                  </children>
+               </HBox>
+                </VBox>
+            <VBox fillWidth="false" prefHeight="93.0" prefWidth="227.0" styleClass="filter-section">
+               <children>
+                  <Label styleClass="filter-title" text="Filter By Name" />
+                  <HBox alignment="CENTER_LEFT" spacing="10">
+                     <children>
+                        <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="300.0" promptText="Search Shipments" HBox.hgrow="ALWAYS" />
+                        <JFXButton fx:id="searchButton" ellipsisString="" minWidth="60.0" prefHeight="30.0">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../GitRetos/FleetIQ_Client/src/images/magnifying-glass.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Search" />
+                           </tooltip>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
             </HBox>
         </VBox>
     </top>
-    
+
     <center>
         <TableView fx:id="table" VBox.vgrow="ALWAYS">
             <columns>
@@ -60,14 +95,52 @@
             </columns>
         </TableView>
     </center>
-    
+
     <bottom>
-        <HBox alignment="CENTER_LEFT" spacing="20">
+        <HBox alignment="CENTER_LEFT" spacing="15">
             <padding>
                 <Insets bottom="15" left="15" right="15" top="15" />
             </padding>
-            <JFXButton fx:id="addRow" prefWidth="180.0" text="Add row" />
-            <JFXButton fx:id="rmRow" prefWidth="180.0" text="Remove row" />
+
+            <JFXButton fx:id="addShipmentBtn" prefWidth="30.0" text=" ">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                        <image>
+                            <Image url="@../../images/package-add-icon.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Add Package" />
+                </tooltip>
+            </JFXButton>
+
+            <JFXButton fx:id="removeShipmentBtn" ellipsisString="" prefWidth="30.0">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                        <image>
+                            <Image url="@../../images/package-delete-icon.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Delete Package" />
+                </tooltip>
+            </JFXButton>
+
+            <JFXButton fx:id="printReportBtn" ellipsisString="" prefWidth="30.0">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                        <image>
+                            <Image url="@../../../../../GitRetos/FleetIQ_Client/src/images/print-document-icon.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Print Report" />
+                </tooltip>
+            </JFXButton>
+
             <Pane HBox.hgrow="ALWAYS" />
         </HBox>
     </bottom>

@@ -1,61 +1,101 @@
-/* Estilo general del fondo */
+/* General Styles */
 .root {
-    -fx-background-color: white;
+    -fx-font-family: "Arial";
+    -fx-background-color: #f9f9f9;
+}
+.filter-container {
+    -fx-spacing: 10; 
+    -fx-padding: 15; 
+    -fx-background-color: #ffffff;
+ 
 }
 
-/* Estilo de los botones */
-.button {
-    -fx-background-color: #9a4cce;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
+
+.filter-section {
+    -fx-spacing: 5; 
+    -fx-padding: 10; 
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
     -fx-border-radius: 5;
-    -fx-background-radius: 5;
-    -fx-padding: 8 16;
 }
 
-.button:hover {
-    -fx-background-color: #7b3b9e; /* Color más oscuro al pasar el ratón */
-}
 
-/* Estilo del TextField (campo de búsqueda) */
-.text-field {
-    -fx-background-color: white;
-    -fx-border-color: #9a4cce;
-    -fx-border-width: 2;
-    -fx-text-fill: black;
+
+/* Labels */
+.label {
     -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.filter-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 5 0;
+}
+
+/* TextField */
+.text-field {
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 3;
     -fx-padding: 5;
 }
 
-/* Estilo de la tabla */
+/* Buttons */
+.button {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5 10;
+    -fx-border-radius: 3;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #005fa3;
+}
+
+.button:pressed {
+    -fx-background-color: #003f6f;
+}
+
+/* Tooltip */
+.tooltip {
+    -fx-background-color: #333333;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-padding: 5;
+    -fx-border-radius: 3;
+}
+
+.image-view {
+    -fx-fit-height: 20px;
+    -fx-fit-width: 20px;
+}
+
+
+
+
+
+
+/* TableView */
 .table-view {
-    -fx-border-color: #9a4cce;
-    -fx-border-width: 2;
-    -fx-background-color: white;
+    -fx-border-color: #0078d7;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
 }
 
-.table-column {
-    -fx-alignment: CENTER_LEFT;
-    -fx-text-fill: black;
+
+#addShipmentBtn {
+    -fx-background-color: #28a745;
 }
 
-.table-cell {
-    -fx-text-fill: black;
+#removeShipmentBtn {
+    -fx-background-color: #dc3545;
 }
 
-/* Estilo del hipervínculo */
-.hyperlink {
-    -fx-text-fill: #9a4cce;
-    -fx-font-size: 16px;
-    -fx-text-alignment: right;
+#printReportBtn {
+    -fx-background-color: #ffc107;
 }
 
-.hyperlink:hover {
-    -fx-text-fill: #7b3b9e;
-    -fx-underline: true;
-}
 
-/* Estilo de HBox y VBox */
-.hbox, .vbox {
-    -fx-spacing: 10;
-}
+
