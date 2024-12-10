@@ -60,7 +60,7 @@ public class VehicleController {
     @FXML
     private TableColumn<Paquete, Integer> idColumn;
     @FXML
-    private TableColumn<Paquete, String> senderColumn;
+    private TableColumn<Paquete, String> matriculaColumn;
     @FXML
     private TableColumn<Paquete, String> receiverColumn;
     @FXML
@@ -211,7 +211,7 @@ public class VehicleController {
      */
     private void setUpTableColumns() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
+        matriculaColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
         receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
         weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
         sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));

@@ -5,9 +5,11 @@
 <?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -24,10 +26,14 @@
             <HBox alignment="CENTER_LEFT" styleClass="filter-container">
             
 
-                <VBox prefHeight="93.0" prefWidth="440.0" styleClass="filter-section">
-                    <Label styleClass="filter-title" text="Filter By ITV Date" />
+                <VBox prefHeight="94.0" prefWidth="566.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter By ITV/matriculación  Date" />
                     <HBox alignment="CENTER_LEFT">
-                        <Label text="From: " />
+                       <JFXComboBox fx:id="sizeFilterComboBox" prefHeight="30.0" prefWidth="117.0" promptText="Filter by ITV" />
+                        <Label text="From: ">
+                     <HBox.margin>
+                        <Insets left="3.0" />
+                     </HBox.margin></Label>
                         <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="150.0" promptText="From Date" scaleShape="false" />
                         <Label text="To: " />
                         <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="150.0" promptText="To Date" />
@@ -35,15 +41,31 @@
                     </HBox>
                 </VBox>
 
-                <VBox prefWidth="163.0" styleClass="filter-section">
-                    <Label styleClass="filter-title" text="Filter By Size " />
-                    <JFXComboBox fx:id="sizeFilterComboBox" prefHeight="30.0" prefWidth="122.0" promptText="Filter by size" />
+                <VBox prefHeight="94.0" prefWidth="157.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter By Capacity" />
+               <HBox prefHeight="100.0" prefWidth="200.0">
+                  <children>
+                     <Button alignment="CENTER" mnemonicParsing="false" text="-" textAlignment="CENTER">
+                        <HBox.margin>
+                           <Insets left="6.0" />
+                        </HBox.margin></Button>
+                     <TextField alignment="CENTER" prefHeight="27.0" prefWidth="42.0" text="0">
+                        <HBox.margin>
+                           <Insets left="8.0" right="8.0" />
+                        </HBox.margin>
+                     </TextField>
+                     <Button alignment="CENTER" mnemonicParsing="false" text="+" textAlignment="CENTER" />
+                  </children>
+                  <padding>
+                     <Insets left="6.0" />
+                  </padding>
+               </HBox>
                 </VBox>
 
-                <VBox fillWidth="false" prefHeight="93.0" prefWidth="180.0" styleClass="filter-section" HBox.hgrow="ALWAYS">
+                <VBox fillWidth="false" minWidth="200.0" prefHeight="94.0" prefWidth="200.0" styleClass="filter-section" HBox.hgrow="ALWAYS">
                     <Label styleClass="filter-title" text="Filter By Name" />
                     <HBox alignment="CENTER_LEFT" spacing="10">
-                        <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="300.0" promptText="Search Shipments" HBox.hgrow="ALWAYS" />
+                        <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="135.0" promptText="Search Matriculas" HBox.hgrow="ALWAYS" />
                         <JFXButton fx:id="searchButton" ellipsisString="" minWidth="60.0" prefHeight="30.0">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
@@ -59,6 +81,7 @@
                     </HBox>
                 </VBox>
             </HBox>
+         <TextField />
         </VBox>
     </top>
 
@@ -66,12 +89,12 @@
         <TableView fx:id="paqueteTableView" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="idColumn" prefWidth="91.0" text="ID" />
-                <TableColumn fx:id="senderColumn" prefWidth="160.0" text="Sender" />
-                <TableColumn fx:id="receiverColumn" prefWidth="160.0" text="Receiver" />
-                <TableColumn fx:id="weightColumn" prefWidth="120.0" text="Weight" />
-                <TableColumn fx:id="sizeColumn" prefWidth="160.0" text="Size" />
-                <TableColumn fx:id="dateColumn" prefWidth="160.0" text="Creation Date" />
-                <TableColumn fx:id="fragileColumn" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" text="Fragile" />
+                <TableColumn fx:id="matriculaColumn" prefWidth="160.0" text="Matrícula" />
+                <TableColumn fx:id="receiverColumn" prefWidth="160.0" text="Modelo" />
+                <TableColumn fx:id="weightColumn" prefWidth="120.0" text="Capacidad" />
+                <TableColumn fx:id="sizeColumn" prefWidth="160.0" text="Fecha matriculación" />
+                <TableColumn fx:id="dateColumn" prefWidth="160.0" text="Fecha ITV" />
+                <TableColumn fx:id="fragileColumn" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" text="Activo" />
             </columns>
             <BorderPane.margin>
                 <Insets left="15.0" right="15.0" />
@@ -94,7 +117,7 @@
                     </ImageView>
                 </graphic>
                 <tooltip>
-                    <Tooltip text="Add Package" />
+                    <Tooltip text="Add Vehicle" />
                 </tooltip>
             </JFXButton>
 
@@ -107,7 +130,7 @@
                     </ImageView>
                 </graphic>
                 <tooltip>
-                    <Tooltip text="Delete Package" />
+                    <Tooltip text="Delete Vehicle" />
                 </tooltip>
             </JFXButton>
 
