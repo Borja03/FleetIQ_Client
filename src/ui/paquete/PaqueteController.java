@@ -119,7 +119,9 @@ public class PaqueteController {
         // Set up date pickers
         setUpDatePickers();
         // Populate size filter combo box
+        
         sizeFilterComboBox.getItems().setAll(PaqueteSize.values());
+        
         // Set up table columns
         setUpTableColumns();
         // Fill table with example data
