@@ -27,15 +27,15 @@
             
 
                 <VBox prefHeight="94.0" prefWidth="566.0" styleClass="filter-section">
-                    <Label styleClass="filter-title" text="Filter By ITV/matriculación  Date" />
+                    <Label styleClass="filter-title" text="Filter By ITV/registration date " />
                     <HBox alignment="CENTER_LEFT">
                        <JFXComboBox fx:id="sizeFilterComboBox" prefHeight="30.0" prefWidth="117.0" promptText="Filter by ITV" />
-                        <Label text="From: ">
+                        <Label text="From:">
                      <HBox.margin>
                         <Insets left="3.0" />
                      </HBox.margin></Label>
                         <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="150.0" promptText="From Date" scaleShape="false" />
-                        <Label text="To: " />
+                        <Label text="To:" />
                         <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="150.0" promptText="To Date" />
                         <JFXButton fx:id="applyFilterButton" prefHeight="30.0" text="Apply" />
                     </HBox>
@@ -65,7 +65,7 @@
                 <VBox fillWidth="false" minWidth="200.0" prefHeight="94.0" prefWidth="200.0" styleClass="filter-section" HBox.hgrow="ALWAYS">
                     <Label styleClass="filter-title" text="Filter By Name" />
                     <HBox alignment="CENTER_LEFT" spacing="10">
-                        <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="135.0" promptText="Search Matriculas" HBox.hgrow="ALWAYS" />
+                        <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="135.0" promptText="Search License Plate" HBox.hgrow="ALWAYS" />
                         <JFXButton fx:id="searchButton" ellipsisString="" minWidth="60.0" prefHeight="30.0">
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
@@ -89,12 +89,12 @@
         <TableView fx:id="paqueteTableView" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="idColumn" prefWidth="91.0" text="ID" />
-                <TableColumn fx:id="matriculaColumn" prefWidth="160.0" text="Matrícula" />
-                <TableColumn fx:id="receiverColumn" prefWidth="160.0" text="Modelo" />
-                <TableColumn fx:id="weightColumn" prefWidth="120.0" text="Capacidad" />
-                <TableColumn fx:id="sizeColumn" prefWidth="160.0" text="Fecha matriculación" />
-                <TableColumn fx:id="dateColumn" prefWidth="160.0" text="Fecha ITV" />
-                <TableColumn fx:id="fragileColumn" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" text="Activo" />
+                <TableColumn fx:id="matriculaColumn" prefWidth="160.0" text="License plate" />
+                <TableColumn fx:id="modelColumn" prefWidth="160.0" text="Model" />
+                <TableColumn fx:id="capacityColumn" prefWidth="120.0" text="Capacity" />
+                <TableColumn fx:id="registrationDateColumn" prefWidth="160.0" text="Registration date" />
+                <TableColumn fx:id="ITVdateColumn" prefWidth="160.0" text="ITV Date" />
+                <TableColumn fx:id="activeColumn" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" text="Active" />
             </columns>
             <BorderPane.margin>
                 <Insets left="15.0" right="15.0" />
@@ -112,7 +112,7 @@
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../images/package-add-icon.png" />
+                            <Image url="@../../images/truckAdd.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -125,7 +125,7 @@
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../images/package-delete-icon.png" />
+                            <Image url="@../../images/truckDelete.png" />
                         </image>
                     </ImageView>
                 </graphic>

@@ -49,7 +49,7 @@ public class VehicleController {
     private JFXDatePicker toDatePicker;
 
     @FXML
-    private JFXComboBox<PaqueteSize> sizeFilterComboBox;
+    private JFXComboBox<PaqueteSize> filterTypeComboBox;
 
     @FXML
     private JFXTextField searchTextField;
@@ -62,15 +62,15 @@ public class VehicleController {
     @FXML
     private TableColumn<Paquete, String> matriculaColumn;
     @FXML
-    private TableColumn<Paquete, String> receiverColumn;
+    private TableColumn<Paquete, String> modelColumn;
     @FXML
-    private TableColumn<Paquete, Double> weightColumn;
+    private TableColumn<Paquete, Double> capacityColumn;
     @FXML
-    private TableColumn<Paquete, PaqueteSize> sizeColumn;
+    private TableColumn<Paquete, PaqueteSize> registrationDateColumn;
     @FXML
-    private TableColumn<Paquete, LocalDate> dateColumn;
+    private TableColumn<Paquete, LocalDate> ITVdateColumn;
     @FXML
-    private TableColumn<Paquete, Boolean> fragileColumn;
+    private TableColumn<Paquete, Boolean> activeColumn;
 
     @FXML
     private JFXButton addShipmentBtn;
@@ -119,7 +119,7 @@ public class VehicleController {
         // Set up date pickers
         setUpDatePickers();
         // Populate size filter combo box
-        sizeFilterComboBox.getItems().setAll(PaqueteSize.values());
+        filterTypeComboBox.getItems().setAll(PaqueteSize.values());
         // Set up table columns
         setUpTableColumns();
         // Fill table with example data
@@ -211,15 +211,15 @@ public class VehicleController {
      */
     private void setUpTableColumns() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        matriculaColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
-        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+        matriculaColumn.setCellValueFactory(new PropertyValueFactory<>("License Plate"));
+        modelColumn.setCellValueFactory(new PropertyValueFactory<>("Model"));
+        capacityColumn.setCellValueFactory(new PropertyValueFactory<>("Capacity"));
+        registrationDateColumn.setCellValueFactory(new PropertyValueFactory<>("RegistrationDate"));
+        ITVdateColumn.setCellValueFactory(new PropertyValueFactory<>("ITVDate"));
+        activeColumn.setCellValueFactory(new PropertyValueFactory<>("active"));
 
         // Optionally, set cell factories for formatting
-        dateColumn.setCellFactory(column -> new TableCell<Paquete, LocalDate>() {
+        ITVdateColumn.setCellFactory(column -> new TableCell<Paquete, LocalDate>() {
             private final DateTimeFormatter formatter = dateFormatter;
 
             @Override
@@ -266,12 +266,12 @@ public class VehicleController {
     }
 
     @FXML
-    private void onAddShipment() {
+    private void onAddVehicle() {
         // Open a new window or dialog to add a shipment
     }
 
     @FXML
-    private void onRemoveShipment() {
+    private void onRemoveVehicle() {
         Paquete selectedPaquete = paqueteTableView.getSelectionModel().getSelectedItem();
         if (selectedPaquete != null) {
             paqueteTableView.getItems().remove(selectedPaquete);
