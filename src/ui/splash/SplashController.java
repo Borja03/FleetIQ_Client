@@ -106,7 +106,7 @@ public class SplashController  {
     private void loadMainApplication() {
         // Replace this with the code to load your main application
         System.out.println("Loading main application...");
-         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
+         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/vehicle/vehicle.fxml"));
             Parent root=null;
         try {
             root = loader.load();
