@@ -7,6 +7,12 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 public class MenuController {
 
@@ -93,4 +99,7 @@ public class MenuController {
     private void handleChangePasswordMenuItemAction(Event event) {
         System.out.println("Change password menu item clicked");
     }
+
+   
+
 }

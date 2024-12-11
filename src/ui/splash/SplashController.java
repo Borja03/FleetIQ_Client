@@ -1,7 +1,7 @@
 package ui.splash;
 
 import ui.paquete.*;
-import model.Paquete;
+import models.Paquete;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;

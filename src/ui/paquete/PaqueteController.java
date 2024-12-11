@@ -1,6 +1,6 @@
 package ui.paquete;
 
-import model.Paquete;
+import models.Paquete;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -32,7 +32,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import model.PaqueteSize;
+import models.PaqueteSize;
 
 /**
  *

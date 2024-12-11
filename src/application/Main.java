@@ -18,6 +18,7 @@ public class Main extends Application {
         // Cargar el archivo FXML
         Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
 
+
         // Crear la escena
         Scene scene = new Scene(root);
 
@@ -25,6 +26,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Ventana Fija");
         primaryStage.setResizable(false);  // Aquí se desactiva la opción de redimensionar
+        
 
         // Mostrar la ventana
         primaryStage.show();
