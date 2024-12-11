@@ -25,6 +25,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Ventana Fija");
         primaryStage.setResizable(false);  // Aquí se desactiva la opción de redimensionar
+        
 
         // Mostrar la ventana
         primaryStage.show();

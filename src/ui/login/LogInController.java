@@ -1,15 +1,9 @@
 package ui.login;
 
-import exception.ServerErrorException;
-import exception.ConnectionException;
-import exception.IncorrectCredentialsException;
-import exception.MaxThreadUserException;
+
 import exception.InvalidEmailFormatException;
-import factories.SignableFactory;
 import models.User;
-import ui.signup.SignUpController;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -26,11 +20,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -40,6 +31,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
+import ui.signup.SignUpController;
 
 /**
  * Controlador para la vista de inicio de sesión en la aplicación. Esta clase

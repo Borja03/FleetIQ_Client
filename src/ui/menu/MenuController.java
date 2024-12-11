@@ -1,4 +1,4 @@
-package ui;
+package ui.menu;
 
 import javafx.fxml.FXML;
 import javafx.scene.effect.ColorAdjust;
