@@ -1,106 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.scene.control.Hyperlink?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.SplitMenuButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.EnvioController">
+<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.ruta.RutaController">
     <top>
-        <fx:include source="menu.fxml" />
-    </top>
-    <center>
-        <VBox alignment="TOP_LEFT" layoutX="10.0" layoutY="10.0" spacing="10.0">
-            <Region prefHeight="12.0" prefWidth="1024.0" />
-            <!-- Buscador -->
-            <HBox prefHeight="35.0" prefWidth="860.0" spacing="10.0">
-                <SplitMenuButton fx:id="filterMenu" mnemonicParsing="false" prefHeight="35.0" prefWidth="106.0" text="Filters">
-                    <items>
-                        <MenuItem fx:id="filtrarPorFecha" mnemonicParsing="false" text="Filtrar por fecha" />
-                        <MenuItem fx:id="filtrarPorEstado" mnemonicParsing="false" text="Filtrar por estado" />
-                        <MenuItem fx:id="filtrarPorNumPaquetes" mnemonicParsing="false" text="Filtrar por numero de paquetes" />
-                    </items>
-                </SplitMenuButton>
-                
-                <!-- Filtros Visibles -->
-                <Label fx:id="filterLabelFecha" prefHeight="35.0" prefWidth="92.0" style="-fx-background-color: #d3d3d3; -fx-padding: 5px; -fx-border-radius: 5px;" text="Fecha" visible="false">
-                    <graphic>
-                        <HBox>
-                            <Label fx:id="removeFilterFecha" style="-fx-cursor: hand; -fx-text-fill: red;" text="X" />
-                        </HBox>
-                    </graphic>
-                </Label>
-                
-                <Label fx:id="filterLabelEstado" prefHeight="35.0" prefWidth="102.0" style="-fx-background-color: #d3d3d3; -fx-padding: 5px; -fx-border-radius: 5px;" text="Estado" visible="false">
-                    <graphic>
-                        <HBox>
-                            <Label fx:id="removeFilterEstado" style="-fx-cursor: hand; -fx-text-fill: red;" text="X" />
-                        </HBox>
-                    </graphic>
-                </Label>
+        <VBox>
+            <fx:include source="../menu/menu.fxml" />
 
-                <Label fx:id="filterLabelPaquetes" prefHeight="35.0" prefWidth="110.0" style="-fx-background-color: #d3d3d3; -fx-padding: 5px; -fx-border-radius: 5px;" text="Paquetes" visible="false">
-                    <graphic>
-                        <HBox>
-                            <Label fx:id="removeFilterPaquetes" style="-fx-cursor: hand; -fx-text-fill: red;" text="X" />
-                        </HBox>
-                    </graphic>
-                </Label>
+            <HBox alignment="CENTER_LEFT" styleClass="filter-container">
+            
 
-                <TextField fx:id="searchField" prefHeight="35.0" prefWidth="561.0" promptText="Buscar..." />
+                <VBox prefWidth="405.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filtrar Por Fechas" />
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="From: " />
+                        <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="From Date" scaleShape="false" />
+                        <Label text="To: " />
+                        <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="To Date" />
+                        <JFXButton fx:id="applyDateFilterButton" prefHeight="30.0" text="Apply" />
+                    </HBox>
+                </VBox>
+
+                <VBox prefHeight="93.0" prefWidth="236.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter Por Estado  " />
+                    <HBox prefHeight="100.0" prefWidth="271.0">
+                        <children>
+                            <JFXComboBox fx:id="estadoFilterComboBox" prefHeight="30.0" prefWidth="116.0" promptText="Filter" />
+                     <JFXButton fx:id="applyEstadoFilterButton" prefHeight="30.0" text="Apply" />
+                        </children>
+                    </HBox>
+                </VBox>
+                <VBox fillWidth="false" prefHeight="93.0" prefWidth="289.0" styleClass="filter-section">
+                    <children>
+                        <Label styleClass="filter-title" text="Filtrar Por Paquetes" />
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <children>
+                                <JFXTextField fx:id="numeroPaquetesTextField" prefHeight="30.0" prefWidth="155.0" promptText="Numero de paquetes" HBox.hgrow="ALWAYS" />
+                        <JFXButton fx:id="applyNumPaquetesFilterButton" prefHeight="30.0" text="Apply" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
             </HBox>
-
-            <Region prefHeight="18.0" prefWidth="1024.0" />
-
-            <!-- Tabla -->
-            <TableView fx:id="table" prefHeight="448.0" prefWidth="1024.0">
+        </VBox>
+    </top>
+    
+        <center>
+            <TableView fx:id="table" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="idColumn" prefWidth="87.13847208023071" text="id" />
-                    <TableColumn fx:id="fechaEnvioColumn" prefWidth="110.03080749511719" text="fecha_envio" />
-                    <TableColumn fx:id="fechaEntregaColumn" prefWidth="135.13841247558594" text="fecha_entrega" />
-                    <TableColumn fx:id="estadoColumn" prefWidth="174.27682495117188" text="estado" />
-                    <TableColumn fx:id="numPaquetesColumn" prefWidth="127.26156616210938" text="num_paquetes" />
-                    <TableColumn fx:id="creadorEnvioColumn" prefWidth="148.18463134765625" text="creador_envio" />
-                    <TableColumn fx:id="rutaColumn" prefWidth="91.3231201171875" text="ruta" />
-                    <TableColumn fx:id="vehiculoColumn" prefWidth="150.6463623046875" text="vehiculo" />
+                    <TableColumn fx:id="IdColumn" prefWidth="75.32305574417114" text="Id" />
+                    <TableColumn fx:id="fechaEnvioColumn" prefWidth="130.7076416015625" text="Fecha Envio" />
+                    <TableColumn fx:id="fechaEntregaColumn" prefWidth="143.99993896484375" text="Fecha Entrega" />
+                    <TableColumn fx:id="estadoColumn" prefWidth="129.230712890625" text="Estado" />
+                    <TableColumn fx:id="numPaquetesColumn" prefWidth="167.63070678710938" text="Numero Paquetes" />
+                    <TableColumn fx:id="creadorEnvioColumn" prefWidth="152.123046875" text="Creador Envio" />
+            <TableColumn fx:id="rutaColumn" prefWidth="103.3846435546875" text="Ruta" />
+            <TableColumn fx:id="vehiculoColumn" prefWidth="117.415283203125" text="Vehiculo" />
                 </columns>
             </TableView>
+        </center>
 
-            <HBox prefHeight="16.0" prefWidth="1024.0">
-                <children>
-                    <Region prefHeight="33.0" prefWidth="28.0" />
-                    <Hyperlink fx:id="addRow" text="Add row" />
-                    <Separator orientation="VERTICAL" prefHeight="33.0" prefWidth="39.0" />
-                    <Hyperlink fx:id="rmRow" text="Remove row" />
-                </children>
+
+        <bottom>
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <padding>
+                    <Insets bottom="15" left="15" right="15" top="15" />
+                </padding>
+
+                <JFXButton fx:id="addShipmentBtn" prefHeight="39.0" prefWidth="34.0" text=" ">
+                    <graphic>
+                        <ImageView fitHeight="28.0" fitWidth="76.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../image/addRoute.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Add Route" />
+                    </tooltip>
+                </JFXButton>
+
+                <JFXButton fx:id="removeShipmentBtn" ellipsisString="" prefWidth="30.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../image/removeRoute.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Delete Route" />
+                    </tooltip>
+                </JFXButton>
+
+                <JFXButton fx:id="printReportBtn" ellipsisString="" prefWidth="30.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../image/print.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Print Report" />
+                    </tooltip>
+                </JFXButton>
+
+                <Pane HBox.hgrow="ALWAYS" />
             </HBox>
-         <Separator opacity="0.0" prefHeight="21.0" prefWidth="1024.0" />
-         <HBox prefHeight="58.0" prefWidth="1024.0">
-            <children>
-               <Separator opacity="0.0" orientation="VERTICAL" prefHeight="58.0" prefWidth="963.0" />
-               <ImageView fx:id="logOut" fitHeight="58.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#handleLogOutClick">
-                    <image>
-                        <Image url="@../Images/logout.png" />
-                    </image>
-                </ImageView>
-            </children>
-         </HBox>
-        </VBox>
-    </center>
-
-    <stylesheets>
-        <URL value="@Style/style.css" />
-        <URL value="@../Style/style.css" />
-    </stylesheets>
+        </bottom>
 </BorderPane>
