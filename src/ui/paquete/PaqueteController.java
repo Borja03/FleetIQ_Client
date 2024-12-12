@@ -1,43 +1,38 @@
 package ui.paquete;
 
 import models.Paquete;
+import models.PaqueteSize;
+import models.User;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+
 import java.io.IOException;
 import java.io.InputStream;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.TableView;
-import javafx.util.StringConverter;
-
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import models.PaqueteSize;
+import javafx.util.StringConverter;
 
-/**
- *
- * @author Omar
- */
 public class PaqueteController {
 
     private static final Logger LOGGER = Logger.getLogger(PaqueteController.class.getName());
@@ -87,6 +82,9 @@ public class PaqueteController {
     private JFXButton applyFilterButton;
 
     private Stage stage;
+    private DateTimeFormatter dateFormatter;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     public Stage getStage() {
         return stage;
@@ -95,44 +93,35 @@ public class PaqueteController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-    // Date formatter and limits
-    private DateTimeFormatter dateFormatter;
-    private LocalDate startDate;
-    private LocalDate endDate;
 
-    public void initStage(Parent root) {
-        LOGGER.info("Initialising Sign Up window.");
+    public void initStage(Parent root, User connectedUser) {
+        LOGGER.info("Initialising Paquete window.");
         Scene scene = new Scene(root);
-        // Set the stage properties
+        
         stage.setScene(scene);
         stage.setTitle("Paquete");
         stage.setResizable(false);
-        // stage.initModality(Modality.APPLICATION_MODAL);
         stage.centerOnScreen();
-        //stage.getIcons().add(new Image("/images/userIcon.png"));
-        LOGGER.info("Window opened.");
-        // Load configuration using ResourceBundle
-        // loadConfigurationSettings();
-
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
+        removeShipmentBtn.setDisable(true);
         // Load configurations
         loadConfigurations();
+        
         // Set up date pickers
         setUpDatePickers();
-        // Populate size filter combo box
         
-        sizeFilterComboBox.getItems().setAll(PaqueteSize.values());
+        // Set up size filter combo box
+        setUpSizeFilterComboBox();
         
         // Set up table columns
         setUpTableColumns();
+        
         // Fill table with example data
         fillTableWithExampleData();
 
         stage.show();
     }
 
-    /**
-     * Loads configurations from the config.properties file.
-     */
     private void loadConfigurations() {
         Properties config = new Properties();
 
@@ -158,7 +147,7 @@ public class PaqueteController {
             } else {
                 // Default to today if not specified
                 startDate = LocalDate.now();
-                endDate = LocalDate.now();
+                endDate = LocalDate.now().plusYears(1);
             }
 
         } catch (IOException ex) {
@@ -166,11 +155,8 @@ public class PaqueteController {
         }
     }
 
-    /**
-     * Sets up the date pickers with the appropriate format and limits.
-     */
     private void setUpDatePickers() {
-        // Set the date converter for both date pickers
+        // Date converter
         StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
             @Override
             public String toString(LocalDate date) {
@@ -186,31 +172,64 @@ public class PaqueteController {
         fromDatePicker.setConverter(converter);
         toDatePicker.setConverter(converter);
 
-        // Disable dates outside the specified range
+        // Disable 'to' date picker until 'from' date is selected
+        toDatePicker.setDisable(true);
+
+        // Listener for 'from' date picker
+        fromDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Enable 'to' date picker
+                toDatePicker.setDisable(false);
+
+                // Set day cell factory for 'to' date picker
+                toDatePicker.setDayCellFactory(picker -> new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate date, boolean empty) {
+                        super.updateItem(date, empty);
+                        // Disable dates before the selected 'from' date and after endDate
+                        setDisable(empty || date.compareTo(newValue) < 0 || date.compareTo(endDate) > 0);
+                    }
+                });
+            } else {
+                // Disable 'to' date picker if 'from' is not selected
+                toDatePicker.setDisable(true);
+                toDatePicker.setValue(null);
+            }
+        });
+
+        // Set initial date picker constraints
         fromDatePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-
-                // Disable dates before startDate and after endDate
-                setDisable(empty || date.compareTo(startDate) < 0 || date.compareTo(endDate) > 0);
-            }
-        });
-
-        toDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-
                 // Disable dates before startDate and after endDate
                 setDisable(empty || date.compareTo(startDate) < 0 || date.compareTo(endDate) > 0);
             }
         });
     }
 
-    /**
-     * Sets up the table columns with appropriate cell value factories.
-     */
+    private void setUpSizeFilterComboBox() {
+        // Create a list with all enum values plus a null option
+        ObservableList<PaqueteSize> sizeOptions = FXCollections.observableArrayList();
+        sizeOptions.add(null); // Add null as the first option (represents "No filter")
+        sizeOptions.addAll(PaqueteSize.values());
+        
+        sizeFilterComboBox.setItems(sizeOptions);
+        
+        // Custom converter to display "No filter" for null
+        sizeFilterComboBox.setConverter(new StringConverter<PaqueteSize>() {
+            @Override
+            public String toString(PaqueteSize size) {
+                return size == null ? "No Filter" : size.name();
+            }
+
+            @Override
+            public PaqueteSize fromString(String string) {
+                return string.equals("No Filter") ? null : PaqueteSize.valueOf(string);
+            }
+        });
+    }
+
     private void setUpTableColumns() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
@@ -220,56 +239,99 @@ public class PaqueteController {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
         fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
 
-        // Optionally, set cell factories for formatting
+        // Date column formatting
         dateColumn.setCellFactory(column -> new TableCell<Paquete, LocalDate>() {
-            private final DateTimeFormatter formatter = dateFormatter;
-
             @Override
             protected void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                if (empty || date == null) {
-                    setText(null);
-                } else {
-                    setText(formatter.format(date));
-                }
+                setText(empty || date == null ? null : dateFormatter.format(date));
             }
         });
     }
 
-    /**
-     * Fills the table with example data.
-     */
     private void fillTableWithExampleData() {
         ObservableList<Paquete> data = FXCollections.observableArrayList(
-                        new Paquete(1, "Alice", "Bob", 2.5, PaqueteSize.SMALL, LocalDate.now(), true),
-                        new Paquete(2, "Charlie", "Dave", 5.0, PaqueteSize.MEDIUM, LocalDate.now().minusDays(1), false),
-                        new Paquete(3, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(4, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(5, "Charlie", "Dave", 5.0, PaqueteSize.MEDIUM, LocalDate.now().minusDays(1), false),
-                        new Paquete(6, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(7, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(8, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(9, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
-                        new Paquete(10, "Grace", "Heidi", 20.0, PaqueteSize.EXTRA_LARGE, LocalDate.now().minusDays(3), false)
+            new Paquete(1, "Alice", "Bob", 2.5, PaqueteSize.SMALL, LocalDate.now(), true),
+            new Paquete(2, "Charlie", "Dave", 5.0, PaqueteSize.MEDIUM, LocalDate.now().minusDays(1), false),
+            new Paquete(3, "Eve", "Frank", 10.0, PaqueteSize.LARGE, LocalDate.now().minusDays(2), true),
+            new Paquete(4, "Grace", "Heidi", 7.5, PaqueteSize.MEDIUM, LocalDate.now().minusDays(3), false),
+            new Paquete(5, "Ivan", "Jack", 15.0, PaqueteSize.EXTRA_LARGE, LocalDate.now().minusDays(4), true)
         );
 
         paqueteTableView.setItems(data);
     }
 
     @FXML
-    private void onApplyFilter() {
-        // Implement filtering logic based on selected dates and size
+    private void onSearch() {
+        String query = searchTextField.getText().trim().toLowerCase();
+        
+        if (query.isEmpty()) {
+            // If no search query, reset to original data
+            fillTableWithExampleData();
+            return;
+        }
+        
+        ObservableList<Paquete> originalData = paqueteTableView.getItems();
+        ObservableList<Paquete> filteredData = FXCollections.observableArrayList();
+        
+        for (Paquete paquete : originalData) {
+            // Check if query matches sender or receiver (case-insensitive)
+            if (paquete.getSender().toLowerCase().contains(query) || 
+                paquete.getReceiver().toLowerCase().contains(query)) {
+                filteredData.add(paquete);
+            }
+            
+            // If query is a valid number, search by weight
+            try {
+                double weightQuery = Double.parseDouble(query);
+                if (paquete.getWeight() == weightQuery) {
+                    filteredData.add(paquete);
+                }
+            } catch (NumberFormatException e) {
+                // Not a valid number, ignore
+            }
+        }
+        
+        paqueteTableView.setItems(filteredData);
     }
 
     @FXML
-    private void onSearch() {
-        String query = searchTextField.getText();
-        // Implement search logic
+    private void onApplyFilter() {
+        ObservableList<Paquete> originalData = paqueteTableView.getItems();
+        ObservableList<Paquete> filteredData = FXCollections.observableArrayList();
+        
+        LocalDate fromDate = fromDatePicker.getValue();
+        LocalDate toDate = toDatePicker.getValue();
+        PaqueteSize selectedSize = sizeFilterComboBox.getValue();
+        
+        for (Paquete paquete : originalData) {
+            boolean dateMatch = true;
+            boolean sizeMatch = true;
+            
+            // Date filtering
+            if (fromDate != null && toDate != null) {
+                dateMatch = !paquete.getCreationDate().isBefore(fromDate) && 
+                            !paquete.getCreationDate().isAfter(toDate);
+            }
+            
+            // Size filtering
+            if (selectedSize != null) {
+                sizeMatch = paquete.getSize() == selectedSize;
+            }
+            
+            // Add to filtered list if both conditions are met
+            if (dateMatch && sizeMatch) {
+                filteredData.add(paquete);
+            }
+        }
+        
+        paqueteTableView.setItems(filteredData);
     }
 
     @FXML
     private void onAddShipment() {
-        // Open a new window or dialog to add a shipment
+        // TODO: Implement add shipment logic
+        System.out.println("Add Shipment clicked");
     }
 
     @FXML
@@ -280,4 +342,9 @@ public class PaqueteController {
         }
     }
 
+    @FXML
+    private void onPrintReport() {
+        // TODO: Implement print report logic
+        System.out.println("Print Report clicked");
+    }
 }

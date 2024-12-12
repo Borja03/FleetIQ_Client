@@ -15,7 +15,7 @@
          <children>
             <ImageView fx:id="logoImageView" fitHeight="512.0" fitWidth="512.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../images/logo.gif" />
+                  <Image url="@../../image/logo.gif" />
                </image>
             </ImageView>
             <JFXProgressBar fx:id="progressBar" prefHeight="10.0" prefWidth="512.0">

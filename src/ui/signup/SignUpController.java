@@ -1,8 +1,7 @@
 package ui.signup;
 
-import models.User;
-import ui.login.LogInController;
-import utils.UtilsMethods;
+
+
 
 import exception.ConnectionException;
 import exception.EmptyFieldException;
@@ -11,7 +10,10 @@ import exception.InvalidEmailFormatException;
 import exception.InvalidPasswordFormatException;
 import exception.InvalidStreetFormatException;
 import exception.InvalidZipFormatException;
-
+import exception.ServerErrorException;
+import exception.UserAlreadyExistsException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -41,7 +44,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import static utils.UtilsMethods.logger;
+import models.User;
+import ui.login.LogInController;
 
 /**
  * SignUpController handles the user interactions for the sign-up window. It
@@ -138,8 +142,7 @@ public class SignUpController {
         return stage;
     }
 
-    UtilsMethods utils = new UtilsMethods(); // Instance of utility methods
-
+   
     /**
      * Sets the current stage of the SignUpController.
      *
@@ -169,8 +172,9 @@ public class SignUpController {
         // stage.initModality(Modality.APPLICATION_MODAL);
         stage.centerOnScreen();
 
-        stage.getIcons().add(new Image("/Images/userIcon.png"));
-
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
+   
+        
         tf_password.setVisible(false);
         tf_password_confirm.setVisible(false);
 
@@ -179,8 +183,22 @@ public class SignUpController {
         btn_show_password.setOnAction(this::handlePasswordImageButtonAction);
         stage.setOnCloseRequest(this::handleOnActionExit);
 
-        // menu
-        // Initialize context menu
+        // changes for exam
+             
+        // active chackbox
+        chb_active.setSelected(true);
+        // listener for focus
+        tf_email.focusedProperty().addListener(this::focusChanged);
+        pf_password.focusedProperty().addListener(this::focusChanged);
+        tf_password.focusedProperty().addListener(this::focusChanged);
+        pf_password_confirm.focusedProperty().addListener(this::focusChanged);
+        tf_password_confirm.focusedProperty().addListener(this::focusChanged);
+        tf_name.focusedProperty().addListener(this::focusChanged);
+        tf_street.focusedProperty().addListener(this::focusChanged);
+        tf_city.focusedProperty().addListener(this::focusChanged);
+        tf_zip.focusedProperty().addListener(this::focusChanged);
+
+      // Initialize context menu
         initializeContextMenu();
 
         // Add context menu to the scene
@@ -230,9 +248,9 @@ public class SignUpController {
     try {
         Properties props = new Properties();
         props.setProperty("theme", theme);
-        props.store(new FileOutputStream("src/config/config.properties"), "Theme Settings");
+        props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
     } catch (IOException e) {
-        logger.severe("Error saving theme preference: " + e.getMessage());
+      LOGGER.severe("Error saving theme preference: " + e.getMessage());
     }
 }
 
@@ -251,7 +269,7 @@ public class SignUpController {
  */
 private String loadThemePreference() {
     try {
-        ResourceBundle bundle = ResourceBundle.getBundle("config/config");
+        ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
         return bundle.getString("theme");
     } catch (Exception e) {
         // Log an error message if loading the theme preference fails
@@ -281,29 +299,29 @@ private String loadThemePreference() {
 
         if (theme.equals("dark")) {
             // Code for dark theme
-            String cssFile = "/css/dark-styles.css";
+            String cssFile = "/style/dark-styles.css";
             scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-            imgEmail.setImage(new Image(getClass().getResourceAsStream("/Images/envelope-solid-white.png")));
-            imgLock.setImage(new Image(getClass().getResourceAsStream("/Images/lock-solid-white.png")));
-            imgKey.setImage(new Image(getClass().getResourceAsStream("/Images/key-solid-white.png")));
-            imgUser.setImage(new Image(getClass().getResourceAsStream("/Images/user-solid-white.png")));
-            imgStreet.setImage(new Image(getClass().getResourceAsStream("/Images/location-dot-solid-white.png")));
-            imgCity.setImage(new Image(getClass().getResourceAsStream("/Images/city-solid-white.png")));
-            imgZIP.setImage(new Image(getClass().getResourceAsStream("/Images/imgZIP-white.png")));
+            imgEmail.setImage(new Image(getClass().getResourceAsStream("/image/envelope-solid-white.png")));
+            imgLock.setImage(new Image(getClass().getResourceAsStream("/image/lock-solid-white.png")));
+            imgKey.setImage(new Image(getClass().getResourceAsStream("/image/key-solid-white.png")));
+            imgUser.setImage(new Image(getClass().getResourceAsStream("/image/user-solid-white.png")));
+            imgStreet.setImage(new Image(getClass().getResourceAsStream("/image/location-dot-solid-white.png")));
+            imgCity.setImage(new Image(getClass().getResourceAsStream("/image/city-solid-white.png")));
+            imgZIP.setImage(new Image(getClass().getResourceAsStream("/image/imgZIP-white.png")));
             contextMenu.getStyleClass().add("context-menu-dark");
 
             // Additional actions for dark theme
         } else if (theme.equals("light")) {
             // Code for light theme
-            String cssFile = "/css/CSSglobal.css";
+            String cssFile = "/style/CSSglobal.css";
             scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-            imgEmail.setImage(new Image(getClass().getResourceAsStream("/Images/envelope-solid.png")));
-            imgLock.setImage(new Image(getClass().getResourceAsStream("/Images/lock-solid.png")));
-            imgKey.setImage(new Image(getClass().getResourceAsStream("/Images/key-solid.png")));
-            imgUser.setImage(new Image(getClass().getResourceAsStream("/Images/user-solid.png")));
-            imgStreet.setImage(new Image(getClass().getResourceAsStream("/Images/location-dot-solid.png")));
-            imgCity.setImage(new Image(getClass().getResourceAsStream("/Images/city-solid.png")));
-            imgZIP.setImage(new Image(getClass().getResourceAsStream("/Images/imgZIP.png")));
+            imgEmail.setImage(new Image(getClass().getResourceAsStream("/image/envelope-solid.png")));
+            imgLock.setImage(new Image(getClass().getResourceAsStream("/image/lock-solid.png")));
+            imgKey.setImage(new Image(getClass().getResourceAsStream("/image/key-solid.png")));
+            imgUser.setImage(new Image(getClass().getResourceAsStream("/image/user-solid.png")));
+            imgStreet.setImage(new Image(getClass().getResourceAsStream("/image/location-dot-solid.png")));
+            imgCity.setImage(new Image(getClass().getResourceAsStream("/image/city-solid.png")));
+            imgZIP.setImage(new Image(getClass().getResourceAsStream("/image/imgZIP.png")));
             contextMenu.getStyleClass().remove("context-menu-dark");
 
             // Additional actions for light theme
@@ -324,7 +342,7 @@ private String loadThemePreference() {
         tf_street.clear();
         tf_city.clear();
         tf_zip.clear();
-        chb_active.setSelected(false);
+        chb_active.setSelected(true);
         lbl_error.setText("");
     }
 
@@ -336,7 +354,7 @@ private String loadThemePreference() {
     private void handlePasswordImageButtonAction(ActionEvent event) {
         isPasswordVisible = !isPasswordVisible;
         if (isPasswordVisible) {
-            imgShowPassword.setImage(new Image(getClass().getResourceAsStream("/Images/eye-slash-solid.png")));
+            imgShowPassword.setImage(new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png")));
             pf_password.setVisible(false);
             tf_password.setVisible(true);
             tf_password.setText(pf_password.getText());
@@ -344,7 +362,7 @@ private String loadThemePreference() {
             tf_password_confirm.setVisible(true);
             tf_password_confirm.setText(pf_password_confirm.getText());
         } else {
-            imgShowPassword.setImage(new Image(getClass().getResourceAsStream("/Images/eye-solid.png")));
+            imgShowPassword.setImage(new Image(getClass().getResourceAsStream("/image/eye-solid.png")));
             pf_password.setVisible(true);
             tf_password.setVisible(false);
             pf_password.setText(tf_password.getText());
@@ -352,6 +370,14 @@ private String loadThemePreference() {
             tf_password_confirm.setVisible(false);
             pf_password_confirm.setText(tf_password_confirm.getText());
         }
+    }
+    
+    //
+    private void focusChanged(ObservableValue observable ,Boolean oldValue ,Boolean newValue){
+      if(newValue){
+       lbl_error.setText("");
+
+      }  
     }
 
     /**
@@ -562,21 +588,31 @@ private String loadThemePreference() {
     private void performSignUp(String email, String password, String name, int companyID, String street, String city, int zip, boolean isActive) {
         User user = new User(email, password, name, isActive, companyID, street, city, zip);
 
-        try {
-            // Attempting to sign up the user
-            User nuevoUser=null;
-            //User nuevoUser = SignableFactory.getSignable().signUp(user);
-            // If the sign-up is successful
-            if (nuevoUser != null) {
-                showAlert();
-                LOGGER.info("User signed up successfully: " + email);
-            }
-        
-        } catch (Exception e) {
-            // Handle unexpected errors
-            utils.showAlert("Error", "An unexpected error occurred: " + e.getMessage());
-            LOGGER.log(Level.SEVERE, "Unexpected error in performSignUp", e);
-        }
+//        try {
+//            // Attempting to sign up the user
+//            User nuevoUser = SignableFactory.getSignable().signUp(user);
+//            // If the sign-up is successful
+//            if (nuevoUser != null) {
+//                showAlert();
+//                LOGGER.info("User signed up successfully: " + email);
+//            }
+//        } catch (UserAlreadyExistsException e) {
+//            // Handle duplicate email error
+//            utils.showAlert("Error", "Email already exists. Please use another email.");
+//            LOGGER.warning("Email already exists: " + email);
+//        } catch (ServerErrorException e) {
+//            // Handle server error
+//            utils.showAlert("Error", "Server is not available at the moment. Please try again later.");
+//            LOGGER.warning("Server error occurred during sign-up: " + e.getMessage());
+//        } catch (ConnectionException e) {
+//            // Handle connection exceptions
+//            utils.showAlert("Error", "Problemas de conexión a la base de datos.");
+//            LOGGER.warning("Connection error during sign-up: " + e.getMessage());
+//        } catch (Exception e) {
+//            // Handle unexpected errors
+//            utils.showAlert("Error", "An unexpected error occurred: " + e.getMessage());
+//            LOGGER.log(Level.SEVERE, "Unexpected error in performSignUp", e);
+//        }
     }
 
     /**
@@ -585,7 +621,7 @@ private String loadThemePreference() {
      * @param event the action event triggered by the hyperlink.
      */
     private void handleLoginHyperlinkAction(ActionEvent event) {
-        navigateToScreen("/view/LogIn.fxml", "LogIn");
+        navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
     }
 
         private void showAlert() {
@@ -598,7 +634,7 @@ private String loadThemePreference() {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 // Navigate to another screen after the user clicks OK
-                navigateToScreen("/view/LogIn.fxml", "LogIn");
+                navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
             }
         });
     }
@@ -640,6 +676,13 @@ private String loadThemePreference() {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                             "Are you sure you want to exit the application?",
                             ButtonType.OK, ButtonType.CANCEL);
+                      // Load an icon image for the alert
+           // Load a custom icon for the window (not the alert itself)
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        Image iconImage = new Image(getClass().getResourceAsStream("/image/fleet_icon.png"));
+        stage.getIcons().add(iconImage);  // Set the icon for the window
+
+        // Set the icon as the graphic for the alert
             Optional<ButtonType> result = alert.showAndWait();
             // If OK to exit
             if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -654,6 +697,8 @@ private String loadThemePreference() {
             Alert alert = new Alert(Alert.AlertType.ERROR,
                             errorMsg,
                             ButtonType.OK);
+   
+      
             alert.showAndWait();
             LOGGER.log(Level.SEVERE, errorMsg);
         }

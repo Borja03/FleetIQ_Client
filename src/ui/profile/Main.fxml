@@ -11,11 +11,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<Pane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainController">
+<Pane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.profile.MainController">
     <children>
+          <fx:include source="../menu/menu.fxml" />
         <ImageView fitHeight="101.0" fitWidth="103.0" layoutX="45.0" layoutY="21.0">
             <image>
-                <Image url="@../Images/userIcon.png" />
+                <Image url="@../../image/userIcon.png" />
             </image>
         </ImageView>
 
@@ -52,7 +53,7 @@
             <graphic>
                 <ImageView fx:id="eyeImageView" fitHeight="30.0" fitWidth="30.0">
                     <image>
-                        <Image url="@../Images/passwordNotVisible.png" />
+                        <Image url="@../../image/eye-slash-solid.png" />
                     </image>
                 </ImageView>
             </graphic>

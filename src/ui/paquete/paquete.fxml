@@ -48,7 +48,7 @@
                             <graphic>
                                 <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
                                     <image>
-                                        <Image url="@../../images/magnifying-glass.png" />
+                                        <Image url="@../../image/magnifying-glass.png" />
                                     </image>
                                 </ImageView>
                             </graphic>
@@ -89,7 +89,7 @@
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../images/package-add-icon.png" />
+                            <Image url="@../../image/package-add-icon.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -102,7 +102,7 @@
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../images/package-delete-icon.png" />
+                            <Image url="@../../image/package-delete-icon.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -115,7 +115,7 @@
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../images/print-document-icon.png" />
+                            <Image url="@../../image/print-document-icon.png" />
                         </image>
                     </ImageView>
                 </graphic>

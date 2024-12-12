@@ -1,6 +1,5 @@
 package ui.login;
 
-
 import exception.InvalidEmailFormatException;
 import models.User;
 import javafx.fxml.FXML;
@@ -31,6 +30,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
+import ui.paquete.PaqueteController;
+import ui.profile.MainController;
 import ui.signup.SignUpController;
 
 /**
@@ -137,7 +138,7 @@ public class LogInController {
         stage.setScene(scene);
         stage.setTitle("SignIn");
         stage.setResizable(false);
-        stage.getIcons().add(new Image("/Images/userIcon.png"));
+        //stage.getIcons().add(new Image("/Images/userIcon.png"));
         stage.centerOnScreen();
 
         visiblePasswordField.setVisible(false);
@@ -197,7 +198,7 @@ public class LogInController {
         try {
             Properties props = new Properties();
             props.setProperty("theme", theme);
-            props.store(new FileOutputStream("src/config/config.properties"), "Theme Settings");
+            props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
         } catch (IOException e) {
             logger.severe("Error saving theme preference: " + e.getMessage());
         }
@@ -210,16 +211,16 @@ public class LogInController {
      *
      * @return the saved theme preference, or "light" if no preference is found
      */
-//private String loadThemePreference() {
-//    try {
-//        ResourceBundle bundle = ResourceBundle.getBundle("config/config");
-//        return bundle.getString("theme");
-//    } catch (Exception e) {
-//        // Log an error message if loading the theme preference fails
-//    }
-//
-//    return "light";
-//}
+private String loadThemePreference() {
+    try {
+        ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
+        return bundle.getString("theme");
+    } catch (Exception e) {
+        // Log an error message if loading the theme preference fails
+    }
+
+    return "light";
+}
     /**
      * Cambia el tema de la interfaz y guarda la preferencia.
      *
@@ -249,11 +250,11 @@ public class LogInController {
         scene.getStylesheets().clear();
 
         if (theme.equals("dark")) {
-            String cssFile = "/css/dark-styles.css";
+            String cssFile = "/style/dark-styles.css";
             scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
             contextMenu.getStyleClass().add("context-menu-dark");
         } else if (theme.equals("light")) {
-            String cssFile = "/css/CSSglobal.css";
+            String cssFile = "/style/CSSglobal.css";
             scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
             contextMenu.getStyleClass().remove("context-menu-dark");
         }
@@ -282,8 +283,8 @@ public class LogInController {
      */
     @FXML
     private void handleLogInButtonAction() {
-        try {
-            utils.validateEmail(emailTextField.getText());
+       // try {
+            //utils.validateEmail(emailTextField.getText());
 
             String email = emailTextField.getText();
             String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
@@ -291,19 +292,37 @@ public class LogInController {
             User user = new User();
             user.setEmail(email);
             user.setPassword(password);
-User loggedInUser=null;
-           // User loggedInUser = SignableFactory.getSignable().signIn(user);
+            //User loggedInUser = null;
+            // User loggedInUser = SignableFactory.getSignable().signIn(user);
 
-            if (loggedInUser != null) {
-                navigateToScreen("/view/Main.fxml", "Main", true, loggedInUser);
-            }
-        } catch (InvalidEmailFormatException e) {
-            utils.showAlert("Formato de email inválido", e.getMessage());
-            logger.severe("Error inesperado");
-        } catch (Exception ex) {
-            utils.showAlert("Error", "Ocurrió un error inesperado.");
-            logger.severe("Error inesperado");
+           // if (loggedInUser != null) {
+           // System.out.println("Here!!!!!!!!!!!!!!!!");
+            //    navigateToScreen("/ui/paquete/paquete.fxml", "Paquete", true, user);
+           // }
+         System.out.println("Loading main application...");
+         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
+            Parent root=null;
+        try {
+            root = loader.load();
+        } catch (IOException ex) {
+            Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
+              PaqueteController controller = loader.getController();
+                Stage newStage = new Stage();
+                controller.setStage(newStage);
+                controller.initStage(root,user);
+                stage.close();
+    
+           
+           
+           
+//        } catch (InvalidEmailFormatException e) {
+//            utils.showAlert("Formato de email inválido", e.getMessage());
+//            logger.severe("Error inesperado");
+//        } catch (Exception ex) {
+//            utils.showAlert("Error", "Ocurrió un error inesperado.");
+//            logger.severe("Error inesperado");
+//        }
     }
 
     /**
@@ -313,7 +332,7 @@ User loggedInUser=null;
     @FXML
     private void handleCreateUserLinkAction() {
         logger.info("Abrir vista de registro.");
-        navigateToScreen("/view/SignUpView.fxml", "SignUp", false, null);
+        navigateToScreen("/ui/signup/SignUpView.fxml", "SignUp", false, null);
     }
 
     /**
@@ -357,10 +376,10 @@ User loggedInUser=null;
                 controller.initStage(root);
                 stage.close();
             } else {
-              //  MainController controller = loader.getController();
-              //  Stage newStage = new Stage();
-                //controller.setStage(newStage);
-               // controller.initStage(root, user);
+                  MainController controller = loader.getController();
+                  Stage newStage = new Stage();
+                controller.setStage(newStage);
+                 controller.initStage(root, user);
                 stage.close();
             }
 
