@@ -283,9 +283,14 @@ public class VehicleController {
      */
     private void fillTableWithExampleData() {
         ObservableList<Vehicle> data = FXCollections.observableArrayList(
-                new Vehicle(1, "ABC123", "Toyota Corolla", 5, LocalDate.now().minusYears(2), LocalDate.now().minusMonths(6), true),
-                new Vehicle(2, "XYZ789", "Honda Civic", 5, LocalDate.now().minusYears(3), LocalDate.now().minusMonths(3), false),
-                new Vehicle(3, "DEF456", "Ford Focus", 4, LocalDate.now().minusYears(1), LocalDate.now().minusMonths(2), true)
+                new Vehicle(1, "1234BCD", "Toyota Corolla", 5, LocalDate.now().minusYears(2), LocalDate.now().minusMonths(6), true),
+                new Vehicle(2, "5678XRF", "Honda Civic", 5, LocalDate.now().minusYears(3), LocalDate.now().minusMonths(3), false),
+                new Vehicle(3, "9101GQT", "Ford Focus", 4, LocalDate.now().minusYears(1), LocalDate.now().minusMonths(2), true),
+                new Vehicle(4, "1122LPM", "Chevrolet Malibu", 5, LocalDate.now().minusYears(4), LocalDate.now().minusMonths(12), true),
+                new Vehicle(5, "3344VHW", "Nissan Altima", 4, LocalDate.now().minusYears(2).minusMonths(6), LocalDate.now().minusMonths(1), false),
+                new Vehicle(6, "5566JKT", "BMW 320i", 5, LocalDate.now().minusYears(1), LocalDate.now().minusMonths(3), true),
+                new Vehicle(7, "7788MNL", "Audi A4", 5, LocalDate.now().minusYears(6), LocalDate.now().minusMonths(8), false),
+                new Vehicle(8, "9900PRZ", "Mercedes-Benz C-Class", 5, LocalDate.now().minusYears(5), LocalDate.now().minusMonths(4), true)
         );
 
         vehicleTableView.setItems(data);
