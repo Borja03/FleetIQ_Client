@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SignUpController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.signup.SignUpController">
     
               
          <children>
@@ -50,7 +50,7 @@
                         </Label>
                   <ImageView fx:id="imgEmail" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../Images/envelope-solid.png" />
+                        <Image url="@../../image/envelope-solid.png" />
                      </image>
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" top="1.0" />
@@ -109,7 +109,7 @@
                         </TextField>
                         <ImageView fx:id="imgLock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                            <image>
-                              <Image url="@../Images/lock-solid.png" />
+                              <Image url="@../../image/lock-solid.png" />
                            </image>
                            <GridPane.margin>
                               <Insets left="10.0" top="1.0" />
@@ -124,7 +124,7 @@
                      <graphic>
                         <ImageView fx:id="imgShowPassword" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../Images/eye-solid.png" />
+                              <Image url="@../../image/eye-solid.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -175,7 +175,7 @@
                         </TextField>
                         <ImageView fx:id="imgKey" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
                            <image>
-                              <Image url="@../Images/key-solid.png" />
+                              <Image url="@../../image/key-solid.png" />
                            </image>
                            <GridPane.margin>
                               <Insets left="10.0" top="1.0" />
@@ -203,7 +203,7 @@
                         <Insets left="10.0" right="10.0" top="1.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../Images/user-solid.png" />
+                        <Image url="@../../image/user-solid.png" />
                      </image>
                   </ImageView>
                         <TextField id="tf_name" fx:id="tf_name" prefHeight="40.0" prefWidth="350.0" promptText="Enter your full name">
@@ -234,7 +234,7 @@
                         <Insets left="10.0" right="10.0" top="1.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../Images/location-dot-solid.png" />
+                        <Image url="@../../image/location-dot-solid.png" />
                      </image>
                   </ImageView>
                         <TextField id="tf_street" fx:id="tf_street" prefHeight="40.0" prefWidth="350.0" promptText="Enter your street">
@@ -268,7 +268,7 @@
                         </Label>
                   <ImageView fx:id="imgCity" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../Images/city-solid.png" />
+                        <Image url="@../../image/city-solid.png" />
                      </image>
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" top="1.0" />
@@ -302,7 +302,7 @@
                         <Insets left="10.0" right="10.0" top="1.0" />
                      </HBox.margin>
                      <image>
-                        <Image url="@../Images/imgZIP.png" />
+                        <Image url="@../../image/imgZIP.png" />
                      </image>
                   </ImageView>
                         <TextField id="tf_zip" fx:id="tf_zip" prefHeight="40.0" prefWidth="350.0" promptText="Enter your ZIP number">

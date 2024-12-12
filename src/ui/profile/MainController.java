@@ -78,8 +78,8 @@ public class MainController {
     private Pane mainPane;
 
     // Image paths for the eye icons
-    private final Image eyeClosed = new Image(getClass().getResourceAsStream("/Images/eye-solid.png"));
-    private final Image eyeOpen = new Image(getClass().getResourceAsStream("/Images/eye-slash-solid.png"));
+    private final Image eyeClosed = new Image(getClass().getResourceAsStream("/image/eye-solid.png"));
+    private final Image eyeOpen = new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png"));
 
     private boolean passwordIsVisible = false;
 
@@ -113,7 +113,7 @@ public class MainController {
         stage.setScene(scene);
         stage.setTitle("Main");
         stage.setResizable(false);
-        stage.getIcons().add(new Image("/Images/userIcon.png"));
+       // stage.getIcons().add(new Image("/Images/userIcon.png"));
 
         // Set initial visibility of password fields
         passwordField.setVisible(true);
@@ -197,7 +197,7 @@ private void saveThemePreference(String theme) {
     try {
         Properties props = new Properties();
         props.setProperty("theme", theme);
-        props.store(new FileOutputStream("src/config/config.properties"), "Theme Settings");
+        props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
     } catch (IOException e) {
         logger.severe("Error saving theme preference: " + e.getMessage());
     }
@@ -218,7 +218,7 @@ private void saveThemePreference(String theme) {
  */
 private String loadThemePreference() {
     try {
-        ResourceBundle bundle = ResourceBundle.getBundle("config/config");
+        ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
         return bundle.getString("theme");
     } catch (Exception e) {
         // Log an error message if loading the theme preference fails
@@ -260,7 +260,7 @@ private String loadThemePreference() {
         // Check if the specified theme is "dark"
         if (theme.equals("dark")) {
             // Define the CSS file for the dark theme
-            String cssFile = "/css/dark-styles.css";
+            String cssFile = "/style/dark-styles.css";
 
             // Add the dark theme stylesheet to the scene
             scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -272,7 +272,7 @@ private String loadThemePreference() {
         } // Check if the specified theme is "light"
         else if (theme.equals("light")) {
             // Define the CSS file for the light theme
-            String cssFile = "/css/CSSglobal.css";
+            String cssFile = "/style/CSSglobal.css";
 
             // Add the light theme stylesheet to the scene
             scene.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -367,7 +367,7 @@ private String loadThemePreference() {
      */
     @FXML
     private void logOut(ActionEvent event) {
-        navigateToScreen("/view/LogIn.fxml", "LogIn");
+        navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
     }
 
     /**

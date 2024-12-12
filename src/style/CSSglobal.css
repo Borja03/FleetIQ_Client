@@ -1,0 +1,93 @@
+/*
+    Created on: 24-Oct-2024, 11:16:14
+    Author: Adrian
+*/
+
+/* General styles */
+/* light-minimal-theme.css */
+
+/* Font */
+.root {
+    -fx-font-family: "Helvetica Neue", Arial, sans-serif;
+    -fx-background-color: #f9f9f9; /* Very light gray */
+}
+
+/* Labels, text fields, and buttons */
+.label, .text-field, .button {
+    -fx-text-fill: #333333; /* Darker gray for text */
+}
+.label{
+    -fx-font-size: 20px;
+}
+
+/* TextField and PasswordField with rounded corners */
+.text-field, .password-field {
+    -fx-background-color: #ffffff; /* White background */
+    -fx-border-color: #dcdcdc; /* Light gray border */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px; /* Rounded corners */
+    -fx-background-radius: 10px; /* Matches border radius */
+}
+.image-view {
+    -fx-opacity: 0.7;
+}
+/* Buttons with rounded corners */
+.button {
+    -fx-background-color: #2196F3; /* Green button */
+    -fx-border-radius: 5px; /* Rounded corners */
+    -fx-background-radius: 5px; /* Matches border radius */
+    -fx-text-fill: white; /* White text */
+}
+
+.button:hover {
+    -fx-background-color: #1976D2; /* Darker green on hover */
+}
+
+/* ComboBox with rounded corners */
+.combo-box {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #333333;
+}
+
+/* Arrow style in ComboBox */
+.combo-box .arrow {
+    -fx-background-color: #dcdcdc; /* Light gray arrow */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Menu bar with lighter background */
+.menu-bar {
+    -fx-background-color: #f0f0f0; /* Lighter gray */
+}
+
+/* Minimal hover effect for TextField and PasswordField */
+.text-field:hover, .password-field:hover {
+    -fx-border-color: #bbbbbb; /* Slightly darker border on hover */
+}
+
+#lbl_signup{
+    -fx-font-size: 60px;
+}
+#logInButton{
+    -fx-font-size: 20px;
+}
+#orLabelLogIn{
+    -fx-font-size: 20px;
+}
+#createUserLink{
+    -fx-font-size: 20px;
+}
+
+
+#lbl_error{
+        -fx-text-fill: #FF0000;
+}

@@ -1,40 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.menu.MenuController">
    <children>
-      <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="1114.0">
+      <MenuBar fx:id="menuBar" prefHeight="30.0" prefWidth="994.0">
         <menus>
             <Menu fx:id="menuGoTo" mnemonicParsing="false" text="Go to">
               <items>
-                  <MenuItem fx:id="menuItemPaquete" mnemonicParsing="false" text="Paquete" />
-                  <MenuItem fx:id="menuItemEnvio" mnemonicParsing="false" text="Envio" />
-                <MenuItem fx:id="menuItemRuta" mnemonicParsing="false" text="Ruta" />
-                  <MenuItem fx:id="menuItemVehiculo" mnemonicParsing="false" text="Vehiculo" />
-                  <MenuItem fx:id="menuItemCambiarPasswd" mnemonicParsing="false" text="Cambiar contraseña" />
+                  <MenuItem fx:id="menuItemPaquete" mnemonicParsing="false" onAction="#handlePaqueteMenuItemAction" text="Paquete" />
+                  <MenuItem fx:id="menuItemEnvio" mnemonicParsing="false" onAction="#handleEnvioMenuItemAction" text="Envio" />
+                <MenuItem fx:id="menuItemRuta" mnemonicParsing="false" onAction="#handleRutaMenuItemAction" text="Ruta" />
+                  <MenuItem fx:id="menuItemVehiculo" mnemonicParsing="false" onAction="#handleVehiculoMenuItemAction" text="Vehiculo" />
+                  <MenuItem fx:id="menuItemCambiarPasswd" mnemonicParsing="false" onAction="#handleChangePasswordMenuItemAction" text="Cambiar contraseña" />
               </items>
             </Menu>
           <Menu fx:id="menuView" mnemonicParsing="false" text="View">
             <items>
-              <MenuItem fx:id="menuItemDarkMode" mnemonicParsing="false" text="Dark mode" />
+              <MenuItem fx:id="menuItemDarkMode" mnemonicParsing="false" onAction="#handleDarkModeMenuItemAction" text="Dark mode" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="menuItemLightMode" mnemonicParsing="false" text="Light mode" />
+                  <MenuItem fx:id="menuItemLightMode" mnemonicParsing="false" onAction="#handleLightModeMenuItemAction" text="Light mode" />
             </items>
           </Menu>
           <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
             <items>
-                  <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" text="AboutPaquete" />
-              <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" text="AboutRuta" />
-                  <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" text="AboutEnvio" />
-                  <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" text="AboutVehiculo" />
+                  <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" onAction="#handleAboutPaqueteMenuItemAction" text="About Paquete" />
+              <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" onAction="#handleAboutRutaMenuItemAction" text="About Ruta" />
+                  <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" onAction="#handleAboutEnvioMenuItemAction" text="About Envio" />
+                  <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" onAction="#handleAboutVehiculoMenuItemAction"  text="About Vehiculo" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
+      <MenuButton fx:id="menuLogout" ellipsisString="" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="122.0">
+        <items>
+          <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuItemAction"  text="Profile" />
+          <MenuItem mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
+        </items>
+         <graphic>
+            <ImageView fitHeight="26.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../image/logout-icon.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <padding>
+            <Insets right="10.0" />
+         </padding>
+         <tooltip>
+            <Tooltip text="User" />
+         </tooltip>
+      </MenuButton>
    </children>
 </HBox>
