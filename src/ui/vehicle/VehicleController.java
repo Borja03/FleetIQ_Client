@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,14 +29,17 @@ import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
- * Controller for managing the Vehicle UI.
- * Handles initialization, configuration, and event logic.
- * 
+ * Controller for managing the Vehicle UI. Handles initialization,
+ * configuration, and event logic.
+ *
  * @author Omar
  */
 public class VehicleController {
@@ -58,22 +63,22 @@ public class VehicleController {
 
     @FXML
     private TableColumn<Vehicle, Integer> idColumn;
-    
+
     @FXML
     private TableColumn<Vehicle, String> matriculaColumn;
-    
+
     @FXML
     private TableColumn<Vehicle, String> modelColumn;
-    
+
     @FXML
     private TableColumn<Vehicle, Double> capacityColumn;
-    
+
     @FXML
     private TableColumn<Vehicle, LocalDate> registrationDateColumn;
-    
+
     @FXML
     private TableColumn<Vehicle, LocalDate> itvDateColumn;
-    
+
     @FXML
     private TableColumn<Vehicle, Boolean> activeColumn;
 
@@ -92,6 +97,15 @@ public class VehicleController {
     @FXML
     private JFXButton applyFilterButton;
 
+    @FXML
+    private JFXButton minusButton;
+
+    @FXML
+    private JFXButton plusButton;
+
+    @FXML
+    private JFXTextField capacityTextField;
+
     private Stage stage;
     private DateTimeFormatter dateFormatter;
     private LocalDate startDate;
@@ -99,7 +113,7 @@ public class VehicleController {
 
     /**
      * Gets the stage for this controller.
-     * 
+     *
      * @return the stage instance.
      */
     public Stage getStage() {
@@ -108,7 +122,7 @@ public class VehicleController {
 
     /**
      * Sets the stage for this controller.
-     * 
+     *
      * @param stage the stage to set.
      */
     public void setStage(Stage stage) {
@@ -117,7 +131,7 @@ public class VehicleController {
 
     /**
      * Initializes the stage with the given root layout.
-     * 
+     *
      * @param root the root layout for the scene.
      */
     public void initStage(Parent root) {
@@ -216,6 +230,52 @@ public class VehicleController {
                 setText(empty || date == null ? null : dateFormatter.format(date));
             }
         });
+    }
+
+    /**
+     * Initializes the event handlers for incrementing and decrementing the
+     * capacity value.
+     */
+    @FXML
+    private void initialize() {
+        // Initialize event handlers for the buttons
+        plusButton.setOnAction(event -> modifyCapacity(1));
+        minusButton.setOnAction(event -> modifyCapacity(-1));
+
+        // Set default value for capacityTextField if empty
+        if (capacityTextField.getText().isEmpty()) {
+            capacityTextField.setText("0");
+
+            TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change
+                    -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
+            capacityTextField.setTextFormatter(formatter);
+        }
+        LOGGER.info("Capacity controls initialized.");
+    }
+
+    /**
+     * Modifies the capacity value in the TextField by a given amount.
+     *
+     * @param amount the amount to modify the capacity by (positive or
+     * negative).
+     */
+    private void modifyCapacity(int amount) {
+        try {
+            // Parse the current value in the text field
+            int currentCapacity = Integer.parseInt(capacityTextField.getText().trim());
+            int newCapacity = currentCapacity + amount;
+
+            // Ensure the new value is within the allowed range (0 to 999)
+            if (newCapacity >= 0 && newCapacity <= 999) {
+                capacityTextField.setText(String.valueOf(newCapacity));
+            } else {
+                LOGGER.warning("Attempted to set capacity value outside the range (0-999).");
+            }
+        } catch (NumberFormatException e) {
+            // Reset to default value on invalid input
+            LOGGER.warning("Invalid capacity value: " + capacityTextField.getText());
+            capacityTextField.setText("0");
+        }
     }
 
     /**

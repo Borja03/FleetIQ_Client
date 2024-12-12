@@ -5,7 +5,6 @@
 <?import com.jfoenix.controls.JFXDatePicker?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -45,16 +44,17 @@
                     <Label styleClass="filter-title" text="Filter By Capacity" />
                <HBox prefHeight="100.0" prefWidth="200.0">
                   <children>
-                     <Button alignment="CENTER" mnemonicParsing="false" text="-" textAlignment="CENTER">
+                     <JFXButton fx:id="minusButton" text="-">
                         <HBox.margin>
-                           <Insets left="6.0" />
-                        </HBox.margin></Button>
-                     <TextField alignment="CENTER" prefHeight="27.0" prefWidth="42.0" text="0">
-                        <HBox.margin>
-                           <Insets left="8.0" right="8.0" />
+                           <Insets left="8.0" />
                         </HBox.margin>
-                     </TextField>
-                     <Button alignment="CENTER" mnemonicParsing="false" text="+" textAlignment="CENTER" />
+                     </JFXButton>
+                     <JFXTextField fx:id="capacityTextField" alignment="CENTER" prefHeight="30.0" prefWidth="43.0" text="0">
+                        <HBox.margin>
+                           <Insets left="6.0" right="6.0" />
+                        </HBox.margin>
+                     </JFXTextField>
+                     <JFXButton fx:id="plusButton" text="+" textAlignment="CENTER" />
                   </children>
                   <padding>
                      <Insets left="6.0" />
