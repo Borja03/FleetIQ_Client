@@ -20,10 +20,9 @@ public interface EnvioManager {
     /**
      * Añade un nuevo envío al sistema.
      *
-     * @param envio el objeto Envio añadido.
      * @throws createException si ocurre un error al crear el envío.
      */
-    public void addEnvio(Envio envio) throws createException;
+    public void addEnvio() throws createException;
 
     /**
      * Actualiza los datos de un envío existente.
@@ -37,7 +36,7 @@ public interface EnvioManager {
     /**
      * Elimina un envío del sistema basado en su identificador.
      *
-     * @param id el identificador del envío a eliminar.
+     * @param id del identificador del envío a eliminar.
      * @return el objeto Envio eliminado.
      * @throws deleteException si ocurre un error al eliminar el envío.
      */
