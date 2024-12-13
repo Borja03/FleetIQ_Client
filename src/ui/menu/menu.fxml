@@ -43,8 +43,13 @@
       </MenuBar>
       <MenuButton fx:id="menuLogout" ellipsisString="" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="122.0">
         <items>
+<<<<<<< HEAD
           <MenuItem fx:id="menuItemProfile" mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile" />
           <MenuItem fx:id="menuItemLogout" mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
+=======
+          <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile" />
+          <MenuItem mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
+>>>>>>> origin/merge_design_windows
         </items>
          <graphic>
             <ImageView fitHeight="26.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">

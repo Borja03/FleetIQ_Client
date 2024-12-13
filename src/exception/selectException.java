@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
+
 package exception;
 
-/**
- *
+ /*
  * @author Alder
  */
 public class selectException extends Exception {
