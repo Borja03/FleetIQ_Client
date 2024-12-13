@@ -48,7 +48,7 @@
                               <Font size="20.0" />
                            </font>
                         </Label>
-                  <ImageView fx:id="imgEmail" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgEmail" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons">
                      <image>
                         <Image url="@../../image/envelope-solid.png" />
                      </image>
@@ -107,7 +107,7 @@
                               <Insets />
                            </GridPane.margin>
                         </TextField>
-                        <ImageView fx:id="imgLock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                        <ImageView fx:id="imgLock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons" GridPane.columnIndex="1">
                            <image>
                               <Image url="@../../image/lock-solid.png" />
                            </image>
@@ -173,7 +173,7 @@
                               <Insets left="10.0" />
                            </GridPane.margin>
                         </TextField>
-                        <ImageView fx:id="imgKey" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1">
+                        <ImageView fx:id="imgKey" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons" GridPane.columnIndex="1">
                            <image>
                               <Image url="@../../image/key-solid.png" />
                            </image>
@@ -198,7 +198,7 @@
                               <Font size="20.0" />
                            </font>
                         </Label>
-                  <ImageView fx:id="imgUser" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgUser" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" top="1.0" />
                      </HBox.margin>
@@ -229,7 +229,7 @@
                               <Font size="20.0" />
                            </font>
                         </Label>
-                  <ImageView fx:id="imgStreet" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgStreet" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" top="1.0" />
                      </HBox.margin>
@@ -266,7 +266,7 @@
                         <Insets />
                      </HBox.margin>
                         </Label>
-                  <ImageView fx:id="imgCity" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgCity" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons">
                      <image>
                         <Image url="@../../image/city-solid.png" />
                      </image>
@@ -297,7 +297,7 @@
                               <Font size="20.0" />
                            </font>
                         </Label>
-                  <ImageView fx:id="imgZIP" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgZIP" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" styleClass="icons">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" top="1.0" />
                      </HBox.margin>
