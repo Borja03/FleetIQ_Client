@@ -5,13 +5,16 @@
  */
 package models;
 
+import java.io.Serializable;
 import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Alder
  */
-public class Envio {
+@XmlRootElement
+public class Envio implements Serializable{
     private Integer id;
     private Date fecha_envio;
     private Date fecha_entrega;
@@ -83,6 +86,11 @@ public class Envio {
 
     public void setVehiculo(String vehiculo) {
         this.vehiculo = vehiculo;
+    }
+
+    @Override
+    public String toString() {
+        return "Envio{" + "id=" + id + ", fecha_envio=" + fecha_envio + ", fecha_entrega=" + fecha_entrega + ", estado=" + estado + ", num_paquetes=" + num_paquetes + ", creador_envio=" + creador_envio + ", ruta=" + ruta + ", vehiculo=" + vehiculo + '}';
     }
     
     
