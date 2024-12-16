@@ -6,9 +6,13 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 public class RutaController {
 
@@ -69,8 +73,28 @@ public class RutaController {
     @FXML
     private JFXButton printReportBtn;
 
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+    
+    private Stage stage;
+
     @FXML
-    public void initialize() {
+    public void initialize(Parent root) {
+        Scene scene = new Scene(root);
+        
+        stage.setScene(scene);
+        stage.setTitle("Ruta");
+        stage.setResizable(false);
+        stage.centerOnScreen();
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
+        removeShipmentBtn.setDisable(true);
+
+        
         // Configurar opciones para los filtros de tamaño
         sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
         sizeFilterComboBox1.setItems(FXCollections.observableArrayList(">", "<", "="));
@@ -89,6 +113,8 @@ public class RutaController {
         addShipmentBtn.setOnAction(event -> addShipment());
         removeShipmentBtn.setOnAction(event -> removeShipment());
         printReportBtn.setOnAction(event -> printReport());
+        
+        stage.show();
     }
 
     private void updateUnitLabel() {

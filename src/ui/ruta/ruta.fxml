@@ -22,8 +22,6 @@
             <fx:include source="../menu/menu.fxml" />
 
             <HBox alignment="CENTER_LEFT" styleClass="filter-container">
-            
-
                 <VBox prefWidth="405.0" styleClass="filter-section">
                     <Label styleClass="filter-title" text="Filter By Date" />
                     <HBox alignment="CENTER_LEFT">
@@ -92,6 +90,7 @@
                     <TableColumn fx:id="distanciaColumn" prefWidth="150.0" text="Distancia" />
                     <TableColumn fx:id="tiempoColumn" prefWidth="150.0" text="Tiempo" />
                     <TableColumn fx:id="fechaColumn" prefWidth="150.0" text="Fecha Creación" />
+                    <TableColumn fx:id="numeroVehiculosColumn" prefWidth="150.0" text="Número Vehículos" />
                 </columns>
             </TableView>
         </center>
