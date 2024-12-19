@@ -9,21 +9,29 @@ import exception.selectException;
 import exception.createException;
 import exception.updateException;
 import exception.deleteException;
-import java.sql.Time;
-
+import java.util.ArrayList;
 
 import java.util.Date;
+import models.FilterTypeRuta;
+import models.Ruta;
 
 /**
  *
  * @author Borja
  */
 public interface RutaManager {
-    public void addRuta() throws createException;//El tipo de entrada será un objeto ruta
-    public void updateRuta() throws updateException;//El tipo de entrada será un objeto ruta y el de salida tambien
-    public void deleteRuta(Integer id) throws deleteException;//El tipo de salida sera un objeto Ruta
-    public void selectAll() throws selectException;//salida array ruta
-    public void  filterByDates(Date firstDate,Date secondDate) throws selectException;//salida array rutas
-    public void filterTiempo(Time tiempo) throws selectException;//Parametro entrada será un tipo del enum y salida un array de rutas
-    public void filterDistacia(Integer distancia) throws selectException;//Salida array rutas
+
+    public void addRuta() throws createException; // El tipo de entrada será un objeto Ruta
+
+    public Ruta updateRuta(Ruta ruta) throws updateException; // El tipo de entrada será un objeto Ruta
+
+    public Ruta deleteRuta(Integer idRuta) throws deleteException; // Entrada: ID de la ruta
+
+    public ArrayList<Ruta> selectAll() throws selectException;
+
+    public ArrayList<Ruta> filterByDates(Date firstDate, Date secondDate) throws selectException;
+
+    public ArrayList<Ruta> filterTiempo(FilterTypeRuta filterType, Integer tiempo) throws selectException;
+
+    public ArrayList<Ruta> filterDistancia(FilterTypeRuta filterType, Integer distancia) throws selectException;
 }
