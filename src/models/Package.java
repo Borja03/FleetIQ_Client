@@ -12,18 +12,18 @@ package models;
 import java.time.LocalDate;
 import java.util.Date;
 
-public class Paquete {
+public class Package {
     private Integer id;
     private String sender;
     private String receiver;
     private double weight;
-    private PaqueteSize size;
+    private PackageSize size;
     private LocalDate creationDate;
     private boolean fragile;
 
     
-    public Paquete(Integer id, String sender, String receiver, double weight, 
-                   PaqueteSize size, LocalDate creationDate, boolean fragile) {
+    public Package(Integer id, String sender, String receiver, double weight, 
+                   PackageSize size, LocalDate creationDate, boolean fragile) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
@@ -84,7 +84,7 @@ public class Paquete {
         this.fragile = fragile;
     }
 
-    public PaqueteSize getSize() { 
+    public PackageSize getSize() { 
         return size;
     }
 }

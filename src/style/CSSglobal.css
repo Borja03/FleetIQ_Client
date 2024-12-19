@@ -28,7 +28,7 @@
     -fx-border-radius: 5px; /* Rounded corners */
     -fx-background-radius: 10px; /* Matches border radius */
 }
-.image-view {
+.image-view .icons {
     -fx-opacity: 0.7;
 }
 /* Buttons with rounded corners */
