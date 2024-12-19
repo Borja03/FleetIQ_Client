@@ -10,6 +10,7 @@ import exception.DeleteException;
 import exception.SelectException;
 import exception.UpdateException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import logicInterface.PackageManager;
 import models.Package;
@@ -47,7 +48,7 @@ public class PackageImp implements PackageManager {
     }
 
     @Override
-    public List<Package> findAllPackagesByDates(LocalDate firstDate, LocalDate secondDate) throws SelectException {
+    public List<Package> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -55,5 +56,7 @@ public class PackageImp implements PackageManager {
     public List<Package> findAllPackagesByName(String senderOrReceiverName) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+
     
 }

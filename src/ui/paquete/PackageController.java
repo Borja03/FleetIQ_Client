@@ -76,10 +76,10 @@ public class PackageController {
     @FXML
     private JFXButton printReportBtn;
     @FXML
-    private JFXButton searchBtn;
+    private JFXButton searchButton;
 
     @FXML
-    private JFXButton applyFilterBtn;
+    private JFXButton applyFilterButton;
 
     private Stage stage;
     private DateTimeFormatter dateFormatter;
@@ -106,8 +106,7 @@ public class PackageController {
         removeShipmentBtn.setDisable(true);
         // Load configurations
         loadConfigurations();
-        senderColumn.setEditable(true);
-        paqueteTableView.setEditable(true);
+        
         // Set up date pickers
         setUpDatePickers();
         
@@ -174,11 +173,14 @@ public class PackageController {
         toDatePicker.setConverter(converter);
 
         // Disable 'to' date picker until 'from' date is selected
+        toDatePicker.setDisable(true);
 
         // Listener for 'from' date picker
         fromDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 // Enable 'to' date picker
+                toDatePicker.setDisable(false);
+
                 // Set day cell factory for 'to' date picker
                 toDatePicker.setDayCellFactory(picker -> new DateCell() {
                     @Override
@@ -209,6 +211,7 @@ public class PackageController {
     private void setUpSizeFilterComboBox() {
         // Create a list with all enum values plus a null option
         ObservableList<PackageSize> sizeOptions = FXCollections.observableArrayList();
+        sizeOptions.add(null); // Add null as the first option (represents "No filter")
         sizeOptions.addAll(PackageSize.values());
         
         sizeFilterComboBox.setItems(sizeOptions);

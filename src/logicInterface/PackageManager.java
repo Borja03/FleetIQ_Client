@@ -5,6 +5,7 @@ import exception.DeleteException;
 import exception.SelectException;
 import exception.UpdateException;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import models.Package;
 import models.PackageSize;
@@ -65,7 +66,7 @@ public interface PackageManager {
      * @return a list of matching paquetes
      * @throws SelectException if an error occurs during retrieval
      */
-    List<Package> findAllPackagesByDates(LocalDate firstDate, LocalDate secondDate) throws SelectException;
+    List<Package> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException;
 
     /**
      * Retrieves paquetes by sender or receiver name.

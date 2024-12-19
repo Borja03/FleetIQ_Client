@@ -3,20 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package exception;
 
 /**
  *
  * @author Alder
  */
-public class deleteException extends Exception {
+public class CreateException extends Exception {
 
     /**
      * Creates a new instance of <code>createException</code> without detail
      * message.
      */
-    public deleteException() {
+    public CreateException() {
         super();
     }
 
@@ -26,7 +25,7 @@ public class deleteException extends Exception {
      *
      * @param msg the detail message.
      */
-    public deleteException(String msg) {
+    public CreateException(String msg) {
         super(msg);
     }
 }
