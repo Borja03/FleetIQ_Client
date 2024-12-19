@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package models;
 
 /**
  *
@@ -15,7 +15,7 @@ import java.time.LocalDate;
  * Represents a vehicle with attributes such as ID, license plate, model,
  * capacity, registration date, ITV date, and active status.
  */
-public class Vehicle {
+public class Vehiculo {
 
     private int id;
     private String licensePlate;
@@ -25,7 +25,7 @@ public class Vehicle {
     private LocalDate itvDate;
     private boolean active;
 
-    public Vehicle(int id, String licensePlate, String model, int capacity, LocalDate registrationDate, LocalDate itvDate, boolean active) {
+    public Vehiculo(int id, String licensePlate, String model, int capacity, LocalDate registrationDate, LocalDate itvDate, boolean active) {
         this.id = id;
         this.licensePlate = licensePlate;
         this.model = model;
@@ -35,7 +35,7 @@ public class Vehicle {
         this.active = active;
     }
 
-    public Vehicle() {
+    public Vehiculo() {
     }
 
     /**
