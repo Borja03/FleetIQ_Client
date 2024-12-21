@@ -10,29 +10,38 @@ package models;
  *
  * @author Omar
  */
-import java.time.LocalDate;
+import java.io.Serializable;
 import java.util.Date;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class Package {
+@XmlRootElement
+public class Paquete  implements Serializable {
     private Integer id;
     private String sender;
     private String receiver;
     private double weight;
+    @XmlElement
     private PackageSize size;
-    private LocalDate creationDate;
+    private Date creationDate;
     private boolean fragile;
 
-    
-    public Package(Integer id, String sender, String receiver, double weight, 
-                   PackageSize size, LocalDate creationDate, boolean fragile) {
-        this.id = id;
-        this.sender = sender;
-        this.receiver = receiver;
-        this.weight = weight;
-        this.size = size;
-        this.creationDate = creationDate;
-        this.fragile = fragile;
+    public Paquete() {
     }
+
+    
+    
+    
+//    public Paquete(Integer id, String sender, String receiver, double weight, 
+//                   PackageSize size, Date creationDate, boolean fragile) {
+//        this.id = id;
+//        this.sender = sender;
+//        this.receiver = receiver;
+//        this.weight = weight;
+//        this.size = size;
+//        this.creationDate = creationDate;
+//        this.fragile = fragile;
+//    }
 
     
     
@@ -69,11 +78,11 @@ public class Package {
     }
 
 
-    public LocalDate getCreationDate() {
+    public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDate creationDate) {
+    public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -88,5 +97,13 @@ public class Package {
     public PackageSize getSize() { 
         return size;
     }
+
+    @Override
+    public String toString() {
+        return "Paquete{" + "id=" + id + ", sender=" + sender + ", receiver=" + receiver + ", weight=" + weight + ", size=" + size + ", creationDate=" + creationDate + ", fragile=" + fragile + '}';
+    }
+    
+    
+    
 }
 

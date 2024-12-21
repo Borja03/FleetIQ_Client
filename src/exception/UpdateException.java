@@ -29,4 +29,8 @@ public class UpdateException extends Exception {
     public UpdateException(String msg) {
         super(msg);
     }
+
+    public UpdateException(String error_updating_package, Exception e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

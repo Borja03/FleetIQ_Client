@@ -1,6 +1,5 @@
 package ui.paquete;
 
-import models.Package;
 import models.PackageSize;
 import models.User;
 
@@ -8,6 +7,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import exception.SelectException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +15,11 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.collections.FXCollections;
@@ -32,6 +35,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import models.Paquete;
+import service.PackageRESTClient;
 
 public class PackageController {
 
@@ -50,22 +55,22 @@ public class PackageController {
     private JFXTextField searchTextField;
 
     @FXML
-    private TableView<Package> paqueteTableView;
+    private TableView<Paquete> paqueteTableView;
 
     @FXML
-    private TableColumn<Package, Integer> idColumn;
+    private TableColumn<Paquete, Integer> idColumn;
     @FXML
-    private TableColumn<Package, String> senderColumn;
+    private TableColumn<Paquete, String> senderColumn;
     @FXML
-    private TableColumn<Package, String> receiverColumn;
+    private TableColumn<Paquete, String> receiverColumn;
     @FXML
-    private TableColumn<Package, Double> weightColumn;
+    private TableColumn<Paquete, Double> weightColumn;
     @FXML
-    private TableColumn<Package, PackageSize> sizeColumn;
+    private TableColumn<Paquete, PackageSize> sizeColumn;
     @FXML
-    private TableColumn<Package, LocalDate> dateColumn;
+    private TableColumn<Paquete, LocalDate> dateColumn;
     @FXML
-    private TableColumn<Package, Boolean> fragileColumn;
+    private TableColumn<Paquete, Boolean> fragileColumn;
 
     @FXML
     private JFXButton addShipmentBtn;
@@ -76,7 +81,7 @@ public class PackageController {
     @FXML
     private JFXButton printReportBtn;
     @FXML
-    private JFXButton searchButton;
+    private JFXButton searchBtn;
 
     @FXML
     private JFXButton applyFilterButton;
@@ -97,7 +102,7 @@ public class PackageController {
     public void initStage(Parent root, User connectedUser) {
         LOGGER.info("Initialising Paquete window.");
         Scene scene = new Scene(root);
-        
+
         stage.setScene(scene);
         stage.setTitle("Paquete");
         stage.setResizable(false);
@@ -106,19 +111,20 @@ public class PackageController {
         removeShipmentBtn.setDisable(true);
         // Load configurations
         loadConfigurations();
-        
+
         // Set up date pickers
         setUpDatePickers();
-        
+
         // Set up size filter combo box
         setUpSizeFilterComboBox();
-        
+
         // Set up table columns
         setUpTableColumns();
-        
-        // Fill table with example data
-        fillTableWithExampleData();
 
+        // Fill table with example data
+        //fillTableWithExampleData();
+        // Fill table with database data
+        fillTableFromDataBase();
         stage.show();
     }
 
@@ -172,8 +178,6 @@ public class PackageController {
         fromDatePicker.setConverter(converter);
         toDatePicker.setConverter(converter);
 
-        // Disable 'to' date picker until 'from' date is selected
-        toDatePicker.setDisable(true);
 
         // Listener for 'from' date picker
         fromDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -190,10 +194,6 @@ public class PackageController {
                         setDisable(empty || date.compareTo(newValue) < 0 || date.compareTo(endDate) > 0);
                     }
                 });
-            } else {
-                // Disable 'to' date picker if 'from' is not selected
-                toDatePicker.setDisable(true);
-                toDatePicker.setValue(null);
             }
         });
 
@@ -211,11 +211,9 @@ public class PackageController {
     private void setUpSizeFilterComboBox() {
         // Create a list with all enum values plus a null option
         ObservableList<PackageSize> sizeOptions = FXCollections.observableArrayList();
-        sizeOptions.add(null); // Add null as the first option (represents "No filter")
         sizeOptions.addAll(PackageSize.values());
-        
         sizeFilterComboBox.setItems(sizeOptions);
-        
+
         // Custom converter to display "No filter" for null
         sizeFilterComboBox.setConverter(new StringConverter<PackageSize>() {
             @Override
@@ -230,6 +228,8 @@ public class PackageController {
         });
     }
 
+    
+    
     private void setUpTableColumns() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
@@ -239,47 +239,59 @@ public class PackageController {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
         fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
 
-        // Date column formatting
-        dateColumn.setCellFactory(column -> new TableCell<Package, LocalDate>() {
-            @Override
-            protected void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                setText(empty || date == null ? null : dateFormatter.format(date));
-            }
-        });
+//        // Date column formatting
+//        dateColumn.setCellFactory(column -> new TableCell<Paquete,Date>() {
+//            @Override
+//            protected void updateItem(Date date, boolean empty) {
+//                super.updateItem(date, empty);
+//                setText(empty || date == null ? null : dateFormatter.format(date));
+//            }
+//        });
     }
 
-    private void fillTableWithExampleData() {
-        ObservableList<Package> data = FXCollections.observableArrayList(new Package(1, "Alice", "Bob", 2.5, PackageSize.SMALL, LocalDate.now(), true),
-            new Package(2, "Charlie", "Dave", 5.0, PackageSize.MEDIUM, LocalDate.now().minusDays(1), false),
-            new Package(3, "Eve", "Frank", 10.0, PackageSize.LARGE, LocalDate.now().minusDays(2), true),
-            new Package(4, "Grace", "Heidi", 7.5, PackageSize.MEDIUM, LocalDate.now().minusDays(3), false),
-            new Package(5, "Ivan", "Jack", 15.0, PackageSize.EXTRA_LARGE, LocalDate.now().minusDays(4), true)
-        );
+//    private void fillTableWithExampleData() {
+//        ObservableList<Paquete> data = FXCollections.observableArrayList(
+//            new Paquete(1, "Alice", "Bob", 2.5, PackageSize.SMALL, LocalDate.now(), true),
+//            new Paquete(2, "Charlie", "Dave", 5.0, PackageSize.MEDIUM, LocalDate.now().minusDays(1), false),
+//            new Paquete(3, "Eve", "Frank", 10.0, PackageSize.LARGE, LocalDate.now().minusDays(2), true),
+//            new Paquete(4, "Grace", "Heidi", 7.5, PackageSize.MEDIUM, LocalDate.now().minusDays(3), false),
+//            new Paquete(5, "Ivan", "Jack", 15.0, PackageSize.EXTRA_LARGE, LocalDate.now().minusDays(4), true)
+//        );
+//
+//        paqueteTableView.setItems(data);
+//    }
+    
+    // fill test data from server 
+    private void fillTableFromDataBase() {
+        PackageRESTClient client = new PackageRESTClient(); // Manually manage the client
+        try {
+            paqueteTableView.setItems(FXCollections.observableArrayList(client.findAllPackages()));
+        } catch (SelectException ex) {
+            Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        paqueteTableView.setItems(data);
     }
 
     @FXML
     private void onSearch() {
         String query = searchTextField.getText().trim().toLowerCase();
-        
+
         if (query.isEmpty()) {
             // If no search query, reset to original data
-            fillTableWithExampleData();
+            //fillTableWithExampleData();
             return;
         }
-        
-        ObservableList<Package> originalData = paqueteTableView.getItems();
-        ObservableList<Package> filteredData = FXCollections.observableArrayList();
-        
-        for (Package paquete : originalData) {
+
+        ObservableList<Paquete> originalData = paqueteTableView.getItems();
+        ObservableList<Paquete> filteredData = FXCollections.observableArrayList();
+
+        for (Paquete paquete : originalData) {
             // Check if query matches sender or receiver (case-insensitive)
-            if (paquete.getSender().toLowerCase().contains(query) || 
-                paquete.getReceiver().toLowerCase().contains(query)) {
+            if (paquete.getSender().toLowerCase().contains(query)
+                            || paquete.getReceiver().toLowerCase().contains(query)) {
                 filteredData.add(paquete);
             }
-            
+
             // If query is a valid number, search by weight
             try {
                 double weightQuery = Double.parseDouble(query);
@@ -290,40 +302,40 @@ public class PackageController {
                 // Not a valid number, ignore
             }
         }
-        
+
         paqueteTableView.setItems(filteredData);
     }
 
     @FXML
     private void onApplyFilter() {
-        ObservableList<Package> originalData = paqueteTableView.getItems();
-        ObservableList<Package> filteredData = FXCollections.observableArrayList();
-        
+        ObservableList<Paquete> originalData = paqueteTableView.getItems();
+        ObservableList<Paquete> filteredData = FXCollections.observableArrayList();
+
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate toDate = toDatePicker.getValue();
         PackageSize selectedSize = sizeFilterComboBox.getValue();
-        
-        for (Package paquete : originalData) {
+
+        for (Paquete paquete : originalData) {
             boolean dateMatch = true;
             boolean sizeMatch = true;
-            
+
             // Date filtering
-            if (fromDate != null && toDate != null) {
-                dateMatch = !paquete.getCreationDate().isBefore(fromDate) && 
-                            !paquete.getCreationDate().isAfter(toDate);
-            }
-            
+//            if (fromDate != null && toDate != null) {
+//                dateMatch = !paquete.getCreationDate().isBefore(fromDate)
+//                                && !paquete.getCreationDate().isAfter(toDate);
+//            }
+
             // Size filtering
             if (selectedSize != null) {
                 sizeMatch = paquete.getSize() == selectedSize;
             }
-            
+
             // Add to filtered list if both conditions are met
             if (dateMatch && sizeMatch) {
                 filteredData.add(paquete);
             }
         }
-        
+
         paqueteTableView.setItems(filteredData);
     }
 
@@ -335,7 +347,7 @@ public class PackageController {
 
     @FXML
     private void onRemoveShipment() {
-        Package selectedPaquete = paqueteTableView.getSelectionModel().getSelectedItem();
+        Paquete selectedPaquete = paqueteTableView.getSelectionModel().getSelectedItem();
         if (selectedPaquete != null) {
             paqueteTableView.getItems().remove(selectedPaquete);
         }

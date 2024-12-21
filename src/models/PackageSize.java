@@ -6,6 +6,8 @@
 
 package models;
 
+import javax.xml.bind.annotation.XmlEnum;
+
 /**
  *
  * @author Omar
