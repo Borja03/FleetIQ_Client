@@ -31,7 +31,5 @@ public class DeleteException extends Exception {
         super(msg);
     }
 
-    public DeleteException(String error_deleting_package, Exception e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
 }

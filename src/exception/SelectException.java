@@ -30,7 +30,5 @@ public class SelectException extends Exception {
         super(msg);
     }
 
-    public SelectException(String error_fetching_packages_by_name, Exception e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
 }
