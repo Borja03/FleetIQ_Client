@@ -15,9 +15,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import models.User;
 import ui.login.LogInController;
-import ui.paquete.PaqueteController;
+import ui.paquete.PackageController;
 import ui.profile.MainController;
 import ui.ruta.RutaController;
+import ui.vehicle.VehicleController;
 
 public class MenuController {
 
@@ -89,7 +90,7 @@ public class MenuController {
        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
             Parent root = loader.load();
-            PaqueteController controller = loader.getController();
+            PackageController controller = loader.getController();
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
             controller.initStage(root,connectedUser);
@@ -128,6 +129,20 @@ public class MenuController {
 
     @FXML
     private void handleVehiculoMenuItemAction(Event event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/vehicle/vehicle.fxml"));
+            Parent root = loader.load();
+            VehicleController controller = loader.getController();
+            Stage loginStage = new Stage();
+            controller.setStage(loginStage);
+            controller.initStage(root);
+            LOGGER.info("Paquete window opened");
+            // Close the current stage (the one with the menu)
+            Stage currentStage = (Stage) menuBar.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException ex) {
+            LOGGER.severe("Error loading paquete window: " + ex);
+        }
         System.out.println("Vehiculo menu item clicked");
     }
 

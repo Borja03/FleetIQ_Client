@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
@@ -8,55 +11,150 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
 <Pane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.profile.MainController">
     <children>
           <fx:include source="../menu/menu.fxml" />
-        <ImageView fitHeight="101.0" fitWidth="103.0" layoutX="45.0" layoutY="21.0">
-            <image>
-                <Image url="@../../image/userIcon.png" />
-            </image>
-        </ImageView>
-
-       <TextField fx:id="emailField" editable="false" layoutX="177.0" layoutY="29.0" minHeight="-Infinity" minWidth="-Infinity" style="-fx-font-size: 40; -fx-background-color: transparent; -fx-border-color: transparent;" text="email@example.com" />
+      <VBox fx:id="leftVBox" alignment="TOP_CENTER" layoutY="31.0" prefHeight="688.0" prefWidth="300.0">
+         <children>
+              <ImageView fitHeight="160.0" fitWidth="160.0">
+                  <image>
+                      <Image url="@../../image/userIcon.png" />
+                  </image>
+              </ImageView>
+            <JFXButton prefHeight="40.0" prefWidth="300.0" text="Profile">
+               <VBox.margin>
+                  <Insets top="100.0" />
+               </VBox.margin>
+            </JFXButton>
+            <JFXButton layoutX="10.0" layoutY="270.0" prefHeight="40.0" prefWidth="300.0" text="Settings" />
+         </children>
+      </VBox>
+      <VBox fx:id="rightVBox" layoutX="300.0" layoutY="29.0" prefHeight="691.0" prefWidth="724.0">
+         <children>
       
-        <GridPane layoutX="53.0" layoutY="214.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="282.0" prefWidth="600.0">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="219.2" minWidth="10.0" prefWidth="219.2" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="148.8" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-
-
-            <Label text="NAME" />
-           <TextField id="nameTextField" fx:id="nameField" editable="false" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the name" GridPane.columnIndex="1" />
-        
-            <Label text="ADDRESS" GridPane.rowIndex="1" />
-             <TextField id="addressTextField" fx:id="addressField" editable="false" maxWidth="1.7976931348623157E308" minWidth="300.0" prefHeight="27.0" prefWidth="300.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the address" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        
-            <Label text="PASSWORD" GridPane.rowIndex="2" />
-        
-           <PasswordField id="passwordField" fx:id="passwordField" editable="false" prefHeight="27.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-            <TextField id="passwordTextField" fx:id="plainPasswordField" style="-fx-background-color: transparent; -fx-border-color: transparent;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        </GridPane>
-     
-        <Button fx:id="logOutButton" layoutX="680.0" layoutY="530.0" onAction="#logOut" prefWidth="100.0" text="Log Out" />
-       
-        <Button fx:id="eyeButton" layoutX="508.0" layoutY="317.0" mnemonicParsing="false" onAction="#togglePasswordVisibility" prefHeight="30.0" prefWidth="30.0">
-            <graphic>
-                <ImageView fx:id="eyeImageView" fitHeight="30.0" fitWidth="30.0">
-                    <image>
-                        <Image url="@../../image/eye-slash-solid.png" />
-                    </image>
-                </ImageView>
-            </graphic>
-        </Button>
+             <TextField fx:id="emailField" editable="false" minHeight="-Infinity" minWidth="-Infinity" style="-fx-font-size: 40; -fx-background-color: transparent; -fx-border-color: transparent;" text="email@example.com" />
+            
+              <GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="189.0" prefWidth="724.0">
+                  <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="219.2" minWidth="10.0" prefWidth="219.2" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="148.8" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="176.0" minWidth="10.0" prefWidth="148.8" />
+                  </columnConstraints>
+                  <rowConstraints>
+                      <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+      
+      
+                  <Label text="NAME" />
+                 <TextField id="nameTextField" fx:id="nameField" editable="false" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the name" GridPane.columnIndex="1" />
+              
+                  <Label text="ADDRESS" GridPane.rowIndex="1" />
+                   <TextField id="addressTextField" fx:id="addressField" editable="false" maxWidth="1.7976931348623157E308" minWidth="300.0" prefHeight="27.0" prefWidth="300.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the address" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+              
+                  <Label text="PASSWORD" GridPane.rowIndex="2" />
+              
+                 <PasswordField id="passwordField" fx:id="passwordField" editable="false" prefHeight="27.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      
+                  <TextField id="passwordTextField" fx:id="plainPasswordField" style="-fx-background-color: transparent; -fx-border-color: transparent;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                
+                 <Button fx:id="eyeButton" mnemonicParsing="false" onAction="#togglePasswordVisibility" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                     <graphic>
+                         <ImageView fx:id="eyeImageView" fitHeight="30.0" fitWidth="30.0">
+                             <image>
+                                 <Image url="@../../image/eye-slash-solid.png" />
+                             </image>
+                         </ImageView>
+                     </graphic>
+                 </Button>
+               <Label text="Role" GridPane.rowIndex="3" />
+               <Label layoutX="10.0" layoutY="169.0" text="Admin" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+              </GridPane>
+            <VBox alignment="CENTER" styleClass="section-box">
+               <children>
+                  <Label styleClass="section-title" text="Verification">
+                     <VBox.margin>
+                        <Insets top="-20.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox prefHeight="49.0" prefWidth="427.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <children>
+                        <Label prefWidth="150.0" text="Old PASSWORD" />
+                        <PasswordField id="passwordField" fx:id="passwordField1" editable="false" prefHeight="27.0" prefWidth="200.0" style="-fx-background-color: transparent; -fx-border-color: transparent;" text="here goes the password" />
+                        <Button fx:id="eyeButton1" mnemonicParsing="false" onAction="#togglePasswordVisibility" prefHeight="30.0" prefWidth="30.0">
+                           <graphic>
+                              <ImageView fx:id="eyeImageView1" fitHeight="30.0" fitWidth="30.0">
+                                 <image>
+                                    <Image url="@../../image/eye-slash-solid.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="49.0" prefWidth="427.0" />
+               </children>
+               <VBox.margin>
+                  <Insets top="50.0" />
+               </VBox.margin>
+            </VBox>
+            <VBox fx:id="passwordSection" alignment="CENTER" styleClass="section-box">
+               <children>
+                  <Label styleClass="section-title" text="Set New Password">
+                     <VBox.margin>
+                        <Insets top="-20.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox prefHeight="50.0" prefWidth="427.0">
+                     <children>
+                        <Label prefHeight="30.0" prefWidth="150.0" styleClass="field-label" text="New Password" />
+                        <JFXPasswordField fx:id="newPasswordField" prefHeight="30.0" prefWidth="200" />
+                        <JFXButton fx:id="showPasswordBtn">
+                           <graphic>
+                              <ImageView fitHeight="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/eye-slash-solid.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <HBox.margin>
+                              <Insets left="15.0" />
+                           </HBox.margin>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="50.0" prefWidth="427.0">
+                     <children>
+                        <Label prefHeight="30.0" prefWidth="150.0" styleClass="field-label" text="Repeat Password" />
+                        <JFXPasswordField fx:id="repeatPasswordField" prefHeight="30.0" prefWidth="200.0" />
+                        <JFXButton fx:id="showRepeatedPasswordBtn">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/eye-slash-solid.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <HBox.margin>
+                              <Insets left="15.0" />
+                           </HBox.margin>
+                        </JFXButton>
+                     </children>
+                  </HBox>
+                  <JFXButton fx:id="updatePasswordBtn" styleClass="update-button" text="update" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
     </children>
 </Pane>

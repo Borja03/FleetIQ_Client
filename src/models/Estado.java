@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package models;
 
 /**
  *
- * @author Omar
+ * @author Alder
  */
-public enum UserType {
-    ADMIN,
-    TRABAJADOR
-
+public enum Estado {
+    PREPARACION,
+    EN_REPARTO,
+    ENTREGADO
+    
 }

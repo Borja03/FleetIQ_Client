@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="1024.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar fx:id="menuBar" prefHeight="30.0" prefWidth="994.0">
+        <menus>
+            <Menu fx:id="menuGoTo" mnemonicParsing="false" text="Go to">
+              <items>
+                  <MenuItem fx:id="menuItemPaquete" mnemonicParsing="false" text="Paquete" />
+                  <MenuItem fx:id="menuItemEnvio" mnemonicParsing="false" text="Envio" />
+                <MenuItem fx:id="menuItemRuta" mnemonicParsing="false" text="Ruta" />
+                  <MenuItem fx:id="menuItemVehiculo" mnemonicParsing="false" text="Vehiculo" />
+                  <MenuItem fx:id="menuItemCambiarPasswd" mnemonicParsing="false" text="Cambiar contraseña" />
+              </items>
+            </Menu>
+          <Menu fx:id="menuView" mnemonicParsing="false" text="View">
+            <items>
+              <MenuItem fx:id="menuItemDarkMode" mnemonicParsing="false" text="Dark mode" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="menuItemLightMode" mnemonicParsing="false" text="Light mode" />
+            </items>
+          </Menu>
+          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
+            <items>
+                  <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" text="About Paquete" />
+              <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" text="About Ruta" />
+                  <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" text="About Envio" />
+                  <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" text="About Vehiculo" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <MenuButton fx:id="menuLogout" ellipsisString="" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="122.0">
+        <items>
+          <MenuItem mnemonicParsing="false" text="Profil" />
+          <MenuItem mnemonicParsing="false" text="Logout" />
+        </items>
+         <graphic>
+            <ImageView fitHeight="26.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/user.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <padding>
+            <Insets right="10.0" />
+         </padding>
+         <tooltip>
+            <Tooltip text="User" />
+         </tooltip>
+      </MenuButton>
+   </children>
+</HBox>

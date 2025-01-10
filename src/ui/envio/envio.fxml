@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXDatePicker?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.ruta.RutaController">
+    <top>
+        <VBox>
+            <fx:include source="../menu/menu.fxml" />
+
+            <HBox alignment="CENTER_LEFT" styleClass="filter-container">
+            
+
+                <VBox prefWidth="405.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filtrar Por Fechas" />
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="From: " />
+                        <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="From Date" scaleShape="false" />
+                        <Label text="To: " />
+                        <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="To Date" />
+                        <JFXButton fx:id="applyDateFilterButton" prefHeight="30.0" text="Apply" />
+                    </HBox>
+                </VBox>
+
+                <VBox prefHeight="93.0" prefWidth="236.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter Por Estado  " />
+                    <HBox prefHeight="100.0" prefWidth="271.0">
+                        <children>
+                            <JFXComboBox fx:id="estadoFilterComboBox" prefHeight="30.0" prefWidth="116.0" promptText="Filter" />
+                            <JFXButton fx:id="applyEstadoFilterButton" prefHeight="30.0" text="Apply" />
+                        </children>
+                    </HBox>
+                </VBox>
+                <VBox fillWidth="false" prefHeight="93.0" prefWidth="289.0" styleClass="filter-section">
+                    <children>
+                        <Label styleClass="filter-title" text="Filtrar Por Paquetes" />
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <children>
+                                <JFXTextField fx:id="numeroPaquetesTextField" prefHeight="30.0" prefWidth="155.0" promptText="Numero de paquetes" HBox.hgrow="ALWAYS" />
+                                <JFXButton fx:id="applyNumPaquetesFilterButton" prefHeight="30.0" text="Apply" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </HBox>
+        </VBox>
+    </top>
+    
+    <center>
+        <TableView fx:id="table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="IdColumn" prefWidth="75.32305574417114" text="Id" />
+                <TableColumn fx:id="fechaEnvioColumn" prefWidth="130.7076416015625" text="Fecha Envio" />
+                <TableColumn fx:id="fechaEntregaColumn" prefWidth="143.99993896484375" text="Fecha Entrega" />
+                <TableColumn fx:id="estadoColumn" prefWidth="129.230712890625" text="Estado" />
+                <TableColumn fx:id="numPaquetesColumn" prefWidth="167.63070678710938" text="Numero Paquetes" />
+                <TableColumn fx:id="creadorEnvioColumn" prefWidth="152.123046875" text="Creador Envio" />
+                <TableColumn fx:id="rutaColumn" prefWidth="103.3846435546875" text="Ruta" />
+                <TableColumn fx:id="vehiculoColumn" prefWidth="117.415283203125" text="Vehiculo" />
+            </columns>
+        </TableView>
+    </center>
+
+
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="15">
+            <padding>
+                <Insets bottom="15" left="15" right="15" top="15" />
+            </padding>
+
+            <JFXButton fx:id="addShipmentBtn" prefHeight="39.0" prefWidth="34.0" text=" ">
+                <graphic>
+                    <ImageView fitHeight="28.0" fitWidth="76.0" preserveRatio="true">
+                        <image>
+                            <Image url="@../../image/addRoute.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Add Route" />
+                </tooltip>
+            </JFXButton>
+
+            <JFXButton fx:id="removeShipmentBtn" ellipsisString="" prefWidth="30.0">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                        <image>
+                            <Image url="@../../image/removeRoute.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Delete Route" />
+                </tooltip>
+            </JFXButton>
+
+            <JFXButton fx:id="printReportBtn" ellipsisString="" prefWidth="30.0">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
+                        <image>
+                            <Image url="@../../image/print.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <tooltip>
+                    <Tooltip text="Print Report" />
+                </tooltip>
+            </JFXButton>
+
+            <Pane HBox.hgrow="ALWAYS" />
+        </HBox>
+    </bottom>
+</BorderPane>

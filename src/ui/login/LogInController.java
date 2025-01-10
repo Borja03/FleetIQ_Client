@@ -30,8 +30,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
-import ui.paquete.PaqueteController;
+import ui.paquete.PackageController;
 import ui.profile.MainController;
+import ui.resetpassword.ResetPasswordController;
 import ui.signup.SignUpController;
 
 /**
@@ -91,7 +92,8 @@ public class LogInController {
 
     @FXML
     private BorderPane borderPane;
-
+  @FXML
+    private Hyperlink forgotPasswordHlink;
     private ContextMenu contextMenu;
 
     @FXML
@@ -307,7 +309,7 @@ private String loadThemePreference() {
         } catch (IOException ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
-              PaqueteController controller = loader.getController();
+              PackageController controller = loader.getController();
                 Stage newStage = new Stage();
                 controller.setStage(newStage);
                 controller.initStage(root,user);
@@ -335,6 +337,17 @@ private String loadThemePreference() {
         navigateToScreen("/ui/signup/SignUpView.fxml", "SignUp", false, null);
     }
 
+    
+    @FXML
+    private void handleForgotPasswordLinkAction() throws IOException {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/resetpassword/resetpassword.fxml"));
+            Parent root = loader.load();
+                 ResetPasswordController controller = loader.getController();
+                Stage newStage = new Stage();
+                controller.setStage(newStage);
+                controller.initStage(root);
+         
+    }
     /**
      * Maneja la acción de cambiar la visibilidad de la contraseña. Alterna
      * entre mostrar y ocultar la contraseña en el campo correspondiente.
