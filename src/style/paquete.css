@@ -51,8 +51,6 @@
 }
 
 .button:hover {
-    -fx-background-color: #4a4fdc;
-
     -fx-background-color: #005fa3;
 }
 
@@ -74,26 +72,6 @@
     -fx-fit-width: 20px;
 }
 
-
-
-
-
-
-/* TableView */
-.table-view {
-    -fx-border-color: #0078d7;
-    -fx-border-width: 1;
-    -fx-border-radius: 5;
-}
-#addShipmentBtn {
-    -fx-background-color: #28a745;
-}
-#addShipmentBtn:hover {
-    -fx-background-color: #218838;
-}
-
-
-
 #addShipmentBtn {
     -fx-background-color: #28a745;
 }
@@ -102,14 +80,14 @@
     -fx-background-color: #dc3545;
 }
 
-#removeShipmentBtn:hover {
-    -fx-background-color: #bd2130;
-}
-
-
 #printReportBtn {
     -fx-background-color: #ffc107;
 }
-#printReportBtn:hover {
-    -fx-background-color: #e0a800;
+
+
+/* TableView */
+.table-view {
+    -fx-border-color: #0078d7;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
 }

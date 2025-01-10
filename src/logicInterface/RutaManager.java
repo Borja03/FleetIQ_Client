@@ -87,4 +87,3 @@ public interface RutaManager {
      */
     public ArrayList<Ruta> filterDistancia(FilterTypeRuta filterType, Integer distancia) throws selectException;
 }
-

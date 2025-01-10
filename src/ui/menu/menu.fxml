@@ -36,14 +36,14 @@
                   <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" onAction="#handleAboutPaqueteMenuItemAction" text="About Paquete" />
               <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" onAction="#handleAboutRutaMenuItemAction" text="About Ruta" />
                   <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" onAction="#handleAboutEnvioMenuItemAction" text="About Envio" />
-                  <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" onAction="#handleAboutVehiculoMenuItemAction"  text="About Vehiculo" />
+                  <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" onAction="#handleAboutVehiculoMenuItemAction" text="About Vehiculo" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
       <MenuButton fx:id="menuLogout" ellipsisString="" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="122.0">
         <items>
-          <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuItemAction"  text="Profile" />
+          <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile" />
           <MenuItem mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
         </items>
          <graphic>
