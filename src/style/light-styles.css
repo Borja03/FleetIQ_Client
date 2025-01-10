@@ -1,0 +1,111 @@
+/*
+    Created on: 13-Oct-2024, 11:16:14
+    Author: Adrian
+*/
+
+/* General styles */
+.root {
+    -fx-background-color: #ffffff;
+    -fx-font-family: 'Helvetica', Arial, sans-serif;
+}
+
+/* Card-like appearance for the SignUp form */
+.anchor-pane {
+    -fx-background-color: white;      /* White background for the card */
+    -fx-background-radius: 15px;      /* Rounded corners */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 10, 0, 0, 5); /* Drop shadow effect */
+    -fx-padding: 10px;                /* Padding inside the card */
+    -fx-border-radius: 15px;          /* Rounded borders matching the background */
+}
+.HBox{
+    -fx-padding : 0px 0px 7px 0px;
+}
+
+/* Label styles */
+.label {
+    -fx-font-family: 'Helvetica', Arial, sans-serif;
+    -fx-font-size: 18px;
+    -fx-text-fill: #333333;
+    -fx-padding:0 0 0 15px;
+
+}
+#lbl_signup{
+    -fx-font-size: 40px;
+    -fx-alignment: center;
+}
+
+.text-field, .password-field {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #4a90e2;
+}
+
+
+.button:hover {
+    -fx-background-color: #3a7fcf;
+  
+}
+
+.button:pressed {
+    -fx-background-color: #2a6ebf;
+}
+
+
+/* Hyperlink styles */
+.hyperlink {
+    -fx-text-fill: #4a90e2;
+    -fx-border-color: transparent;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #3a7fcf;
+}
+
+/* Checkbox styles */
+.check-box {
+    -fx-font-size: 14px;
+}
+
+/* Error label styles */
+#lbl_error {
+    -fx-text-fill: #df0e0e;
+    -fx-font-size: 14px;
+        -fx-text-alignment: center;
+
+}
+
+
+#vbx_card {
+    -fx-background-color: #f2f2f2;
+    -fx-border-radius: 100px;
+    -fx-background-radius: 15px;
+
+}
+.tf_email {
+    -fx-background-image: url("images/userIcon.png");
+    -fx-background-position: left center;
+    -fx-background-repeat: no-repeat;
+    -fx-padding: 0 0 0 25; /* Adjust padding as necessary */
+}
+
+.font-awesome-icon {
+    -fx-fill: #007bff;
+}
+#btn_show_password, 
+#btn_show_password_conf {
+    -fx-background-color: transparent; /* No background */
+    -fx-border-color: transparent; /* No border */
+    -fx-padding: 0; /* Remove padding */
+    -fx-cursor: hand; /* Optional: Change cursor to hand on hover */
+}
+
+#lbl_error{
+        -fx-text-fill: #FF0000;
+}
