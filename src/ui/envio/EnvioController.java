@@ -1,204 +1,203 @@
 package ui.envio;
 
+import com.jfoenix.controls.*;
+import exception.SelectException;
+import factories.EnvioFactory;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.input.MouseEvent;
-
-import java.time.LocalDate;
-import java.util.Optional;
-import javafx.event.EventHandler;
+import models.Envio;
+import logicInterface.EnvioManager;
+import utils.UtilsMethods;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import javafx.scene.Parent;
+import javafx.stage.Stage;
 
 public class EnvioController {
 
     @FXML
-    private MenuItem filtrarPorFecha;
-    @FXML
-    private MenuItem filtrarPorEstado;
-    @FXML
-    private MenuItem filtrarPorNumPaquetes;
+    private JFXDatePicker fromDatePicker;
 
     @FXML
-    private Label filterLabelFecha;
-    @FXML
-    private Label filterLabelEstado;
-    @FXML
-    private Label filterLabelPaquetes;
+    private JFXDatePicker toDatePicker;
 
     @FXML
-    private Label removeFilterFecha;
-    @FXML
-    private Label removeFilterEstado;
-    @FXML
-    private Label removeFilterPaquetes;
+    private JFXComboBox<String> estadoFilterComboBox;
 
     @FXML
-    private DatePicker fechaInicioPicker;
-    @FXML
-    private DatePicker fechaFinPicker;
+    private JFXTextField numeroPaquetesTextField;
 
     @FXML
-    private TextField searchField;
+    private TableView<Envio> table;
 
-    // Este método se encarga de mostrar el filtro de fecha
-     @FXML
-    private void handleFiltrarPorFecha() {
-        // Mostrar el filtro
-        filterLabelFecha.setVisible(true);
+    @FXML
+    private TableColumn<Envio, Integer> IdColumn;
 
-        // Crear el diálogo para seleccionar las fechas
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Filtrar por Fechas");
-        dialog.setHeaderText("Selecciona el rango de fechas para filtrar.");
+    @FXML
+    private TableColumn<Envio, String> fechaEnvioColumn;
 
-        VBox vbox = new VBox();
-        fechaInicioPicker = new DatePicker();
-        fechaFinPicker = new DatePicker();
+    @FXML
+    private TableColumn<Envio, String> fechaEntregaColumn;
 
-        vbox.getChildren().addAll(new Label("Fecha inicio:"), fechaInicioPicker, new Label("Fecha fin:"), fechaFinPicker);
+    @FXML
+    private TableColumn<Envio, String> estadoColumn;
 
-        dialog.getDialogPane().setContent(vbox);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    @FXML
+    private TableColumn<Envio, Integer> numPaquetesColumn;
 
-        // Mostrar el diálogo y esperar una respuesta
-        Optional<ButtonType> result = dialog.showAndWait();
+    @FXML
+    private TableColumn<Envio, String> creadorEnvioColumn;
 
-        // Comprobamos si el usuario presionó OK
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // Obtenemos las fechas solo si el usuario presionó OK
-            LocalDate fechaInicio = fechaInicioPicker.getValue();
-            LocalDate fechaFin = fechaFinPicker.getValue();
+    @FXML
+    private TableColumn<Envio, String> rutaColumn;
 
-            // Aquí puedes implementar el filtrado según el rango de fechas
-            if (fechaInicio != null && fechaFin != null) {
-                System.out.println("Filtrar por fechas entre: " + fechaInicio + " y " + fechaFin);
-                // Aquí podrías actualizar la tabla con los datos filtrados
+    @FXML
+    private TableColumn<Envio, String> vehiculoColumn;
+
+    @FXML
+    private JFXButton applyDateFilterButton, applyEstadoFilterButton, applyNumPaquetesFilterButton;
+
+    @FXML
+    private JFXButton addShipmentBtn, removeShipmentBtn, printReportBtn;
+
+    private EnvioManager envioService;
+    private ObservableList<Envio> envioList;
+
+    @FXML
+    public void initialize(Parent root) throws IOException, SelectException {
+        envioService = EnvioFactory.getEnvioInstance();
+        envioList = FXCollections.observableArrayList();
+
+        table.setEditable(true);
+        IdColumn.setEditable(false);
+        estadoColumn.setEditable(false);
+        rutaColumn.setEditable(false);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        fechaEnvioColumn.setCellFactory(column -> new TableCell<Envio, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
             }
+        });
+
+        fechaEntregaColumn.setCellFactory(column -> new TableCell<Envio, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+            }
+        });
+
+        loadInitialData();
+    }
+
+    private void loadInitialData() throws IOException, SelectException {
+        List<Envio> envios = envioService.selectAll();
+        envioList.setAll(envios);
+        table.setItems(envioList);
+
+        estadoFilterComboBox.setItems(FXCollections.observableArrayList(envioService.filterEstado(String estado)));
+    }
+
+    @FXML
+    private void applyDateFilter(ActionEvent event) {
+        try {
+            Date from = fromDatePicker.getValue() != null ? java.sql.Date.valueOf(fromDatePicker.getValue()) : null;
+            Date to = toDatePicker.getValue() != null ? java.sql.Date.valueOf(toDatePicker.getValue()) : null;
+
+            if (from == null && to == null) {
+                throw new IllegalArgumentException("Como mínimo debes llenar uno de los dos campos de fecha para poder filtrar.");
+            }
+
+            List<Envio> filteredData = envioService.filterByDates(from, to);
+            envioList.setAll(filteredData);
+        } catch (Exception e) {
+            new UtilsMethods().showAlert("Error al filtrar por fechas", e.getMessage());
         }
     }
 
-    // Este método se encarga de mostrar el filtro de estado
     @FXML
-    private void handleFiltrarPorEstado() {
-        // Mostrar el filtro
-        filterLabelEstado.setVisible(true);
-
-        // Mostrar un diálogo para seleccionar el estado
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("Estado 1", "Estado 1", "Estado 2", "Estado 3");
-        dialog.setTitle("Filtrar por Estado");
-        dialog.setHeaderText("Selecciona un estado");
-
-        dialog.showAndWait().ifPresent(selectedState -> {
-            System.out.println("Filtrar por estado: " + selectedState);
-            // Aquí puedes actualizar la tabla con los datos filtrados
-        });
-    }
-
-    // Este método se encarga de mostrar el filtro de número de paquetes
-    @FXML
-    private void handleFiltrarPorNumPaquetes() {
-        // Mostrar el filtro
-        filterLabelPaquetes.setVisible(true);
-
-        // Crear un diálogo para seleccionar el número de paquetes
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Filtrar por Número de Paquetes");
-        dialog.setHeaderText("Introduce el número de paquetes");
-
-        dialog.showAndWait().ifPresent(input -> {
-            try {
-                int numPaquetes = Integer.parseInt(input);
-                System.out.println("Filtrar por número de paquetes: " + numPaquetes);
-                // Aquí puedes actualizar la tabla con los datos filtrados
-            } catch (NumberFormatException e) {
-                System.out.println("Número de paquetes inválido");
+    private void applyEstadoFilter(ActionEvent event) {
+        try {
+            String estado = estadoFilterComboBox.getValue();
+            if (estado == null || estado.isEmpty()) {
+                throw new IllegalArgumentException("El campo no tiene ningún valor, selecciona uno de los valores.");
             }
-        });
-    }
 
-    // Eliminar filtro de fecha
-    @FXML
-    private void removeFechaFilter() {
-        filterLabelFecha.setVisible(false);
-        // Aquí podrías también limpiar o resetear los datos en la tabla si es necesario
-    }
-
-    // Eliminar filtro de estado
-    @FXML
-    private void removeEstadoFilter() {
-        filterLabelEstado.setVisible(false);
-        // Aquí podrías resetear el estado de la tabla si es necesario
-    }
-
-    // Eliminar filtro de paquetes
-    @FXML
-    private void removePaqueteFilter() {
-        filterLabelPaquetes.setVisible(false);
-        // Aquí podrías resetear el número de paquetes en la tabla si es necesario
+            List<Envio> filteredData = envioService.filterEstado(estado);
+            envioList.setAll(filteredData);
+        } catch (Exception e) {
+            new UtilsMethods().showAlert("Error al filtrar por estado", e.getMessage());
+        }
     }
 
     @FXML
-    private void initialize() {
-        // Asociar los eventos de clic a los métodos correspondientes sin usar lambdas
-
-        // Evento de clic para filtrar por fecha
-        filtrarPorFecha.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-            @Override
-            public void handle(javafx.event.ActionEvent event) {
-                handleFiltrarPorFecha();
+    private void applyNumPaquetesFilter(ActionEvent event) {
+        try {
+            String numPaquetes = numeroPaquetesTextField.getText();
+            if (numPaquetes == null || numPaquetes.isEmpty()) {
+                throw new IllegalArgumentException("El campo está vacío, inserta un número de paquetes para filtrar.");
             }
-        });
-
-        // Evento de clic para filtrar por estado
-        filtrarPorEstado.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-            @Override
-            public void handle(javafx.event.ActionEvent event) {
-                handleFiltrarPorEstado();
+            int num = Integer.parseInt(numPaquetes);
+            if (num <= 0) {
+                throw new IllegalArgumentException("El número de paquetes debe ser mayor a 0 para poder hacer el filtrado.");
             }
-        });
 
-        // Evento de clic para filtrar por número de paquetes
-        filtrarPorNumPaquetes.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
-            @Override
-            public void handle(javafx.event.ActionEvent event) {
-                handleFiltrarPorNumPaquetes();
-            }
-        });
-
-        // Evento de clic para eliminar filtro de fecha
-        removeFilterFecha.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                removeFechaFilter();
-            }
-        });
-
-        // Evento de clic para eliminar filtro de estado
-        removeFilterEstado.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                removeEstadoFilter();
-            }
-        });
-
-        // Evento de clic para eliminar filtro de número de paquetes
-        removeFilterPaquetes.setOnMouseClicked(new javafx.event.EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                removePaqueteFilter();
-            }
-        });
+            List<Envio> filteredData = envioService.filterNumPaquetes(num);
+            envioList.setAll(filteredData);
+        } catch (Exception e) {
+            new UtilsMethods().showAlert("Error al filtrar por número de paquetes", e.getMessage());
+        }
     }
-    
-      @FXML
-    private void handleLogOutClick(MouseEvent event) {
-        // Aquí puedes implementar lo que quieres que pase cuando se haga clic en el logOut
-        System.out.println("Clic en el LogOut!");
-        
-        // Ejemplo: cerrar la ventana o hacer logout
-        // Stage stage = (Stage) logOut.getScene().getWindow();
-        // stage.close();
+
+    @FXML
+    private void addShipment(ActionEvent event) {
+        try {
+            Envio nuevoEnvio = new Envio();
+            envioList.add(nuevoEnvio);
+            envioService.addEnvio();
+        } catch (Exception e) {
+            new UtilsMethods().showAlert("Error al añadir envío", e.getMessage());
+        }
     }
-    
+
+    @FXML
+    private void removeShipment(ActionEvent event) {
+        try {
+            Envio selectedEnvio = table.getSelectionModel().getSelectedItem();
+            if (selectedEnvio == null) {
+                throw new IllegalArgumentException("Debes seleccionar una línea antes de poder borrar.");
+            }
+
+            envioService.deleteEnvio(selectedEnvio.getId());
+            envioList.remove(selectedEnvio);
+        } catch (Exception e) {
+            new UtilsMethods().showAlert("Error al eliminar envío", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void printReport(ActionEvent event) {
+        new UtilsMethods().showAlert("Reporte", "Funcionalidad de impresión aún no implementada.");
+    }
+
+    public void setStage(Stage loginStage) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
