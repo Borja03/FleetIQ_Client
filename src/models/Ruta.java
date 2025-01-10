@@ -1,13 +1,8 @@
 package models;
 
-import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
-/**
- * Modelo que representa una Ruta.
- * Este modelo se utiliza en la lógica de negocio y las capas superiores de la aplicación.
- * 
- * Autor: Borja
- */
 public class Ruta {
 
     private Integer localizador;
@@ -15,26 +10,26 @@ public class Ruta {
     private String destino;
     private Float distancia;
     private Integer tiempo;
-    private String type; // Representa el tipo (MAYOR, MENOR, IGUAL)
-    private LocalDate fechaCreacion;
+    private Date fechaCreacion;
     private Integer numVehiculos;
 
-    // Constructores
+
+    // Constructor vacío
     public Ruta() {
     }
 
-    public Ruta(Integer localizador, String origen, String destino, Float distancia, Integer tiempo, String type, LocalDate fechaCreacion, Integer numVehiculos) {
+    // Constructor parametrizado
+    public Ruta(Integer localizador, String origen, String destino, Float distancia, Integer tiempo, Date fechaCreacion, Integer numVehiculos) {
         this.localizador = localizador;
         this.origen = origen;
         this.destino = destino;
         this.distancia = distancia;
         this.tiempo = tiempo;
-        this.type = type;
         this.fechaCreacion = fechaCreacion;
         this.numVehiculos = numVehiculos;
     }
 
-    // Getters y Setters
+    // Getters and Setters
     public Integer getLocalizador() {
         return localizador;
     }
@@ -75,19 +70,11 @@ public class Ruta {
         this.tiempo = tiempo;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public LocalDate getFechaCreacion() {
+    public Date getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(LocalDate fechaCreacion) {
+    public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -107,7 +94,6 @@ public class Ruta {
                 ", destino='" + destino + '\'' +
                 ", distancia=" + distancia +
                 ", tiempo=" + tiempo +
-                ", type='" + type + '\'' +
                 ", fechaCreacion=" + fechaCreacion +
                 ", numVehiculos=" + numVehiculos +
                 '}';
