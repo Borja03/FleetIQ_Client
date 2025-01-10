@@ -124,7 +124,7 @@ public class MainController {
         createContextMenu();
 
         // Link event handlers
-        logOutButton.setOnAction(this::logOut);
+       
         eyeButton.setOnAction(this::togglePasswordVisibility);
 
         // Set user details in text fields

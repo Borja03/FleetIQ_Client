@@ -63,7 +63,11 @@
                 </VBox>
 
                 <VBox fillWidth="false" minWidth="200.0" prefHeight="94.0" prefWidth="200.0" styleClass="filter-section" HBox.hgrow="ALWAYS">
+<<<<<<< HEAD
                     <Label styleClass="filter-title" text="Filter By Name" />
+=======
+                    <Label styleClass="filter-title" text="Filter By License Plate" />
+>>>>>>> origin/merge_UI
                     <HBox alignment="CENTER_LEFT" spacing="10">
                         <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="135.0" promptText="Search License Plate" HBox.hgrow="ALWAYS" />
                         <JFXButton fx:id="searchButton" ellipsisString="" minWidth="60.0" prefHeight="30.0">
@@ -88,6 +92,7 @@
     <center>
         <TableView fx:id="vehicleTableView" VBox.vgrow="ALWAYS">
             <columns>
+<<<<<<< HEAD
                 <TableColumn fx:id="idColumn" prefWidth="91.0" text="ID" />
                 <TableColumn fx:id="matriculaColumn" prefWidth="160.0" text="License plate" />
                 <TableColumn fx:id="modelColumn" prefWidth="160.0" text="Model" />
@@ -95,6 +100,17 @@
                 <TableColumn fx:id="registrationDateColumn" prefWidth="160.0" text="Registration date" />
                 <TableColumn fx:id="itvDateColumn" prefWidth="160.0" text="ITV Date" />
                 <TableColumn fx:id="activeColumn" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" text="Active" />
+=======
+                <TableColumn fx:id="idColumn" prefWidth="40.0" text="ID" />
+                <TableColumn fx:id="matriculaColumn" prefWidth="120.0" text="License plate" />
+                <TableColumn fx:id="modelColumn" prefWidth="160.0" text="Model" />
+                <TableColumn fx:id="capacityColumn" prefWidth="70.0" text="Capacity" />
+                <TableColumn fx:id="registrationDateColumn" prefWidth="130.0" text="Registration date" />
+                <TableColumn fx:id="itvDateColumn" prefWidth="130.0" text="ITV Date" />
+                <TableColumn fx:id="activeColumn" maxWidth="148.0" minWidth="80.0" text="Active" />
+            <TableColumn fx:id="ruta" prefWidth="75.0" text="Ruta" />
+            <TableColumn fx:id="fecha_asignacion" prefWidth="130.0" text="Fecha asignación" />
+>>>>>>> origin/merge_UI
             </columns>
             <BorderPane.margin>
                 <Insets left="15.0" right="15.0" />

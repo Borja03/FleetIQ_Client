@@ -1,9 +1,17 @@
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package logicInterface;
 
-import exception.selectException;
-import exception.createException;
-import exception.updateException;
-import exception.deleteException;
+import exception.SelectException;
+import exception.CreateException;
+import exception.UpdateException;
+import exception.DeleteException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import models.Envio;
@@ -16,13 +24,12 @@ import models.Envio;
  * @author Alder
  */
 public interface EnvioManager {
-
     /**
      * Añade un nuevo envío al sistema.
      *
      * @throws createException si ocurre un error al crear el envío.
      */
-    public void addEnvio() throws createException;
+    public void addEnvio() throws CreateException;
 
     /**
      * Actualiza los datos de un envío existente.
@@ -31,7 +38,7 @@ public interface EnvioManager {
      * @return el objeto Envio actualizado.
      * @throws updateException si ocurre un error durante la actualización del envío.
      */
-    public Envio updateEnvio(Envio envio) throws updateException;
+    public Envio updateEnvio(Envio envio) throws UpdateException;
 
     /**
      * Elimina un envío del sistema basado en su identificador.
@@ -40,7 +47,7 @@ public interface EnvioManager {
      * @return el objeto Envio eliminado.
      * @throws deleteException si ocurre un error al eliminar el envío.
      */
-    public Envio deleteEnvio(Integer id) throws deleteException;
+    public Envio deleteEnvio(Integer id) throws DeleteException;
 
     /**
      * Obtiene una lista de todos los envíos registrados en el sistema.
@@ -48,7 +55,7 @@ public interface EnvioManager {
      * @return una lista de objetos Envio.
      * @throws selectException si ocurre un error al obtener los datos.
      */
-    public ArrayList<Envio> selectAll() throws selectException;
+    public ArrayList<Envio> selectAll() throws SelectException;
 
     /**
      * Filtra los envíos registrados en el sistema por un rango de fechas.
@@ -58,7 +65,7 @@ public interface EnvioManager {
      * @return una lista de objetos Envio que cumplen con el rango de fechas.
      * @throws selectException si ocurre un error al filtrar los datos.
      */
-    public ArrayList<Envio> filterByDates(Date firstDate, Date secondDate) throws selectException;
+    public ArrayList<Envio> filterByDates(Date firstDate, Date secondDate) throws SelectException;
 
     /**
      * Filtra los envíos registrados en el sistema por estado.
@@ -67,7 +74,7 @@ public interface EnvioManager {
      * @return una lista de objetos Envio que tienen el estado especificado.
      * @throws selectException si ocurre un error al filtrar los datos.
      */
-    public ArrayList<Envio> filterEstado(String estado) throws selectException;
+    public ArrayList<Envio> filterEstado(String estado) throws SelectException;
 
     /**
      * Filtra los envíos registrados en el sistema por el número de paquetes.
@@ -76,5 +83,5 @@ public interface EnvioManager {
      * @return una lista de objetos Envio que cumplen con el número de paquetes especificado.
      * @throws selectException si ocurre un error al filtrar los datos.
      */
-    public ArrayList<Envio> filterNumPaquetes(Integer numPaquetes) throws selectException;
+    public ArrayList<Envio> filterNumPaquetes(Integer numPaquetes) throws SelectException;
 }

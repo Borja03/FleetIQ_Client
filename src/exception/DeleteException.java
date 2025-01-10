@@ -7,17 +7,16 @@
 
 package exception;
 
-/**
- *
+ /*
  * @author Alder
  */
-public class deleteException extends Exception {
+public class DeleteException extends Exception {
 
     /**
      * Creates a new instance of <code>createException</code> without detail
      * message.
      */
-    public deleteException() {
+    public DeleteException() {
         super();
     }
 
@@ -27,7 +26,9 @@ public class deleteException extends Exception {
      *
      * @param msg the detail message.
      */
-    public deleteException(String msg) {
+    public DeleteException(String msg) {
         super(msg);
     }
+
+
 }

@@ -44,9 +44,12 @@
       <MenuButton fx:id="menuLogout" ellipsisString="" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="122.0">
         <items>
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
           <MenuItem fx:id="menuItemProfile" mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile" />
           <MenuItem fx:id="menuItemLogout" mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
 =======
+>>>>>>> origin/merge_UI
           <MenuItem mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile" />
           <MenuItem mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
 >>>>>>> origin/merge_design_windows

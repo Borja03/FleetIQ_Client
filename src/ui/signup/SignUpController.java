@@ -3,6 +3,9 @@ package ui.signup;
 
 
 
+import com.jfoenix.controls.JFXAlert;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialogLayout;
 import exception.ConnectionException;
 import exception.EmptyFieldException;
 import exception.InvalidCityFormatException;
@@ -43,6 +46,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import models.User;
 import ui.login.LogInController;
@@ -670,38 +675,84 @@ private String loadThemePreference() {
      *
      * @param event the exit event triggered by the user.
      */
-    private void handleOnActionExit(Event event) {
-        try {
-            // Ask user for confirmation on exit
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                            "Are you sure you want to exit the application?",
-                            ButtonType.OK, ButtonType.CANCEL);
-                      // Load an icon image for the alert
-           // Load a custom icon for the window (not the alert itself)
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        Image iconImage = new Image(getClass().getResourceAsStream("/image/fleet_icon.png"));
-        stage.getIcons().add(iconImage);  // Set the icon for the window
+//    private void handleOnActionExit(Event event) {
+//        try {
+//            // Ask user for confirmation on exit
+//            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+//                            "Are you sure you want to exit the application?",
+//                            ButtonType.OK, ButtonType.CANCEL);
+//                      // Load an icon image for the alert
+//           // Load a custom icon for the window (not the alert itself)
+//        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+//        Image iconImage = new Image(getClass().getResourceAsStream("/image/fleet_icon.png"));
+//        stage.getIcons().add(iconImage);  // Set the icon for the window
+//
+//        // Set the icon as the graphic for the alert
+//            Optional<ButtonType> result = alert.showAndWait();
+//            // If OK to exit
+//            if (result.isPresent() && result.get() == ButtonType.OK) {
+//                 saveThemePreference(LogInController.currentTheme);
+//                Platform.exit();
+//                LOGGER.info("Application exited by user.");
+//            } else {
+//                event.consume();
+//            }
+//        } catch (Exception e) {
+//            String errorMsg = "Error exiting application: " + e.getMessage();
+//            Alert alert = new Alert(Alert.AlertType.ERROR,
+//                            errorMsg,
+//                            ButtonType.OK);
+//   
+//      
+//            alert.showAndWait();
+//            LOGGER.log(Level.SEVERE, errorMsg);
+//        }
 
-        // Set the icon as the graphic for the alert
-            Optional<ButtonType> result = alert.showAndWait();
-            // If OK to exit
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                 saveThemePreference(LogInController.currentTheme);
-                Platform.exit();
-                LOGGER.info("Application exited by user.");
-            } else {
-                event.consume();
-            }
-        } catch (Exception e) {
-            String errorMsg = "Error exiting application: " + e.getMessage();
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                            errorMsg,
-                            ButtonType.OK);
+    private void handleOnActionExit(Event event) {
+
+    // Create JFoenix alert
+    JFXAlert<Void> alert = new JFXAlert<>((Stage) event.getSource());
+    alert.initModality(Modality.APPLICATION_MODAL);
+    
+    // Create dialog layout
+    JFXDialogLayout layout = new JFXDialogLayout();
+    layout.setHeading(new Text("Exit Confirmation"));
+    layout.setBody(new Text("Are you sure you want to exit the application?"));
+    
+    // Create buttons
+    JFXButton okButton = new JFXButton("OK");
+    JFXButton cancelButton = new JFXButton("Cancel");
+    
+    // OK button action
+    okButton.setOnAction(e -> {
+        saveThemePreference(LogInController.currentTheme);
+        Platform.exit();
+        LOGGER.info("Application exited by user.");
+        alert.close();
+    });
+    
+    // Cancel button action
+    cancelButton.setOnAction(e -> {
+        event.consume();
+        alert.close();
+    });
+    
+    // Set buttons to dialog
+    layout.setActions(cancelButton, okButton);
+    
+    // Set layout to alert
+    alert.setContent(layout);
+    
+    // Show the alert
+    alert.show();
+} 
+
+ 
+
    
-      
-            alert.showAndWait();
-            LOGGER.log(Level.SEVERE, errorMsg);
-        }
-    }
+
+
+    
+        
 
 }
