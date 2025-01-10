@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import models.User;
 import ui.login.LogInController;
-import ui.paquete.PaqueteController;
+import ui.paquete.PackageController;
 import ui.profile.MainController;
 import ui.ruta.RutaController;
 import ui.vehicle.VehicleController;
@@ -90,7 +90,7 @@ public class MenuController {
        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
             Parent root = loader.load();
-            PaqueteController controller = loader.getController();
+            PackageController controller = loader.getController();
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
             controller.initStage(root,connectedUser);

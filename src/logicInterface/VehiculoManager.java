@@ -6,15 +6,15 @@
 
 package logicInterface;
 
-import exception.createException;
-import exception.deleteException;
-import exception.selectException;
-import exception.updateException;
+
+import exception.CreateException;
+import exception.DeleteException;
+import exception.SelectException;
+import exception.UpdateException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import models.Vehiculo;
-import models.PaqueteSize;
 
 /**
  *
@@ -22,15 +22,15 @@ import models.PaqueteSize;
  */
 public interface VehiculoManager {
     
-    public void addVehiculo(Vehiculo vehiculo) throws createException;
-    public void updateVehiculo(Vehiculo vehiculo) throws updateException;
-    public void deleteVehiculo(Integer idVehiculo) throws deleteException;
+    public void addVehiculo(Vehiculo vehiculo) throws CreateException;
+    public void updateVehiculo(Vehiculo vehiculo) throws UpdateException;
+    public void deleteVehiculo(Integer idVehiculo) throws DeleteException;
     
-    public List<Vehiculo> findAllVehiculos() throws selectException;
+    public List<Vehiculo> findAllVehiculos() throws SelectException;
   
-    public List<Vehiculo> findAllVehiculosEntreDates(Date firstDate,Date secondDate) throws selectException;
-    public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws selectException;
-    public List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws selectException;
+    public List<Vehiculo> findAllVehiculosEntreDates(Date firstDate,Date secondDate) throws SelectException;
+    public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException;
+    public List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException;
 
 }
     

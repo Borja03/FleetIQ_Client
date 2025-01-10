@@ -4,19 +4,19 @@
  * and open the template in the editor.
  */
 
-
 package exception;
 
- /*
+/**
+ *
  * @author Alder
  */
-public class selectException extends Exception {
+public class CreateException extends Exception {
 
     /**
      * Creates a new instance of <code>createException</code> without detail
      * message.
      */
-    public selectException() {
+    public CreateException() {
         super();
     }
 
@@ -26,7 +26,9 @@ public class selectException extends Exception {
      *
      * @param msg the detail message.
      */
-    public selectException(String msg) {
+    public CreateException(String msg) {
         super(msg);
     }
+
+ 
 }

@@ -5,12 +5,12 @@
  */
 package logicInterface;
 
-import exception.selectException;
-import exception.createException;
-import exception.updateException;
-import exception.deleteException;
-import java.util.ArrayList;
 
+import exception.CreateException;
+import exception.DeleteException;
+import exception.SelectException;
+import exception.UpdateException;
+import java.util.ArrayList;
 import java.util.Date;
 import models.FilterTypeRuta;
 import models.Ruta;
@@ -29,7 +29,7 @@ public interface RutaManager {
      *
      * @throws createException si ocurre un error al crear la ruta.
      */
-    public void addRuta() throws createException;
+    public void addRuta() throws CreateException;
 
     /**
      * Actualiza una ruta existente en el sistema.
@@ -38,7 +38,7 @@ public interface RutaManager {
      * @return el objeto {@link Ruta} actualizado.
      * @throws updateException si ocurre un error durante la actualización de la ruta.
      */
-    public Ruta updateRuta(Ruta ruta) throws updateException;
+    public Ruta updateRuta(Ruta ruta) throws UpdateException;
 
     /**
      * Elimina una ruta del sistema utilizando su identificador único.
@@ -47,7 +47,7 @@ public interface RutaManager {
      * @return el objeto {@link Ruta} eliminado.
      * @throws deleteException si ocurre un error durante la eliminación de la ruta.
      */
-    public Ruta deleteRuta(Integer idRuta) throws deleteException;
+    public Ruta deleteRuta(Integer idRuta) throws DeleteException;
 
     /**
      * Selecciona y devuelve todas las rutas almacenadas en el sistema.
@@ -55,7 +55,7 @@ public interface RutaManager {
      * @return una lista de objetos {@link Ruta} que representan todas las rutas disponibles.
      * @throws selectException si ocurre un error al seleccionar las rutas.
      */
-    public ArrayList<Ruta> selectAll() throws selectException;
+    public ArrayList<Ruta> selectAll() throws SelectException;
 
     /**
      * Filtra las rutas basándose en un rango de fechas.
@@ -65,7 +65,7 @@ public interface RutaManager {
      * @return una lista de objetos {@link Ruta} que se encuentran dentro del rango de fechas especificado.
      * @throws selectException si ocurre un error durante el filtrado de rutas por fechas.
      */
-    public ArrayList<Ruta> filterByDates(Date firstDate, Date secondDate) throws selectException;
+    public ArrayList<Ruta> filterByDates(Date firstDate, Date secondDate) throws SelectException;
 
     /**
      * Filtra las rutas basándose en el tiempo y un tipo de filtro específico.
@@ -75,7 +75,7 @@ public interface RutaManager {
      * @return una lista de objetos {@link Ruta} que cumplen con los criterios de tiempo y tipo de filtro.
      * @throws selectException si ocurre un error durante el filtrado de rutas por tiempo.
      */
-    public ArrayList<Ruta> filterTiempo(FilterTypeRuta filterType, Integer tiempo) throws selectException;
+    public ArrayList<Ruta> filterTiempo(FilterTypeRuta filterType, Integer tiempo) throws SelectException;
 
     /**
      * Filtra las rutas basándose en la distancia y un tipo de filtro específico.
@@ -85,5 +85,6 @@ public interface RutaManager {
      * @return una lista de objetos {@link Ruta} que cumplen con los criterios de distancia y tipo de filtro.
      * @throws selectException si ocurre un error durante el filtrado de rutas por distancia.
      */
-    public ArrayList<Ruta> filterDistancia(FilterTypeRuta filterType, Integer distancia) throws selectException;
+    public ArrayList<Ruta> filterDistancia(FilterTypeRuta filterType, Integer distancia) throws SelectException;
+
 }
