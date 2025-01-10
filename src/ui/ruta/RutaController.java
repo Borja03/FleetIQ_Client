@@ -5,18 +5,19 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import java.time.LocalDate;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import models.Ruta;
 
 public class RutaController {
+
+    private static final Logger logger = Logger.getLogger(RutaController.class.getName());
 
     @FXML
     private JFXDatePicker fromDatePicker;
@@ -98,7 +99,6 @@ public class RutaController {
         stage.centerOnScreen();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         removeShipmentBtn.setDisable(true);
-        
 
         // Configurar opciones para los filtros de tamaño
         sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
@@ -111,8 +111,8 @@ public class RutaController {
         applyFilterButton.setOnAction(event -> applyDateFilter());
 
         // Configurar acción del botón "Search"
-        searchButton.setOnAction(event -> searchByName());
-        searchButton1.setOnAction(event -> searchBySize());
+        searchButton.setOnAction(event -> searchByLocalidazor());
+  
 
         // Configurar acción de los botones de paquetes
         addShipmentBtn.setOnAction(event -> addShipment());
@@ -135,34 +135,29 @@ public class RutaController {
 
     private void applyDateFilter() {
         // Lógica para aplicar el filtro de fecha
-        System.out.println("Aplicando filtro de fecha: Desde " + fromDatePicker.getValue() + " hasta " + toDatePicker.getValue());
+        logger.info("Aplicando filtro de fecha: Desde " + fromDatePicker.getValue() + " hasta " + toDatePicker.getValue());
     }
 
-    private void searchByName() {
+    private void searchByLocalidazor() {
         // Lógica para buscar por nombre
         String searchText = searchTextField.getText();
-        System.out.println("Buscando envíos por nombre: " + searchText);
+        logger.info("Buscando rutas por : " + searchText);
     }
 
-    private void searchBySize() {
-        // Lógica para buscar por tamaño
-        String filterValue = filterValueField.getText();
-        String operator = sizeFilterComboBox1.getValue();
-        System.out.println("Buscando por tamaño con " + operator + " " + filterValue);
-    }
+    
 
     private void addShipment() {
         // Lógica para agregar envío
-        System.out.println("Añadiendo nuevo envío.");
+        logger.info("Añadiendo nueva ruta.");
     }
 
     private void removeShipment() {
         // Lógica para eliminar envío
-        System.out.println("Eliminando envío seleccionado.");
+        logger.info("Eliminando ruta seleccionada.");
     }
 
     private void printReport() {
         // Lógica para generar reporte
-        System.out.println("Generando reporte.");
+        logger.info("Generando reporte.");
     }
 }
