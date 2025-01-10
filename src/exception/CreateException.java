@@ -10,13 +10,13 @@ package exception;
  *
  * @author Alder
  */
-public class updateException extends Exception {
+public class CreateException extends Exception {
 
     /**
      * Creates a new instance of <code>createException</code> without detail
      * message.
      */
-    public updateException() {
+    public CreateException() {
         super();
     }
 
@@ -26,7 +26,9 @@ public class updateException extends Exception {
      *
      * @param msg the detail message.
      */
-    public updateException(String msg) {
+    public CreateException(String msg) {
         super(msg);
     }
+
+ 
 }

@@ -6,12 +6,15 @@
 
 package models;
 
+import javax.xml.bind.annotation.XmlEnum;
+
 /**
  *
  * @author Omar
  */
-public enum UserType {
-    ADMIN,
-    TRABAJADOR
-
+public enum PackageSize {
+    SMALL,
+    MEDIUM,
+    LARGE,
+    EXTRA_LARGE
 }
