@@ -7,12 +7,15 @@ import com.jfoenix.controls.JFXTextField;
 import java.time.LocalDate;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import logicInterface.RutaManager;
 import models.Ruta;
 
 public class RutaController {
@@ -78,6 +81,10 @@ public class RutaController {
 
     @FXML
     private JFXButton printReportBtn;
+    
+    private RutaManager rutaManager;
+    
+    private ObservableList<Ruta> rutaData;
 
     public Stage getStage() {
         return stage;
@@ -112,13 +119,24 @@ public class RutaController {
 
         // Configurar acción del botón "Search"
         searchButton.setOnAction(event -> searchByLocalidazor());
-  
 
         // Configurar acción de los botones de paquetes
         addShipmentBtn.setOnAction(event -> addShipment());
         removeShipmentBtn.setOnAction(event -> removeShipment());
         printReportBtn.setOnAction(event -> printReport());
 
+        localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
+        origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
+        destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
+        distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
+        tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        numVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+        
+        cargarTabla();
+        
+   
         stage.show();
     }
 
@@ -132,6 +150,17 @@ public class RutaController {
             sizeFilterComboBox1.setPromptText("Unit");
         }
     }
+    
+     private void cargarTabla() {
+    try {
+        // Obtener los datos desde el gestor (RutaManager)
+        rutaData = FXCollections.observableArrayList(rutaManager.selectAll());
+        logger.info("Datos cargados exitosamente en la tabla.");
+    } catch (Exception e) {
+        logger.severe("Error al cargar los datos en la tabla: " + e.getMessage());
+        e.printStackTrace();
+    }
+}
 
     private void applyDateFilter() {
         // Lógica para aplicar el filtro de fecha
@@ -143,8 +172,6 @@ public class RutaController {
         String searchText = searchTextField.getText();
         logger.info("Buscando rutas por : " + searchText);
     }
-
-    
 
     private void addShipment() {
         // Lógica para agregar envío
