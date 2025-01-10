@@ -110,7 +110,20 @@ public class MenuController {
 
     @FXML
     private void handleRutaMenuItemAction(Event event) {
-           System.out.println("Ruta menu item clicked");
+           try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/ruta/ruta.fxml"));
+            Parent root = loader.load();
+            RutaController controller = loader.getController();
+            Stage loginStage = new Stage();
+            controller.setStage(loginStage);
+            controller.initialize(root);
+            LOGGER.info("Ruta window opened");
+            // Close the current stage (the one with the menu)
+            Stage currentStage = (Stage) menuBar.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException ex) {
+            LOGGER.severe("Error loading paquete window: " + ex);
+        }
 
     }
 

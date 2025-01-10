@@ -22,57 +22,35 @@
             <fx:include source="../menu/menu.fxml" />
 
             <HBox alignment="CENTER_LEFT" styleClass="filter-container">
+            
+
                 <VBox prefWidth="405.0" styleClass="filter-section">
-                    <Label styleClass="filter-title" text="Filter By Date" />
+                    <Label styleClass="filter-title" text="Filtrar Por Fechas" />
                     <HBox alignment="CENTER_LEFT">
                         <Label text="From: " />
                         <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="From Date" scaleShape="false" />
                         <Label text="To: " />
                         <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="To Date" />
-                        <JFXButton fx:id="applyFilterButton" prefHeight="30.0" text="Apply" />
+                        <JFXButton fx:id="applyDateFilterButton" prefHeight="30.0" text="Apply" />
                     </HBox>
                 </VBox>
 
-                <VBox prefHeight="93.0" prefWidth="355.0" styleClass="filter-section">
-                    <Label styleClass="filter-title" text="Filter By Distance &amp; Time " />
+                <VBox prefHeight="93.0" prefWidth="236.0" styleClass="filter-section">
+                    <Label styleClass="filter-title" text="Filter Por Estado  " />
                     <HBox prefHeight="100.0" prefWidth="271.0">
                         <children>
-                            <JFXComboBox fx:id="sizeFilterComboBox" prefHeight="30.0" prefWidth="80.0" promptText="Filter" />
-                            <JFXComboBox fx:id="sizeFilterComboBox1" prefHeight="30.0" prefWidth="80.0" promptText="Type" />
-                            <JFXTextField fx:id="filterValueField" prefHeight="27.0" prefWidth="113.0" />
-                            <JFXButton fx:id="searchButton1" ellipsisString="" minWidth="60.0" prefHeight="30.0">
-                                <graphic>
-                                    <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
-                                        <image>
-                                            <Image url="@../../image/search.png" />
-                                        </image>
-                                    </ImageView>
-                                </graphic>
-                                <tooltip>
-                                    <Tooltip text="Search" />
-                                </tooltip>
-                            </JFXButton>
+                            <JFXComboBox fx:id="estadoFilterComboBox" prefHeight="30.0" prefWidth="116.0" promptText="Filter" />
+                            <JFXButton fx:id="applyEstadoFilterButton" prefHeight="30.0" text="Apply" />
                         </children>
                     </HBox>
                 </VBox>
-                <VBox fillWidth="false" prefHeight="93.0" prefWidth="227.0" styleClass="filter-section">
+                <VBox fillWidth="false" prefHeight="93.0" prefWidth="289.0" styleClass="filter-section">
                     <children>
-                        <Label styleClass="filter-title" text="Filter By Localizador" />
+                        <Label styleClass="filter-title" text="Filtrar Por Paquetes" />
                         <HBox alignment="CENTER_LEFT" spacing="10">
                             <children>
-                                <JFXTextField fx:id="searchTextField" prefHeight="30.0" prefWidth="300.0" promptText="Search Routes" HBox.hgrow="ALWAYS" />
-                                <JFXButton fx:id="searchButton" ellipsisString="" minWidth="60.0" prefHeight="30.0">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../image/search.png" />
-                                            </image>
-                                        </ImageView>
-                                    </graphic>
-                                    <tooltip>
-                                        <Tooltip text="Search" />
-                                    </tooltip>
-                                </JFXButton>
+                                <JFXTextField fx:id="numeroPaquetesTextField" prefHeight="30.0" prefWidth="155.0" promptText="Numero de paquetes" HBox.hgrow="ALWAYS" />
+                                <JFXButton fx:id="applyNumPaquetesFilterButton" prefHeight="30.0" text="Apply" />
                             </children>
                         </HBox>
                     </children>
@@ -84,17 +62,18 @@
     <center>
         <TableView fx:id="table" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="localizadorColumn" prefWidth="103.1999785900116" text="Localizador" />
-                <TableColumn fx:id="origenColumn" prefWidth="117.5999755859375" text="Origen" />
-                <TableColumn fx:id="destinoColumn" prefWidth="121.59999084472656" text="Destino" />
-                <TableColumn fx:id="distanciaColumn" prefWidth="165.60003662109375" text="Distancia" />
-                <TableColumn fx:id="tiempoColumn" prefWidth="151.2000732421875" text="Tiempo" />
-                <TableColumn fx:id="fechaColumn" prefWidth="163.99993896484375" text="Fecha Creación" />
-                <TableColumn fx:id="numeroVehiculosColumn" prefWidth="232.0001220703125" text="Número Vehículos" />
+                <TableColumn fx:id="IdColumn" prefWidth="75.32305574417114" text="Id" />
+                <TableColumn fx:id="fechaEnvioColumn" prefWidth="130.7076416015625" text="Fecha Envio" />
+                <TableColumn fx:id="fechaEntregaColumn" prefWidth="143.99993896484375" text="Fecha Entrega" />
+                <TableColumn fx:id="estadoColumn" prefWidth="129.230712890625" text="Estado" />
+                <TableColumn fx:id="numPaquetesColumn" prefWidth="167.63070678710938" text="Numero Paquetes" />
+                <TableColumn fx:id="creadorEnvioColumn" prefWidth="152.123046875" text="Creador Envio" />
+                <TableColumn fx:id="rutaColumn" prefWidth="103.3846435546875" text="Ruta" />
+                <TableColumn fx:id="vehiculoColumn" prefWidth="117.415283203125" text="Vehiculo" />
             </columns>
         </TableView>
-
     </center>
+
 
     <bottom>
         <HBox alignment="CENTER_LEFT" spacing="15">

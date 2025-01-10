@@ -4,11 +4,17 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import java.time.LocalDate;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import models.Ruta;
 
 public class RutaController {
 
@@ -40,25 +46,28 @@ public class RutaController {
     private JFXButton searchButton1;
 
     @FXML
-    private TableView<?> table;
+    private TableColumn<Ruta, Integer> localizadorColumn;
 
     @FXML
-    private TableColumn<?, ?> localizadorColumn;
+    private TableColumn<Ruta, String> origenColumn;
 
     @FXML
-    private TableColumn<?, ?> origenColumn;
+    private TableColumn<Ruta, String> destinoColumn;
 
     @FXML
-    private TableColumn<?, ?> destinoColumn;
+    private TableColumn<Ruta, Float> distanciaColumn;
 
     @FXML
-    private TableColumn<?, ?> distanciaColumn;
+    private TableColumn<Ruta, Integer> tiempoColumn;
 
     @FXML
-    private TableColumn<?, ?> tiempoColumn;
+    private TableColumn<Ruta, String> typeColumn;
 
     @FXML
-    private TableColumn<?, ?> fechaColumn;
+    private TableColumn<Ruta, LocalDate> fechaColumn;
+
+    @FXML
+    private TableColumn<Ruta, Integer> numVehiculosColumn;
 
     @FXML
     private JFXButton addShipmentBtn;
@@ -69,8 +78,28 @@ public class RutaController {
     @FXML
     private JFXButton printReportBtn;
 
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    private Stage stage;
+
     @FXML
-    public void initialize() {
+    public void initialize(Parent root) {
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.setTitle("Ruta");
+        stage.setResizable(false);
+        stage.centerOnScreen();
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
+        removeShipmentBtn.setDisable(true);
+        
+
         // Configurar opciones para los filtros de tamaño
         sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
         sizeFilterComboBox1.setItems(FXCollections.observableArrayList(">", "<", "="));
@@ -89,6 +118,8 @@ public class RutaController {
         addShipmentBtn.setOnAction(event -> addShipment());
         removeShipmentBtn.setOnAction(event -> removeShipment());
         printReportBtn.setOnAction(event -> printReport());
+
+        stage.show();
     }
 
     private void updateUnitLabel() {
