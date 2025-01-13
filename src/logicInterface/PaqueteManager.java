@@ -52,7 +52,7 @@ public interface PaqueteManager {
      * @param idPaquete the ID of the paquete to delete
      * @throws DeleteException if an error occurs during deletion
      */
-    void deletePackages(Integer idPaquete) throws DeleteException;
+    void deletePackage(Integer idPaquete) throws DeleteException;
     // multi delte ??
     // 
     // void deletePaquete(Integer idPaquete) throws DeleteException;

@@ -381,7 +381,6 @@ private String loadThemePreference() {
     private void focusChanged(ObservableValue observable ,Boolean oldValue ,Boolean newValue){
       if(newValue){
        lbl_error.setText("");
-
       }  
     }
 
