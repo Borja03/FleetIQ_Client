@@ -7,6 +7,7 @@ import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,13 +74,10 @@ public class RutaController {
     private TableColumn<Ruta, Integer> tiempoColumn;
 
     @FXML
-    private TableColumn<Ruta, String> typeColumn;
+    private TableColumn<Ruta, Date> fechaColumn;
 
     @FXML
-    private TableColumn<Ruta, LocalDate> fechaColumn;
-
-    @FXML
-    private TableColumn<Ruta, Integer> numVehiculosColumn;
+    private TableColumn<Ruta, Integer> numeroVehiculosColumn;
 
     @FXML
     private JFXButton addShipmentBtn;
@@ -109,31 +107,33 @@ public class RutaController {
 
    private void loadRutaData() throws SelectException {
     try {
-        // Get all routes using the RutaRESTClient
-        RutaRESTClient rutaRESTClient = new RutaRESTClient();
+        // Llamar al servicio REST para obtener las rutas en formato XML
+        List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType <List<Ruta>>() {});
         
-        // Get the list of routes (assuming Ruta is a model class that corresponds to the data returned by the API)
-        List<Ruta> rutas = rutaRESTClient.findAll_XML(new GenericType<List<Ruta>>() {});
-        
-        // Convert the list of routes into an ObservableList for the TableView
+        // Convertir la lista de rutas en un ObservableList para el TableView
         rutaData = FXCollections.observableArrayList(rutas);
+        
 
-        // Bind the columns to the appropriate properties in the Ruta class
+        // Enlazar las columnas con las propiedades correspondientes de la clase Ruta
         localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
         origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
         destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
         distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
         tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-        numVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+        
+        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+       numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
 
-        // Set the items for the TableView to display the routes
+        // Establecer los elementos en el TableView para mostrar las rutas
+    
         rutaTable.setItems(rutaData);
     } catch (WebApplicationException e) {
         logger.log(Level.SEVERE, "Error loading ruta data", e);
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Unexpected error", e);
     }
 }
+
 
     @FXML
     public void initialize(Parent root) {

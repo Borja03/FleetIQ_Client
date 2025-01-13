@@ -23,15 +23,12 @@ public class Ruta implements Serializable {
 
     private Date fechaCreacion;
 
-    public Integer getNumVehiculos() {
-        return numVehiculos;
-    }
-
-    public void setNumVehiculos(Integer numVehiculos) {
-        this.numVehiculos = numVehiculos;
-    }
-
     private Integer numVehiculos;
+
+    public Ruta() {
+    }
+
+  
 
     private List<EnvioRutaVehiculo> envioRutaVehiculos;
 
@@ -102,6 +99,14 @@ public class Ruta implements Serializable {
 
     public Integer getId() {
         return localizador;
+    }
+    
+      public Integer getNumVehiculos() {
+        return numVehiculos;
+    }
+
+    public void setNumVehiculos(Integer numVehiculos) {
+        this.numVehiculos = numVehiculos;
     }
 
     @Override

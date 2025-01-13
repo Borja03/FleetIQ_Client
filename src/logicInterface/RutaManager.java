@@ -31,7 +31,7 @@ public interface RutaManager {
 
     public <T> T filterTiempoIgual_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
 
-    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException;
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException;
 
     public <T> T findAll_JSON(Class<T> responseType) throws WebApplicationException;
 
