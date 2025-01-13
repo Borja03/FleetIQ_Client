@@ -12,16 +12,16 @@ import exception.UpdateException;
 import java.util.Date;
 import java.util.List;
 import javax.ws.rs.core.GenericType;
-import logicInterface.PackageManager;
 import models.Paquete;
 import models.PackageSize;
 import service.PackageRESTClient;
+import logicInterface.PaqueteManager;
 
 /**
  *
  * @author Omar
  */
-public class PackageManagerImp implements PackageManager {
+public class PackageManagerImp implements PaqueteManager {
 
     private PackageRESTClient webClient;
 

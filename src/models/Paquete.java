@@ -23,6 +23,7 @@ public class Paquete  implements Serializable {
     private double weight;
     @XmlElement
     private PackageSize size;
+
     private Date creationDate;
     private boolean fragile;
 

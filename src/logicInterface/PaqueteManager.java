@@ -1,19 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package logicInterface;
-
-
-
-
-/**
- *
- * @author Omar
- */
-    
 
 import exception.CreateException;
 import exception.DeleteException;
@@ -52,7 +37,7 @@ public interface PaqueteManager {
      * @param idPaquete the ID of the paquete to delete
      * @throws DeleteException if an error occurs during deletion
      */
-    void deletePackage(Integer idPaquete) throws DeleteException;
+    void deletePackages(Integer idPaquete) throws DeleteException;
     // multi delte ??
     // 
     // void deletePaquete(Integer idPaquete) throws DeleteException;
@@ -91,10 +76,5 @@ public interface PaqueteManager {
      * @throws SelectException if an error occurs during retrieval
      */
     List<Paquete> findAllPackagesByName(String senderOrReceiverName) throws SelectException;
-
-
-
 }
-    
-    
 

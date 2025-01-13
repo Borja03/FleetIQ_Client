@@ -30,7 +30,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
-import ui.paquete.PackageController;
+import ui.paquete.PaqueteController;
 import ui.profile.MainController;
 import ui.resetpassword.ResetPasswordController;
 import ui.signup.SignUpController;
@@ -309,7 +309,7 @@ private String loadThemePreference() {
         } catch (IOException ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
-              PackageController controller = loader.getController();
+              PaqueteController controller = loader.getController();
                 Stage newStage = new Stage();
                 controller.setStage(newStage);
                 controller.initStage(root,user);

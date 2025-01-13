@@ -8,7 +8,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
-import factories.PackageFactory;
+import factories.PaqueteFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,9 +39,9 @@ import javax.ws.rs.core.GenericType;
 import models.Paquete;
 import service.PackageRESTClient;
 
-public class PackageController {
+public class PaqueteController {
 
-    private static final Logger LOGGER = Logger.getLogger(PackageController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PaqueteController.class.getName());
 
     @FXML
     private JFXDatePicker fromDatePicker;
@@ -263,10 +263,10 @@ public class PackageController {
             fillTableFromDataBase();
         } else {
             try {
-                filteredPaqueteList = PackageFactory.getPackageInstance().findAllPackageBySize(selectedSize);
+                filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackageBySize(selectedSize);
                 paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
             } catch (SelectException ex) {
-                Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -284,7 +284,7 @@ public class PackageController {
     // fill test data from server 
     private void fillTableFromDataBase() {
         try {
-            List<Paquete> paqueteList = PackageFactory.getPackageInstance().findAllPackages();
+            List<Paquete> paqueteList = PaqueteFactory.getPackageInstance().findAllPackages();
             // Fetch data and populate the TableView
             paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
         } catch (Exception e) {
@@ -306,10 +306,10 @@ public class PackageController {
             return;
         }
         try {
-            filteredPaqueteList = PackageFactory.getPackageInstance().findAllPackagesByName(query);
+            filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByName(query);
             System.out.println(filteredPaqueteList.toString());
         } catch (SelectException ex) {
-            Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         ObservableList<Paquete> originalData = paqueteTableView.getItems();
@@ -362,9 +362,9 @@ public class PackageController {
     private void filterPackagesAfterDate(Date fromDate) {
         List<Paquete> paqueteList = null;
         try {
-            paqueteList = PackageFactory.getPackageInstance().findAllPackagesByDates(fromDate, null);
+            paqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByDates(fromDate, null);
         } catch (SelectException ex) {
-            Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
@@ -373,9 +373,9 @@ public class PackageController {
     private void filterPackagesBeforeDate(Date toDate) {
         List<Paquete> paqueteList = null;
         try {
-            paqueteList = PackageFactory.getPackageInstance().findAllPackagesByDates(null, toDate);
+            paqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByDates(null, toDate);
         } catch (SelectException ex) {
-            Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
         paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
     }
@@ -383,9 +383,9 @@ public class PackageController {
     private void filterPackagesBetweenDates(Date fromDate, Date toDate) {
         List<Paquete> paqueteList = null;
         try {
-            paqueteList = PackageFactory.getPackageInstance().findAllPackagesByDates(fromDate, toDate);
+            paqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByDates(fromDate, toDate);
         } catch (SelectException ex) {
-            Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));

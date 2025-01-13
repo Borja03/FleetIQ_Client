@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.paquete.PackageController">
+<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.paquete.PaqueteController">
     <top>
         <VBox>
             <fx:include source="../menu/menu.fxml" />
@@ -97,7 +97,7 @@
                 </TableColumn>
                 <TableColumn fx:id="dateColumn" prefWidth="160.0" text="Creation Date"> 
                     <cellValueFactory>           
-                         <PropertyValueFactory property="crDate" />
+                         <PropertyValueFactory property="creationDate" />
                     </cellValueFactory>
                 </TableColumn>
                 <TableColumn fx:id="fragileColumn" maxWidth="148.0" minWidth="148.0" prefWidth="148.0" text="Fragile">

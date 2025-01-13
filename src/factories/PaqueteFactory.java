@@ -5,19 +5,19 @@
  */
 package factories;
 
-import logicInterface.PackageManager;
 import logicimplementaion.PackageManagerImp;
+import logicInterface.PaqueteManager;
 
 
 /**
  *
  * @author Omar
  */
-public class PackageFactory {
+public class PaqueteFactory {
     // Rename the variable to avoid conflict with the Java keyword `package`
-    private static PackageManager packageManager;
+    private static PaqueteManager packageManager;
 
-    public static PackageManager getPackageInstance() {
+    public static PaqueteManager getPackageInstance() {
         if (packageManager == null) {
             packageManager = new PackageManagerImp();
         }
