@@ -1,14 +1,16 @@
 package ui.vehicle;
 
-import models.Vehiculo;
+import models.Vehicle;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import factories.VehicleFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -16,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -49,28 +52,28 @@ public class VehicleController {
     private JFXTextField searchTextField;
 
     @FXML
-    private TableView<Vehiculo> vehicleTableView;
+    private TableView<Vehicle> vehicleTableView;
 
     @FXML
-    private TableColumn<Vehiculo, Integer> idColumn;
+    private TableColumn<Vehicle, Integer> idColumn;
 
     @FXML
-    private TableColumn<Vehiculo, String> matriculaColumn;
+    private TableColumn<Vehicle, String> matriculaColumn;
 
     @FXML
-    private TableColumn<Vehiculo, String> modelColumn;
+    private TableColumn<Vehicle, String> modelColumn;
 
     @FXML
-    private TableColumn<Vehiculo, Double> capacityColumn;
+    private TableColumn<Vehicle, Double> capacityColumn;
 
     @FXML
-    private TableColumn<Vehiculo, LocalDate> registrationDateColumn;
+    private TableColumn<Vehicle, LocalDate> registrationDateColumn;
 
     @FXML
-    private TableColumn<Vehiculo, LocalDate> itvDateColumn;
+    private TableColumn<Vehicle, LocalDate> itvDateColumn;
 
     @FXML
-    private TableColumn<Vehiculo, Boolean> activeColumn;
+    private TableColumn<Vehicle, Boolean> activeColumn;
 
     @FXML
     private JFXButton addShipmentBtn;
@@ -143,7 +146,7 @@ public class VehicleController {
 
         filterTypeComboBox.getItems().setAll("ITV Date", "Registration Date");
         setUpTableColumns();
-        fillTableWithExampleData();
+        fillTableFromDataBase();
 
         stage.show();
     }
@@ -207,6 +210,20 @@ public class VehicleController {
         });
     }
 
+    private void fillTableFromDataBase() {
+        try {
+            List<Vehicle> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
+            // Fetch data and populate the TableView
+            vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+        } catch (Exception e) {
+            // Handle exceptions gracefully
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Data Fetching Failed");
+            alert.setContentText("Could not fetch data from the server. Please try again later.");
+        }
+    }
+
     /**
      * Configures the table columns.
      */
@@ -219,7 +236,7 @@ public class VehicleController {
         itvDateColumn.setCellValueFactory(new PropertyValueFactory<>("itvDate"));
         activeColumn.setCellValueFactory(new PropertyValueFactory<>("active"));
 
-        itvDateColumn.setCellFactory(column -> new TableCell<Vehiculo, LocalDate>() {
+        itvDateColumn.setCellFactory(column -> new TableCell<Vehicle, LocalDate>() {
             @Override
             protected void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
@@ -277,20 +294,6 @@ public class VehicleController {
     /**
      * Populates the table with example data.
      */
-    private void fillTableWithExampleData() {
-        ObservableList<Vehiculo> data = FXCollections.observableArrayList(new Vehiculo(1, "1234BCD", "Toyota Corolla", 5, LocalDate.now().minusYears(2), LocalDate.now().minusMonths(6), true),
-                new Vehiculo(2, "5678XRF", "Honda Civic", 5, LocalDate.now().minusYears(3), LocalDate.now().minusMonths(3), false),
-                new Vehiculo(3, "9101GQT", "Ford Focus", 4, LocalDate.now().minusYears(1), LocalDate.now().minusMonths(2), true),
-                new Vehiculo(4, "1122LPM", "Chevrolet Malibu", 5, LocalDate.now().minusYears(4), LocalDate.now().minusMonths(12), true),
-                new Vehiculo(5, "3344VHW", "Nissan Altima", 4, LocalDate.now().minusYears(2).minusMonths(6), LocalDate.now().minusMonths(1), false),
-                new Vehiculo(6, "5566JKT", "BMW 320i", 5, LocalDate.now().minusYears(1), LocalDate.now().minusMonths(3), true),
-                new Vehiculo(7, "7788MNL", "Audi A4", 5, LocalDate.now().minusYears(6), LocalDate.now().minusMonths(8), false),
-                new Vehiculo(8, "9900PRZ", "Mercedes-Benz C-Class", 5, LocalDate.now().minusYears(5), LocalDate.now().minusMonths(4), true)
-        );
-
-        vehicleTableView.setItems(data);
-    }
-
     @FXML
     private void onApplyFilter() {
         // Implement filter logic
@@ -309,7 +312,7 @@ public class VehicleController {
 
     @FXML
     private void onRemoveVehicle() {
-        Vehiculo selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
+        Vehicle selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
         if (selectedVehicle != null) {
             vehicleTableView.getItems().remove(selectedVehicle);
         }

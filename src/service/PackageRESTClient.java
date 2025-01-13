@@ -33,10 +33,8 @@ public class PackageRESTClient {
     private WebTarget webTarget;
     private Client client;
 
-    //RESTful.baseURI = "http://localhost:8080/FleetIQ_Server/webresources"
-    private static final String BASE_URI = ResourceBundle.getBundle("config/config")
-                    .getString("RESTful.baseURI");
-    
+    private static final String BASE_URI = "http://localhost:8080/FleeIQServer/webresources";
+
     public PackageRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("package");
@@ -48,37 +46,37 @@ public class PackageRESTClient {
 
         resource = resource.path(java.text.MessageFormat.format("name/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .get(responseType);
+                .get(responseType);
     }
 
     public List<Paquete> findPackagesBySize(GenericType<List<Paquete>> responseType, String size) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("size/{0}", new Object[]{size}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .get(responseType);
+                .get(responseType);
     }
 
     public Paquete createPackage(Object requestEntity, GenericType<Paquete> responseType) throws WebApplicationException {
         return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
     public Paquete updatePackage(Object requestEntity, GenericType<Paquete> responseType, String id) throws WebApplicationException {
         return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                        .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
     public List<Paquete> findAllPackages(GenericType<List<Paquete>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .get(responseType);
+                .get(responseType);
     }
 
     public void deletePackage(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
-                        .request()
-                        .delete();
+                .request()
+                .delete();
     }
 
     public List<Paquete> findPackagesByDates(GenericType<List<Paquete>> responseType, String endDate, String startDate) throws WebApplicationException {

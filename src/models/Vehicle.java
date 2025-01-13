@@ -10,6 +10,7 @@ package models;
  * @author 2dam
  */
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * Represents a vehicle with attributes such as ID, license plate, model,
@@ -21,11 +22,11 @@ public class Vehicle {
     private String licensePlate;
     private String model;
     private int capacity;
-    private LocalDate registrationDate;
-    private LocalDate itvDate;
+    private Date registrationDate;
+    private Date itvDate;
     private boolean active;
 
-    public Vehicle(int id, String licensePlate, String model, int capacity, LocalDate registrationDate, LocalDate itvDate, boolean active) {
+    public Vehicle(int id, String licensePlate, String model, int capacity, Date registrationDate, Date itvDate, boolean active) {
         this.id = id;
         this.licensePlate = licensePlate;
         this.model = model;
@@ -115,7 +116,7 @@ public class Vehicle {
      *
      * @return the registration date of the vehicle.
      */
-    public LocalDate getRegistrationDate() {
+    public Date getRegistrationDate() {
         return registrationDate;
     }
 
@@ -124,7 +125,7 @@ public class Vehicle {
      *
      * @param registrationDate the registration date to set.
      */
-    public void setRegistrationDate(LocalDate registrationDate) {
+    public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
     }
 
@@ -133,7 +134,7 @@ public class Vehicle {
      *
      * @return the ITV date of the vehicle.
      */
-    public LocalDate getItvDate() {
+    public Date getItvDate() {
         return itvDate;
     }
 
@@ -142,7 +143,7 @@ public class Vehicle {
      *
      * @param itvDate the ITV date to set.
      */
-    public void setItvDate(LocalDate itvDate) {
+    public void setItvDate(Date itvDate) {
         this.itvDate = itvDate;
     }
 
