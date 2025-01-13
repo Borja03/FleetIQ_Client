@@ -37,7 +37,7 @@ public class PackageRESTClient implements AutoCloseable {
 
     private final Client client;
     private final WebTarget webTarget;
-    private static final String BASE_URI = "http://localhost:8080/FleetIQ_Server/webresources";
+    private static final String BASE_URI = "http://localhost:8080/FleeIQServer/webresources";
     private static final Logger LOGGER = Logger.getLogger(PackageRESTClient.class.getName());
 
     public PackageRESTClient() {
