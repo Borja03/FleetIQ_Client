@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.ruta.RutaController">
+<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.envio.EnvioController">
     <top>
         <VBox>
             <fx:include source="../menu/menu.fxml" />

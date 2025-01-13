@@ -1,35 +1,59 @@
 package models;
 
+import models.*;
+import models.Estado;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class Envio {
+/**
+ * Entidad JPA que representa un Envío.
+ */
+@XmlRootElement
+public class Envio implements Serializable {
 
     private Integer id;
+
     private Date fechaEnvio;
+
     private Date fechaEntrega;
-    private String estado;
+
+    private Estado estado;
+
     private Integer numPaquetes;
+
     private String creadorEnvio;
+
     private String ruta;
+
     private String vehiculo;
 
-    // Constructor por defecto
-    public Envio() {
+    private EnvioRutaVehiculo envioRutaVehiculo;
+
+    private List<User> userList;
+
+    private List<Paquete> packageList;
+
+    // Métodos de acceso (getters y setters) de los campos transitorios
+
+    public void setPackageList(List<Paquete> packageList) {
+        this.packageList = packageList;
     }
 
-    // Constructor con parámetros
-    public Envio(Integer id, Date fechaEnvio, Date fechaEntrega, String estado, Integer numPaquetes, String creadorEnvio, String ruta, String vehiculo) {
-        this.id = id;
-        this.fechaEnvio = fechaEnvio;
-        this.fechaEntrega = fechaEntrega;
-        this.estado = estado;
-        this.numPaquetes = numPaquetes;
-        this.creadorEnvio = creadorEnvio;
-        this.ruta = ruta;
-        this.vehiculo = vehiculo;
+    public EnvioRutaVehiculo getEnvioRutaVehiculo() {
+        return envioRutaVehiculo;
     }
 
-    // Getters y Setters
+    public void setEnvioRutaVehiculo(EnvioRutaVehiculo envioRutaVehiculo) {
+        this.envioRutaVehiculo = envioRutaVehiculo;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
+
+    // Getters y Setters de otros campos
 
     public Integer getId() {
         return id;
@@ -55,11 +79,11 @@ public class Envio {
         this.fechaEntrega = fechaEntrega;
     }
 
-    public String getEstado() {
+    public Estado getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(Estado estado) {
         this.estado = estado;
     }
 
@@ -97,15 +121,6 @@ public class Envio {
 
     @Override
     public String toString() {
-        return "Envio{" +
-                "id=" + id +
-                ", fechaEnvio=" + fechaEnvio +
-                ", fechaEntrega=" + fechaEntrega +
-                ", estado='" + estado + '\'' +
-                ", numPaquetes=" + numPaquetes +
-                ", creadorEnvio='" + creadorEnvio + '\'' +
-                ", ruta='" + ruta + '\'' +
-                ", vehiculo='" + vehiculo + '\'' +
-                '}';
+        return "Envio{" + "id=" + id + ", fechaEnvio=" + fechaEnvio + ", fechaEntrega=" + fechaEntrega + ", estado=" + estado + ", numPaquetes=" + numPaquetes + ", creadorEnvio=" + creadorEnvio + ", ruta=" + ruta + ", vehiculo=" + vehiculo + '}';
     }
 }

@@ -1,138 +1,174 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package service;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
+import logicInterface.EnvioManager;
 import models.Envio;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.Marshaller;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Cliente REST para interactuar con el servicio Envio utilizando XML.
+ * Jersey REST client generated for REST resource:EnvioFacadeREST [envio]<br>
+ * USAGE:
+ * <pre>
+        EnvioRESTClient client = new EnvioRESTClient();
+        Object response = client.XXX(...);
+        // do whatever with response
+        client.close();
+ </pre>
+ *
+ * @author Alder
  */
-public class EnvioRESTClient {
+public class EnvioRESTClient implements EnvioManager{
 
-    private static final String BASE_URL = "http://localhost:8080/FleetIQ_Server/rest/envio";
+    private WebTarget webTarget;
+    private Client client;
+    private static final String BASE_URI = "http://localhost:8080/Server/webresources";
 
-    public List<Envio> selectAll() throws IOException, JAXBException {
-        URL url = new URL(BASE_URL);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/xml");
+    public EnvioRESTClient() {
+        client = javax.ws.rs.client.ClientBuilder.newClient();
+        webTarget = client.target(BASE_URI).path("envio");
+    }
 
-        if (connection.getResponseCode() != 200) {
-            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+    @Override
+    public <T> T filterNumPaquetes_XML(Class<T> responseType, Integer numPaquetes) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (numPaquetes != null) {
+            resource = resource.queryParam("numPaquetes", numPaquetes);
         }
-
-        InputStream xmlResponse = connection.getInputStream();
-        JAXBContext jaxbContext = JAXBContext.newInstance(EnvioListWrapper.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-        EnvioListWrapper wrapper = (EnvioListWrapper) unmarshaller.unmarshal(xmlResponse);
-        connection.disconnect();
-        return wrapper.getEnvios();
+        resource = resource.path("filterNumPaquetes");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public Envio getEnvioById(int id) throws IOException, JAXBException {
-        URL url = new URL(BASE_URL + "/" + id);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Accept", "application/xml");
-
-        if (connection.getResponseCode() != 200) {
-            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+    @Override
+    public <T> T filterNumPaquetes_JSON(Class<T> responseType, Integer numPaquetes) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (numPaquetes != null) {
+            resource = resource.queryParam("numPaquetes", numPaquetes);
         }
-
-        InputStream xmlResponse = connection.getInputStream();
-        JAXBContext jaxbContext = JAXBContext.newInstance(Envio.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-        Envio envio = (Envio) unmarshaller.unmarshal(xmlResponse);
-        connection.disconnect();
-        return envio;
+        resource = resource.path("filterNumPaquetes");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void addEnvio(Envio envio) throws IOException, JAXBException {
-        URL url = new URL(BASE_URL);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/xml");
+    public String countREST() throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path("count");
+        return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
+    }
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(Envio.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.marshal(envio, connection.getOutputStream());
+    @Override
+    public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),Envio.class);
+    }
 
-        if (connection.getResponseCode() != 201) {
-            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+    @Override
+    public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON),Envio.class);
+    }
+
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
+    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public <T> T findRange_JSON(Class<T> responseType, String from, String to) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
+    @Override
+    public <T> T filterEstado_XML(Class<T> responseType, String estado) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (estado != null) {
+            resource = resource.queryParam("estado", estado);
         }
-        connection.disconnect();
+        resource = resource.path("filterEstado");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
-    public void updateEnvio(int id, Envio envio) throws IOException, JAXBException {
-        URL url = new URL(BASE_URL + "/" + id);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("PUT");
-        connection.setRequestProperty("Content-Type", "application/xml");
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(Envio.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.marshal(envio, connection.getOutputStream());
-
-        if (connection.getResponseCode() != 200) {
-            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+    
+    @Override
+    public <T> T filterEstado_JSON(Class<T> responseType, String estado) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (estado != null) {
+            resource = resource.queryParam("estado", estado);
         }
-        connection.disconnect();
+        resource = resource.path("filterEstado");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void deleteEnvio(int id) throws IOException {
-        URL url = new URL(BASE_URL + "/" + id);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("DELETE");
+    @Override
+    public void create_XML(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),Envio.class);
+    }
 
-        if (connection.getResponseCode() != 200) {
-            throw new RuntimeException("Failed : HTTP error code : " + connection.getResponseCode());
+    @Override
+    public void create_JSON(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Envio.class);
+    }
+
+    @Override
+    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    @Override
+    public <T> T findAll_JSON(Class<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
+    @Override
+    public <T> T filterByDates_XML(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (firstDate != null) {
+            resource = resource.queryParam("firstDate", firstDate);
         }
-        connection.disconnect();
-    }
-
-    // Wrapper para manejar listas de envíos en XML
-    public static class EnvioListWrapper {
-
-        private List<Envio> envios;
-
-        public List<Envio> getEnvios() {
-            return envios;
+        if (secondDate != null) {
+            resource = resource.queryParam("secondDate", secondDate);
         }
+        resource = resource.path("filterByDates");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
 
-        public void setEnvios(List<Envio> envios) {
-            this.envios = envios;
+    @Override
+    public <T> T filterByDates_JSON(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (firstDate != null) {
+            resource = resource.queryParam("firstDate", firstDate);
         }
+        if (secondDate != null) {
+            resource = resource.queryParam("secondDate", secondDate);
+        }
+        resource = resource.path("filterByDates");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    // Filtrar por fecha
-    public List<Envio> filterByDates(List<Envio> envios, String startDate, String endDate) {
-        return envios.stream()
-            .filter((Envio envio) -> envio.getFechaEnvio().toString().compareTo(startDate) >= 0 && envio.getFechaEntrega().toString().compareTo(endDate) <= 0)
-            .collect(Collectors.toList());
+    @Override
+    public void remove(Integer id) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Envio.class);
     }
 
-    // Filtrar por estado
-    public List<Envio> filterEstado(List<Envio> envios, String estado) {
-        return envios.stream()
-            .filter(envio -> envio.getEstado().equals(estado))
-            .collect(Collectors.toList());
+    public void close() {
+        client.close();
     }
-
-    // Filtrar por número de paquetes
-    public List<Envio> filterNumPaquetes(List<Envio> envios, int numPaquetes) {
-        return envios.stream()
-            .filter(envio -> envio.getNumPaquetes() == numPaquetes)
-            .collect(Collectors.toList());
-    }
+    
 }

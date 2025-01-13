@@ -8,10 +8,11 @@ package models;
 /**
  *
  * @author Alder
+ * Enumeración que representa los estados de un envío.
  */
 public enum Estado {
     PREPARACION,
     EN_REPARTO,
     ENTREGADO
-    
 }
+

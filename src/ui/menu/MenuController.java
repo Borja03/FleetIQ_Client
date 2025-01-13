@@ -110,8 +110,8 @@ public class MenuController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/envio/envio.fxml"));
             Parent root = loader.load();
             EnvioController controller = loader.getController();
-            Stage loginStage = new Stage();
-            controller.setStage(loginStage);
+            Stage stage = new Stage();
+            controller.setStage(stage);
             controller.initialize(root);
             LOGGER.info("Envio window opened");
             // Close the current stage (the one with the menu)
