@@ -4,7 +4,11 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import exception.SelectException;
+import factories.RutaManagerFactory;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,11 +16,15 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 import logicInterface.RutaManager;
 import models.Ruta;
+import service.RutaRESTClient;
 
 public class RutaController {
 
@@ -81,9 +89,9 @@ public class RutaController {
 
     @FXML
     private JFXButton printReportBtn;
-    
+
     private RutaManager rutaManager;
-    
+
     private ObservableList<Ruta> rutaData;
 
     public Stage getStage() {
@@ -97,9 +105,42 @@ public class RutaController {
     private Stage stage;
 
     @FXML
-    public void initialize(Parent root) {
-        Scene scene = new Scene(root);
+    private TableView<Ruta> rutaTable;
 
+   private void loadRutaData() throws SelectException {
+    try {
+        // Get all routes using the RutaRESTClient
+        RutaRESTClient rutaRESTClient = new RutaRESTClient();
+        
+        // Get the list of routes (assuming Ruta is a model class that corresponds to the data returned by the API)
+        List<Ruta> rutas = rutaRESTClient.findAll_XML(new GenericType<List<Ruta>>() {});
+        
+        // Convert the list of routes into an ObservableList for the TableView
+        rutaData = FXCollections.observableArrayList(rutas);
+
+        // Bind the columns to the appropriate properties in the Ruta class
+        localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
+        origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
+        destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
+        distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
+        tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("fecha"));
+        numVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+
+        // Set the items for the TableView to display the routes
+        rutaTable.setItems(rutaData);
+    } catch (WebApplicationException e) {
+        logger.log(Level.SEVERE, "Error loading ruta data", e);
+    }
+}
+
+    @FXML
+    public void initialize(Parent root) {
+        // Asegúrate de que rutaManager esté inicializado
+        rutaManager = RutaManagerFactory.getRutaManager();  // O el método adecuado para obtener el manager
+
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Ruta");
         stage.setResizable(false);
@@ -120,23 +161,18 @@ public class RutaController {
         // Configurar acción del botón "Search"
         searchButton.setOnAction(event -> searchByLocalidazor());
 
-        // Configurar acción de los botones de paquetes
+     
         addShipmentBtn.setOnAction(event -> addShipment());
         removeShipmentBtn.setOnAction(event -> removeShipment());
         printReportBtn.setOnAction(event -> printReport());
 
-        localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
-        origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
-        destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
-        distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
-        tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-        numVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-        
-        cargarTabla();
-        
-   
+        try {
+            // Llamar al método para cargar las rutas
+            loadRutaData();
+        } catch (SelectException ex) {
+            Logger.getLogger(RutaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         stage.show();
     }
 
@@ -150,17 +186,6 @@ public class RutaController {
             sizeFilterComboBox1.setPromptText("Unit");
         }
     }
-    
-     private void cargarTabla() {
-    try {
-        // Obtener los datos desde el gestor (RutaManager)
-        rutaData = FXCollections.observableArrayList(rutaManager.selectAll());
-        logger.info("Datos cargados exitosamente en la tabla.");
-    } catch (Exception e) {
-        logger.severe("Error al cargar los datos en la tabla: " + e.getMessage());
-        e.printStackTrace();
-    }
-}
 
     private void applyDateFilter() {
         // Lógica para aplicar el filtro de fecha

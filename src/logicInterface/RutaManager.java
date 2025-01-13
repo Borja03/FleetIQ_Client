@@ -1,90 +1,62 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package logicInterface;
 
-
-import exception.CreateException;
-import exception.DeleteException;
-import exception.SelectException;
-import exception.UpdateException;
-import java.util.ArrayList;
-import java.util.Date;
-import models.FilterTypeRuta;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
+import java.util.List;
 import models.Ruta;
 
-/**
- * Interfaz que define las operaciones CRUD y de filtrado para gestionar las rutas en el sistema.
- * Proporciona métodos para añadir, actualizar, eliminar, seleccionar todas las rutas 
- * y realizar filtros específicos basados en fechas, tiempo y distancia.
- * 
- * @author Borja
- */
 public interface RutaManager {
 
-    /**
-     * Añade una nueva ruta al sistema.
-     *
-     * @throws createException si ocurre un error al crear la ruta.
-     */
-    public void addRuta() throws CreateException;
+    public <T> T filterDistanciaMenor_XML(Class<T> responseType, String distancia) throws WebApplicationException;
 
-    /**
-     * Actualiza una ruta existente en el sistema.
-     *
-     * @param ruta el objeto {@link Ruta} que contiene los datos actualizados de la ruta.
-     * @return el objeto {@link Ruta} actualizado.
-     * @throws updateException si ocurre un error durante la actualización de la ruta.
-     */
-    public Ruta updateRuta(Ruta ruta) throws UpdateException;
+    public <T> T filterDistanciaMenor_JSON(Class<T> responseType, String distancia) throws WebApplicationException;
 
-    /**
-     * Elimina una ruta del sistema utilizando su identificador único.
-     *
-     * @param idRuta el identificador único de la ruta a eliminar.
-     * @return el objeto {@link Ruta} eliminado.
-     * @throws deleteException si ocurre un error durante la eliminación de la ruta.
-     */
-    public Ruta deleteRuta(Integer idRuta) throws DeleteException;
+    public <T> T filterDistanciaIgual_XML(Class<T> responseType, String distancia) throws WebApplicationException;
 
-    /**
-     * Selecciona y devuelve todas las rutas almacenadas en el sistema.
-     *
-     * @return una lista de objetos {@link Ruta} que representan todas las rutas disponibles.
-     * @throws selectException si ocurre un error al seleccionar las rutas.
-     */
-    public ArrayList<Ruta> selectAll() throws SelectException;
+    public <T> T filterDistanciaIgual_JSON(Class<T> responseType, String distancia) throws WebApplicationException;
 
-    /**
-     * Filtra las rutas basándose en un rango de fechas.
-     *
-     * @param firstDate la fecha inicial del rango.
-     * @param secondDate la fecha final del rango.
-     * @return una lista de objetos {@link Ruta} que se encuentran dentro del rango de fechas especificado.
-     * @throws selectException si ocurre un error durante el filtrado de rutas por fechas.
-     */
-    public ArrayList<Ruta> filterByDates(Date firstDate, Date secondDate) throws SelectException;
+    public void edit_XML(Object requestEntity, String id) throws WebApplicationException;
 
-    /**
-     * Filtra las rutas basándose en el tiempo y un tipo de filtro específico.
-     *
-     * @param filterType el tipo de filtro definido por {@link FilterTypeRuta}.
-     * @param tiempo el tiempo en minutos para realizar el filtrado.
-     * @return una lista de objetos {@link Ruta} que cumplen con los criterios de tiempo y tipo de filtro.
-     * @throws selectException si ocurre un error durante el filtrado de rutas por tiempo.
-     */
-    public ArrayList<Ruta> filterTiempo(FilterTypeRuta filterType, Integer tiempo) throws SelectException;
+    public void edit_JSON(Object requestEntity, String id) throws WebApplicationException;
 
-    /**
-     * Filtra las rutas basándose en la distancia y un tipo de filtro específico.
-     *
-     * @param filterType el tipo de filtro definido por {@link FilterTypeRuta}.
-     * @param distancia la distancia en kilómetros para realizar el filtrado.
-     * @return una lista de objetos {@link Ruta} que cumplen con los criterios de distancia y tipo de filtro.
-     * @throws selectException si ocurre un error durante el filtrado de rutas por distancia.
-     */
-    public ArrayList<Ruta> filterDistancia(FilterTypeRuta filterType, Integer distancia) throws SelectException;
+    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException;
+
+    public <T> T findRange_JSON(Class<T> responseType, String from, String to) throws WebApplicationException;
+
+    public <T> T filterTiempoMayor_XML(Class<T> responseType, String tiempo) throws WebApplicationException;
+
+    public <T> T filterTiempoMayor_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
+
+    public <T> T filterTiempoIgual_XML(Class<T> responseType, String tiempo) throws WebApplicationException;
+
+    public <T> T filterTiempoIgual_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
+
+    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException;
+
+    public <T> T findAll_JSON(Class<T> responseType) throws WebApplicationException;
+
+    public void remove(String id) throws WebApplicationException;
+
+    public <T> T filterDistanciaMayor_XML(Class<T> responseType, String distancia) throws WebApplicationException;
+
+    public <T> T filterDistanciaMayor_JSON(Class<T> responseType, String distancia) throws WebApplicationException;
+
+    public String countREST() throws WebApplicationException;
+
+    public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException;
+
+    public void create_XML(Object requestEntity) throws WebApplicationException;
+
+    public void create_JSON(Object requestEntity) throws WebApplicationException;
+
+    public <T> T filterBy2Dates_XML(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
+
+    public <T> T filterBy2Dates_JSON(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
+
+    public <T> T filterTiempoMenor_XML(Class<T> responseType, String tiempo) throws WebApplicationException;
+
+    public <T> T filterTiempoMenor_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
+
+    public void close();
 
 }
