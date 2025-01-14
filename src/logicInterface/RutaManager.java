@@ -7,11 +7,11 @@ import models.Ruta;
 
 public interface RutaManager {
 
-    public <T> T filterDistanciaMenor_XML(Class<T> responseType, String distancia) throws WebApplicationException;
+    public <T> T filterDistanciaMenor_XML(GenericType<T> responseType, String distancia) throws WebApplicationException;
 
     public <T> T filterDistanciaMenor_JSON(Class<T> responseType, String distancia) throws WebApplicationException;
 
-    public <T> T filterDistanciaIgual_XML(Class<T> responseType, String distancia) throws WebApplicationException;
+    public <T> T filterDistanciaIgual_XML(GenericType<T> responseType, String distancia) throws WebApplicationException;
 
     public <T> T filterDistanciaIgual_JSON(Class<T> responseType, String distancia) throws WebApplicationException;
 
@@ -23,11 +23,11 @@ public interface RutaManager {
 
     public <T> T findRange_JSON(Class<T> responseType, String from, String to) throws WebApplicationException;
 
-    public <T> T filterTiempoMayor_XML(Class<T> responseType, String tiempo) throws WebApplicationException;
+    public <T> T filterTiempoMayor_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException;
 
     public <T> T filterTiempoMayor_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
 
-    public <T> T filterTiempoIgual_XML(Class<T> responseType, String tiempo) throws WebApplicationException;
+    public <T> T filterTiempoIgual_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException;
 
     public <T> T filterTiempoIgual_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
 
@@ -37,7 +37,7 @@ public interface RutaManager {
 
     public void remove(String id) throws WebApplicationException;
 
-    public <T> T filterDistanciaMayor_XML(Class<T> responseType, String distancia) throws WebApplicationException;
+    public <T> T filterDistanciaMayor_XML(GenericType<T> responseType, String distancia) throws WebApplicationException;
 
     public <T> T filterDistanciaMayor_JSON(Class<T> responseType, String distancia) throws WebApplicationException;
 
@@ -53,10 +53,13 @@ public interface RutaManager {
 
     public <T> T filterBy2Dates_JSON(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
 
-    public <T> T filterTiempoMenor_XML(Class<T> responseType, String tiempo) throws WebApplicationException;
+    public <T> T filterTiempoMenor_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException;
 
     public <T> T filterTiempoMenor_JSON(Class<T> responseType, String tiempo) throws WebApplicationException;
 
-    public void close();
+    public <T> T findByLocalizadorInteger_XML(Class<T> responseType, Integer localizador) throws WebApplicationException;
 
+    public <T> T findByLocalizadorInteger_JSON(Class<T> responseType, Integer localizador) throws WebApplicationException;
+
+    public void close();
 }

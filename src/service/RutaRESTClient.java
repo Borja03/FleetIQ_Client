@@ -37,7 +37,7 @@ public class RutaRESTClient implements RutaManager {
         webTarget = client.target(BASE_URI).path("ruta");
     }
 
-    public <T> T filterDistanciaMenor_XML(Class<T> responseType, String distancia) throws WebApplicationException {
+    public <T> T filterDistanciaMenor_XML(GenericType<T> responseType, String distancia) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterDistanciaMenor/{0}", new Object[]{distancia}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -49,7 +49,7 @@ public class RutaRESTClient implements RutaManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T filterDistanciaIgual_XML(Class<T> responseType, String distancia) throws WebApplicationException {
+    public <T> T filterDistanciaIgual_XML(GenericType<T> responseType, String distancia) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterDistanciaIgual/{0}", new Object[]{distancia}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -81,7 +81,7 @@ public class RutaRESTClient implements RutaManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T filterTiempoMayor_XML(Class<T> responseType, String tiempo) throws WebApplicationException {
+    public <T> T filterTiempoMayor_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterTiempoMayor/{0}", new Object[]{tiempo}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -93,7 +93,7 @@ public class RutaRESTClient implements RutaManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T filterTiempoIgual_XML(Class<T> responseType, String tiempo) throws WebApplicationException {
+    public <T> T filterTiempoIgual_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterTiempoIgual/{0}", new Object[]{tiempo}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -119,7 +119,7 @@ public class RutaRESTClient implements RutaManager {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
-    public <T> T filterDistanciaMayor_XML(Class<T> responseType, String distancia) throws WebApplicationException {
+    public <T> T filterDistanciaMayor_XML(GenericType<T> responseType, String distancia) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterDistanciaMayor/{0}", new Object[]{distancia}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -163,7 +163,7 @@ public class RutaRESTClient implements RutaManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T filterTiempoMenor_XML(Class<T> responseType, String tiempo) throws WebApplicationException {
+    public <T> T filterTiempoMenor_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterTiempoMenor/{0}", new Object[]{tiempo}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -175,9 +175,19 @@ public class RutaRESTClient implements RutaManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+    public <T> T findByLocalizadorInteger_XML(Class<T> responseType, Integer localizador) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("findByLocalizadorInteger/{0}", new Object[]{localizador}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public <T> T findByLocalizadorInteger_JSON(Class<T> responseType, Integer localizador) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("findByLocalizadorInteger/{0}", new Object[]{localizador}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
     public void close() {
         client.close();
     }
-
- 
 }
