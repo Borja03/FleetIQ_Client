@@ -108,8 +108,9 @@ public class RutaController {
     private void loadRutaData() throws SelectException {
         try {
             // Llamar al servicio REST para obtener las rutas en formato XML
-            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {});
-            
+            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
+            });
+
             // Convertir la lista de rutas en un ObservableList para el TableView
             rutaData = FXCollections.observableArrayList(rutas);
 
@@ -189,8 +190,13 @@ public class RutaController {
         String filterValue = filterValueField.getText().trim();
 
         if (filterValue.isEmpty()) {
-            logger.warning("Filter value cannot be empty.");
-            return;
+            try {
+                loadRutaData();  // Llamar al método que carga todas las rutas
+                logger.info("Recargando todas las rutas.");
+            } catch (SelectException e) {
+                logger.log(Level.SEVERE, "Error al recargar las rutas", e);
+            }
+            return;  // Terminar el método para evitar buscar por localizador
         }
 
         // Apply filter based on selected type (Time or Distance)
@@ -211,15 +217,18 @@ public class RutaController {
         switch (comparisonOperator) {
             case ">":
                 rutaData.clear();
-                rutaData.addAll(rutaManager.filterTiempoMayor_XML(new GenericType<List<Ruta>>() {}, filterValue));
+                rutaData.addAll(rutaManager.filterTiempoMayor_XML(new GenericType<List<Ruta>>() {
+                }, filterValue));
                 break;
             case "<":
                 rutaData.clear();
-                rutaData.addAll(rutaManager.filterTiempoMenor_XML(new GenericType<List<Ruta>>() {}, filterValue));
+                rutaData.addAll(rutaManager.filterTiempoMenor_XML(new GenericType<List<Ruta>>() {
+                }, filterValue));
                 break;
             case "=":
                 rutaData.clear();
-                rutaData.addAll(rutaManager.filterTiempoIgual_XML(new GenericType<List<Ruta>>() {}, filterValue));
+                rutaData.addAll(rutaManager.filterTiempoIgual_XML(new GenericType<List<Ruta>>() {
+                }, filterValue));
                 break;
             default:
                 logger.warning("Invalid comparison operator for Time filter.");
@@ -232,15 +241,18 @@ public class RutaController {
         switch (comparisonOperator) {
             case ">":
                 rutaData.clear();
-                rutaData.addAll(rutaManager.filterDistanciaMayor_XML(new GenericType<List<Ruta>>() {}, filterValue));
+                rutaData.addAll(rutaManager.filterDistanciaMayor_XML(new GenericType<List<Ruta>>() {
+                }, filterValue));
                 break;
             case "<":
                 rutaData.clear();
-                rutaData.addAll(rutaManager.filterDistanciaMenor_XML(new GenericType<List<Ruta>>() {}, filterValue));
+                rutaData.addAll(rutaManager.filterDistanciaMenor_XML(new GenericType<List<Ruta>>() {
+                }, filterValue));
                 break;
             case "=":
                 rutaData.clear();
-                rutaData.addAll(rutaManager.filterDistanciaIgual_XML(new GenericType<List<Ruta>>() {}, filterValue));
+                rutaData.addAll(rutaManager.filterDistanciaIgual_XML(new GenericType<List<Ruta>>() {
+                }, filterValue));
                 break;
             default:
                 logger.warning("Invalid comparison operator for Distance filter.");
