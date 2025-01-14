@@ -123,7 +123,7 @@
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../image/package-add-icon.png" />
+                            <Image url="@../../image/package-add-icon%20-%20Copy%20-%20Copy.png" />
                         </image>
                     </ImageView>
                 </graphic>

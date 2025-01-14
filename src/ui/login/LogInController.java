@@ -1,6 +1,8 @@
 package ui.login;
 
 import exception.InvalidEmailFormatException;
+import exception.SelectException;
+import factories.SignableFactory;
 import models.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -92,7 +94,7 @@ public class LogInController {
 
     @FXML
     private BorderPane borderPane;
-  @FXML
+    @FXML
     private Hyperlink forgotPasswordHlink;
     private ContextMenu contextMenu;
 
@@ -213,16 +215,17 @@ public class LogInController {
      *
      * @return the saved theme preference, or "light" if no preference is found
      */
-private String loadThemePreference() {
-    try {
-        ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
-        return bundle.getString("theme");
-    } catch (Exception e) {
-        // Log an error message if loading the theme preference fails
+    private String loadThemePreference() {
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
+            return bundle.getString("theme");
+        } catch (Exception e) {
+            // Log an error message if loading the theme preference fails
+        }
+
+        return "light";
     }
 
-    return "light";
-}
     /**
      * Cambia el tema de la interfaz y guarda la preferencia.
      *
@@ -285,39 +288,36 @@ private String loadThemePreference() {
      */
     @FXML
     private void handleLogInButtonAction() {
-       // try {
-            //utils.validateEmail(emailTextField.getText());
+        // try {
+        //utils.validateEmail(emailTextField.getText());
 
-            String email = emailTextField.getText();
-            String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
+        String email = emailTextField.getText();
+        String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
-            User user = new User();
-            user.setEmail(email);
-            user.setPassword(password);
-            //User loggedInUser = null;
-            // User loggedInUser = SignableFactory.getSignable().signIn(user);
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
 
-           // if (loggedInUser != null) {
-           // System.out.println("Here!!!!!!!!!!!!!!!!");
-            //    navigateToScreen("/ui/paquete/paquete.fxml", "Paquete", true, user);
-           // }
-         System.out.println("Loading main application...");
-         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
-            Parent root=null;
+        User loggedInUser;
         try {
-            root = loader.load();
-        } catch (IOException ex) {
+            loggedInUser = SignableFactory.getSignable().signin(user, User.class);           
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException ex) {
+                Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            PaqueteController controller = loader.getController();
+            Stage newStage = new Stage();
+            controller.setStage(newStage);
+            controller.initStage(root, user);
+            stage.close();
+
+        } catch (SelectException ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
-              PaqueteController controller = loader.getController();
-                Stage newStage = new Stage();
-                controller.setStage(newStage);
-                controller.initStage(root,user);
-                stage.close();
-    
-           
-           
-           
+
 //        } catch (InvalidEmailFormatException e) {
 //            utils.showAlert("Formato de email inválido", e.getMessage());
 //            logger.severe("Error inesperado");
@@ -337,17 +337,17 @@ private String loadThemePreference() {
         navigateToScreen("/ui/signup/SignUpView.fxml", "SignUp", false, null);
     }
 
-    
     @FXML
     private void handleForgotPasswordLinkAction() throws IOException {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/resetpassword/resetpassword.fxml"));
-            Parent root = loader.load();
-                 ResetPasswordController controller = loader.getController();
-                Stage newStage = new Stage();
-                controller.setStage(newStage);
-                controller.initStage(root);
-         
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/resetpassword/resetpassword.fxml"));
+        Parent root = loader.load();
+        ResetPasswordController controller = loader.getController();
+        Stage newStage = new Stage();
+        controller.setStage(newStage);
+        controller.initStage(root);
+
     }
+
     /**
      * Maneja la acción de cambiar la visibilidad de la contraseña. Alterna
      * entre mostrar y ocultar la contraseña en el campo correspondiente.
@@ -389,10 +389,10 @@ private String loadThemePreference() {
                 controller.initStage(root);
                 stage.close();
             } else {
-                  MainController controller = loader.getController();
-                  Stage newStage = new Stage();
+                MainController controller = loader.getController();
+                Stage newStage = new Stage();
                 controller.setStage(newStage);
-                 controller.initStage(root, user);
+                controller.initStage(root, user);
                 stage.close();
             }
 

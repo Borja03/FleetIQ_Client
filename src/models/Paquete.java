@@ -31,18 +31,16 @@ public class Paquete  implements Serializable {
     }
 
     
-    
-    
-//    public Paquete(Integer id, String sender, String receiver, double weight, 
-//                   PackageSize size, Date creationDate, boolean fragile) {
-//        this.id = id;
-//        this.sender = sender;
-//        this.receiver = receiver;
-//        this.weight = weight;
-//        this.size = size;
-//        this.creationDate = creationDate;
-//        this.fragile = fragile;
-//    }
+    public Paquete(Integer id, String sender, String receiver, double weight, 
+                   PackageSize size, Date creationDate, boolean fragile) {
+        this.id = id;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.weight = weight;
+        this.size = size;
+        this.creationDate = creationDate;
+        this.fragile = fragile;
+    }
 
     
     

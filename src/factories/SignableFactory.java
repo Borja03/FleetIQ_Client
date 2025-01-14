@@ -1,6 +1,7 @@
 package factories;
 
 import logicInterface.Signable;
+import logicimplementaion.UserManagerImp;
 
 
 
@@ -28,7 +29,7 @@ public class SignableFactory {
     /**
      * Instancia única de un objeto {@link Signable}.
      */
-    private static Signable signable = null;
+    private static UserManagerImp signable;
 
     /**
      * Método que retorna una instancia única de {@link Signable}, creando una
@@ -37,10 +38,10 @@ public class SignableFactory {
      * @return Una instancia de un objeto {@link Signable}.
      * @author Alder
      */
-    public static Signable getSignable(){
+    public static UserManagerImp getSignable(){
         if (signable == null)
-           // signable = new SignerClient();
-        return signable;
-        return null;
+            signable = new UserManagerImp();
+        return  signable;
+     
     }
 }

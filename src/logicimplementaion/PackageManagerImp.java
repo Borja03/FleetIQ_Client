@@ -27,8 +27,6 @@ public class PackageManagerImp implements PaqueteManager {
 
     public PackageManagerImp() {
         this.webClient = new PackageRESTClient();
-        System.out.println("*****************************************");
-        System.out.println(webClient.toString());
     }
 
     @Override

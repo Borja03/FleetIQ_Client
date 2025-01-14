@@ -3,6 +3,9 @@ package ui.resetpassword;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import exception.SelectException;
+import factories.SignableFactory;
+import java.util.logging.Level;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -15,6 +18,7 @@ import javafx.scene.Scene;
 
 import java.util.logging.Logger;
 import javafx.stage.Modality;
+import models.User;
 
 public class ResetPasswordController {
 
@@ -45,6 +49,8 @@ public class ResetPasswordController {
     private ImageView passwordEyeIcon;
     @FXML
     private ImageView repeatedPasswordEyeIcon;
+    
+    private User resetUserPass;
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -58,7 +64,7 @@ public class ResetPasswordController {
         stage.setTitle("Reset Password");
         stage.setResizable(false);
         stage.centerOnScreen();
-
+        resetUserPass= new User();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         stage.initModality(Modality.APPLICATION_MODAL);
         sendCodeBtn.setOnAction(event -> handleSendCode());
@@ -78,20 +84,24 @@ public class ResetPasswordController {
         } else {
             LOGGER.info("Verification code sent to email: " + email);
             showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
-            // Simulate code sending logic here.
+            resetUserPass.setEmail(email);
+            SignableFactory.getSignable().resetPassword(resetUserPass);
+
         }
     }
 
     private void handleVerifyCode() {
-        String code = verificationCodeField.getText().trim();
-        if (code.equals("00000")) { // Simulate successful verification
-            LOGGER.info("Verification successful.");
-            passwordSection.setVisible(true); // Enable password reset section
+        String codeVerification = verificationCodeField.getText().trim();
+        resetUserPass.setVerifcationCode(codeVerification);
+        try {
+            SignableFactory.getSignable().verifyCode(resetUserPass);
+               LOGGER.info("Verification successful.");
+            passwordSection.setVisible(true); 
             showAlert(Alert.AlertType.INFORMATION, "Code Verified", "You can now set a new password.");
-        } else {
+        } catch (SelectException ex) {
             LOGGER.warning("Verification failed.");
             showAlert(Alert.AlertType.ERROR, "Verification Failed", "The code you entered is incorrect.");
-        }
+        }  
     }
 
     private void handleUpdatePassword() {

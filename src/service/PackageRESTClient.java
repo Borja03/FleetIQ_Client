@@ -33,7 +33,6 @@ public class PackageRESTClient {
     private WebTarget webTarget;
     private Client client;
 
-    //RESTful.baseURI = "http://localhost:8080/FleetIQ_Server/webresources"
     private static final String BASE_URI = ResourceBundle.getBundle("config/config")
                     .getString("RESTful.baseURI");
     
@@ -78,7 +77,7 @@ public class PackageRESTClient {
     public void deletePackage(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
                         .request()
-                        .delete();
+                        .delete(Paquete.class);
     }
 
     public List<Paquete> findPackagesByDates(GenericType<List<Paquete>> responseType, String endDate, String startDate) throws WebApplicationException {
