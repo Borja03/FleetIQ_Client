@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
-import models.Vehicle;
+import models.Vehiculo;
 
 /**
  *
@@ -21,19 +21,18 @@ import models.Vehicle;
  */
 public interface VehicleManager {
 
-    void addVehiculo(Vehicle vehiculo) throws CreateException;
+    void addVehiculo(Vehiculo vehiculo) throws CreateException;
 
-    void updateVehiculo(Vehicle vehiculo) throws UpdateException;
+    void updateVehiculo(Vehiculo vehiculo) throws UpdateException;
 
     void deleteVehiculo(Integer idVehiculo) throws DeleteException;
 
-    List<Vehicle> findAllVehiculos() throws SelectException;
+    List<Vehiculo> findAllVehiculos() throws SelectException;
 
-    List<Vehicle> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException;
+    List<Vehiculo> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException;
 
-    List<Vehicle> findAllVehiculosByPlate(String matricula) throws SelectException;
+    List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException;
 
-    List<Vehicle> findAllVehiculosByCapacity(Integer capacity) throws SelectException;
+    List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException;
 
-    public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException;
 }

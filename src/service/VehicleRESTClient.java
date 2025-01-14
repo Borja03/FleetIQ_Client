@@ -5,9 +5,13 @@
  */
 package service;
 
+import java.util.List;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
+import models.Vehiculo;
 
 /**
  * Jersey REST client generated for REST resource:VehiculoREST [vehiculo]<br>
@@ -94,9 +98,9 @@ public class VehicleRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findByCapacity_XML(Class<T> responseType, String capacity) throws ClientErrorException {
+    public <T> T findByCapacity_XML(GenericType<T> responseType, Integer capacity) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("capacity/{0}", new Object[]{capacity}));
+        resource = resource.path(java.text.MessageFormat.format("capacity/{0}", new Object[]{capacity.toString()}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -138,9 +142,10 @@ public class VehicleRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException {
+    public List<Vehiculo> findAllVehiculos(GenericType<List<Vehiculo>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get(responseType);
     }
 
     public <T> T findAll_JSON(Class<T> responseType) throws ClientErrorException {
@@ -167,5 +172,5 @@ public class VehicleRESTClient {
     public void close() {
         client.close();
     }
-    
+
 }

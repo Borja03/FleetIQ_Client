@@ -16,7 +16,7 @@ import javax.ws.rs.core.GenericType;
 import logicInterface.VehicleManager;
 import models.PackageSize;
 import models.Paquete;
-import models.Vehicle;
+import models.Vehiculo;
 import service.PackageRESTClient;
 import service.VehicleRESTClient;
 
@@ -25,12 +25,11 @@ import service.VehicleRESTClient;
  * @author 2dam
  */
 
-    /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Omar
@@ -38,19 +37,19 @@ import service.VehicleRESTClient;
 public class VehicleManagerImp implements VehicleManager {
 
     private VehicleRESTClient webClient;
-    
-     public VehicleManagerImp() {
+
+    public VehicleManagerImp() {
         this.webClient = new VehicleRESTClient();
-       
+
     }
 
     @Override
-    public void addVehiculo(Vehicle vehiculo) throws CreateException {
+    public void addVehiculo(Vehiculo vehiculo) throws CreateException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void updateVehiculo(Vehicle vehiculo) throws UpdateException {
+    public void updateVehiculo(Vehiculo vehiculo) throws UpdateException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -59,39 +58,37 @@ public class VehicleManagerImp implements VehicleManager {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
- 
     @Override
-    public List<Vehicle> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException {
+    public List<Vehiculo> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Vehicle> findAllVehiculosByPlate(String matricula) throws SelectException {
+    public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Vehicle> findAllVehiculosByCapacity(Integer capacity) throws SelectException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException {
+        // Si la capacidad es 0, llamamos a findAllVehiculos
+        if (capacity == 0) {
+            return findAllVehiculos(); // Llamada a la función que recupera todos los vehículos
+        }
+
+        // Si no es 0, filtramos por capacidad
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        List<Vehiculo> vehiclesList = webClient.findByCapacity_XML(responseType, capacity);
+        return vehiclesList;
     }
 
     @Override
-    public List<Vehicle> findAllVehiculos() throws SelectException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException {
-       return  webClient.findAll_XML(responseType);
-    }
-
-
-
-    
-
+    public List<Vehiculo> findAllVehiculos() throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        List<Vehiculo> vehiclesList = webClient.findAllVehiculos(responseType);
+        return vehiclesList;
 
     }
 
-
-
+}

@@ -1,6 +1,6 @@
 package ui.vehicle;
 
-import models.Vehicle;
+import models.Vehiculo;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -52,28 +53,28 @@ public class VehicleController {
     private JFXTextField searchTextField;
 
     @FXML
-    private TableView<Vehicle> vehicleTableView;
+    private TableView<Vehiculo> vehicleTableView;
 
     @FXML
-    private TableColumn<Vehicle, Integer> idColumn;
+    private TableColumn<Vehiculo, Integer> idColumn;
 
     @FXML
-    private TableColumn<Vehicle, String> matriculaColumn;
+    private TableColumn<Vehiculo, String> matriculaColumn;
 
     @FXML
-    private TableColumn<Vehicle, String> modelColumn;
+    private TableColumn<Vehiculo, String> modelColumn;
 
     @FXML
-    private TableColumn<Vehicle, Double> capacityColumn;
+    private TableColumn<Vehiculo, Double> capacityColumn;
 
     @FXML
-    private TableColumn<Vehicle, LocalDate> registrationDateColumn;
+    private TableColumn<Vehiculo, LocalDate> registrationDateColumn;
 
     @FXML
-    private TableColumn<Vehicle, LocalDate> itvDateColumn;
+    private TableColumn<Vehiculo, LocalDate> itvDateColumn;
 
     @FXML
-    private TableColumn<Vehicle, Boolean> activeColumn;
+    private TableColumn<Vehiculo, Boolean> activeColumn;
 
     @FXML
     private JFXButton addShipmentBtn;
@@ -141,8 +142,8 @@ public class VehicleController {
         stage.setResizable(false);
         stage.centerOnScreen();
 
-        loadConfigurations();
-        setUpDatePickers();
+//        loadConfigurations();
+//        setUpDatePickers();
 
         filterTypeComboBox.getItems().setAll("ITV Date", "Registration Date");
         setUpTableColumns();
@@ -153,66 +154,66 @@ public class VehicleController {
 
     /**
      * Loads configurations from a properties file.
-     */
-    private void loadConfigurations() {
-        Properties config = new Properties();
-        try (InputStream input = getClass().getResourceAsStream("/config/config.properties")) {
-            if (input == null) {
-                LOGGER.warning("Unable to find config.properties");
-                return;
-            }
-
-            config.load(input);
-
-            String dateFormat = config.getProperty("date.format", "dd/MM/yyyy");
-            dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-
-            startDate = LocalDate.parse(config.getProperty("start.date", LocalDate.now().toString()), dateFormatter);
-            endDate = LocalDate.parse(config.getProperty("end.date", LocalDate.now().toString()), dateFormatter);
-        } catch (IOException ex) {
-            LOGGER.severe("Error loading configurations: " + ex.getMessage());
-        }
-    }
+//     */
+//    private void loadConfigurations() {
+//        Properties config = new Properties();
+//        try (InputStream input = getClass().getResourceAsStream("/config/config.properties")) {
+//            if (input == null) {
+//                LOGGER.warning("Unable to find config.properties");
+//                return;
+//            }
+//
+//            config.load(input);
+//
+//            String dateFormat = config.getProperty("date.format", "dd/MM/yyyy");
+//            dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+//
+//            startDate = LocalDate.parse(config.getProperty("start.date", LocalDate.now().toString()), dateFormatter);
+//            endDate = LocalDate.parse(config.getProperty("end.date", LocalDate.now().toString()), dateFormatter);
+//        } catch (IOException ex) {
+//            LOGGER.severe("Error loading configurations: " + ex.getMessage());
+//        }
+//    }
 
     /**
      * Sets up date pickers with formatting and range limits.
      */
-    private void setUpDatePickers() {
-        StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
-            @Override
-            public String toString(LocalDate date) {
-                return date != null ? dateFormatter.format(date) : "";
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                return string != null && !string.isEmpty() ? LocalDate.parse(string, dateFormatter) : null;
-            }
-        };
-
-        fromDatePicker.setConverter(converter);
-        toDatePicker.setConverter(converter);
-
-        fromDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                setDisable(empty || date.isBefore(startDate) || date.isAfter(endDate));
-            }
-        });
-
-        toDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                setDisable(empty || date.isBefore(startDate) || date.isAfter(endDate));
-            }
-        });
-    }
+//    private void setUpDatePickers() {
+//        StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
+//            @Override
+//            public String toString(LocalDate date) {
+//                return date != null ? dateFormatter.format(date) : "";
+//            }
+//
+//            @Override
+//            public LocalDate fromString(String string) {
+//                return string != null && !string.isEmpty() ? LocalDate.parse(string, dateFormatter) : null;
+//            }
+//        };
+//
+//        fromDatePicker.setConverter(converter);
+//        toDatePicker.setConverter(converter);
+//
+//        fromDatePicker.setDayCellFactory(picker -> new DateCell() {
+//            @Override
+//            public void updateItem(LocalDate date, boolean empty) {
+//                super.updateItem(date, empty);
+//                setDisable(empty || date.isBefore(startDate) || date.isAfter(endDate));
+//            }
+//        });
+//
+//        toDatePicker.setDayCellFactory(picker -> new DateCell() {
+//            @Override
+//            public void updateItem(LocalDate date, boolean empty) {
+//                super.updateItem(date, empty);
+//                setDisable(empty || date.isBefore(startDate) || date.isAfter(endDate));
+//            }
+//        });
+//    }
 
     private void fillTableFromDataBase() {
         try {
-            List<Vehicle> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
             // Fetch data and populate the TableView
             vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
         } catch (Exception e) {
@@ -229,20 +230,20 @@ public class VehicleController {
      */
     private void setUpTableColumns() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        matriculaColumn.setCellValueFactory(new PropertyValueFactory<>("licensePlate"));
-        modelColumn.setCellValueFactory(new PropertyValueFactory<>("model"));
-        capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacity"));
+        matriculaColumn.setCellValueFactory(new PropertyValueFactory<>("matricula"));
+        modelColumn.setCellValueFactory(new PropertyValueFactory<>("modelo"));
+        capacityColumn.setCellValueFactory(new PropertyValueFactory<>("capacidadCarga"));
         registrationDateColumn.setCellValueFactory(new PropertyValueFactory<>("registrationDate"));
         itvDateColumn.setCellValueFactory(new PropertyValueFactory<>("itvDate"));
-        activeColumn.setCellValueFactory(new PropertyValueFactory<>("active"));
-
-        itvDateColumn.setCellFactory(column -> new TableCell<Vehicle, LocalDate>() {
-            @Override
-            protected void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                setText(empty || date == null ? null : dateFormatter.format(date));
-            }
-        });
+        activeColumn.setCellValueFactory(new PropertyValueFactory<>("activo"));
+//
+//        itvDateColumn.setCellFactory(column -> new TableCell<Vehiculo, Date>() {
+//            @Override
+//            protected void updateItem(Date date, boolean empty) {
+//                super.updateItem(date, empty);
+//                setText(empty || date == null ? null : dateFormatter.format(date));
+//            }
+//        });
     }
 
     /**
@@ -272,22 +273,42 @@ public class VehicleController {
      * @param amount the amount to modify the capacity by (positive or
      * negative).
      */
-    private void modifyCapacity(int amount) {
+     private void modifyCapacity(int amount) {
         try {
-            // Parse the current value in the text field
             int currentCapacity = Integer.parseInt(capacityTextField.getText().trim());
             int newCapacity = currentCapacity + amount;
 
-            // Ensure the new value is within the allowed range (0 to 999)
             if (newCapacity >= 0 && newCapacity <= 999) {
                 capacityTextField.setText(String.valueOf(newCapacity));
+                filterByCapacity();
             } else {
                 LOGGER.warning("Attempted to set capacity value outside the range (0-999).");
             }
         } catch (NumberFormatException e) {
-            // Reset to default value on invalid input
             LOGGER.warning("Invalid capacity value: " + capacityTextField.getText());
             capacityTextField.setText("0");
+        }
+    }
+     
+     private void filterByCapacity() {
+        try {
+            int capacity = Integer.parseInt(capacityTextField.getText().trim());
+            List<Vehiculo> filteredVehicles = VehicleFactory.getVehicleInstance().findAllVehiculosByCapacity(capacity);
+            vehicleTableView.setItems(FXCollections.observableArrayList(filteredVehicles));
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Invalid capacity input for filtering: " + capacityTextField.getText());
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Invalid Input");
+            alert.setHeaderText("Invalid Capacity");
+            alert.setContentText("Please enter a valid number for capacity.");
+            alert.showAndWait();
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -312,7 +333,7 @@ public class VehicleController {
 
     @FXML
     private void onRemoveVehicle() {
-        Vehicle selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
+        Vehiculo selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
         if (selectedVehicle != null) {
             vehicleTableView.getItems().remove(selectedVehicle);
         }
