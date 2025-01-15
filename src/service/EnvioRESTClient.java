@@ -8,6 +8,7 @@ package service;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import logicInterface.EnvioManager;
 import models.Envio;
 
@@ -35,7 +36,7 @@ public class EnvioRESTClient implements EnvioManager{
     }
 
     @Override
-    public <T> T filterNumPaquetes_XML(Class<T> responseType, Integer numPaquetes) throws WebApplicationException {
+    public <T> T filterNumPaquetes_XML(GenericType<T> responseType, Integer numPaquetes) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (numPaquetes != null) {
             resource = resource.queryParam("numPaquetes", numPaquetes);
@@ -45,7 +46,7 @@ public class EnvioRESTClient implements EnvioManager{
     }
 
     @Override
-    public <T> T filterNumPaquetes_JSON(Class<T> responseType, Integer numPaquetes) throws WebApplicationException {
+    public <T> T filterNumPaquetes_JSON(GenericType<T> responseType, Integer numPaquetes) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (numPaquetes != null) {
             resource = resource.queryParam("numPaquetes", numPaquetes);
@@ -70,32 +71,32 @@ public class EnvioRESTClient implements EnvioManager{
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON),Envio.class);
     }
 
-    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
+    public <T> T find_XML(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException {
+    public <T> T find_JSON(GenericType<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException {
+    public <T> T findRange_XML(GenericType<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findRange_JSON(Class<T> responseType, String from, String to) throws WebApplicationException {
+    public <T> T findRange_JSON(GenericType<T> responseType, String from, String to) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
     @Override
-    public <T> T filterEstado_XML(Class<T> responseType, String estado) throws WebApplicationException {
+    public <T> T filterEstado_XML(GenericType<T> responseType, String estado) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (estado != null) {
             resource = resource.queryParam("estado", estado);
@@ -105,7 +106,7 @@ public class EnvioRESTClient implements EnvioManager{
     }
     
     @Override
-    public <T> T filterEstado_JSON(Class<T> responseType, String estado) throws WebApplicationException {
+    public <T> T filterEstado_JSON(GenericType<T> responseType, String estado) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (estado != null) {
             resource = resource.queryParam("estado", estado);
@@ -125,19 +126,19 @@ public class EnvioRESTClient implements EnvioManager{
     }
 
     @Override
-    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException {
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
-    public <T> T findAll_JSON(Class<T> responseType) throws WebApplicationException {
+    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
     @Override
-    public <T> T filterByDates_XML(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
+    public <T> T filterByDates_XML(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (firstDate != null) {
             resource = resource.queryParam("firstDate", firstDate);
@@ -150,7 +151,7 @@ public class EnvioRESTClient implements EnvioManager{
     }
 
     @Override
-    public <T> T filterByDates_JSON(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
+    public <T> T filterByDates_JSON(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (firstDate != null) {
             resource = resource.queryParam("firstDate", firstDate);

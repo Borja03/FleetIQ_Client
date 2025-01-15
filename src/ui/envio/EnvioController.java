@@ -12,15 +12,25 @@ import models.Envio;
 import logicInterface.EnvioManager;
 import utils.UtilsMethods;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javax.ws.rs.core.GenericType;
+import models.Estado;
+import models.User;
+import ui.paquete.PackageController;
 
 public class EnvioController {
+
+    private static final Logger LOGGER = Logger.getLogger(EnvioController.class.getName());
 
     @FXML
     private JFXDatePicker fromDatePicker;
@@ -38,7 +48,7 @@ public class EnvioController {
     private TableView<Envio> table;
 
     @FXML
-    private TableColumn<Envio, Integer> IdColumn;
+    private TableColumn<Envio, Integer> idColumn;
 
     @FXML
     private TableColumn<Envio, String> fechaEnvioColumn;
@@ -76,23 +86,45 @@ public class EnvioController {
         this.stage = stage;
     }
 
-    @FXML
-    public void initialize(Parent root) throws IOException, SelectException {
+    public void initStage(Parent root) {
+        LOGGER.info("Initialising Envio window.");
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
+        stage.setTitle("Envio");
+        stage.setResizable(false);
+        stage.centerOnScreen();
+        removeShipmentBtn.setDisable(true);
+
         envioService = EnvioFactory.getEnvioInstance();
         envioList = FXCollections.observableArrayList();
 
         table.setEditable(true);
-        IdColumn.setEditable(false);
+        idColumn.setEditable(false);
         estadoColumn.setEditable(false);
         rutaColumn.setEditable(false);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        // Definir cómo se mostrarán las columnas de fecha
+        
+        estadoFilterComboBox.getItems().setAll(Estado.ENTREGADO.toString(),
+                Estado.EN_REPARTO.toString(),
+                Estado.PREPARACION.toString());
+        
+        setUpTableColumns();
         fechaEnvioColumn.setCellFactory(column -> createDateCell());
         fechaEntregaColumn.setCellFactory(column -> createDateCell());
 
         loadInitialData();
+        stage.show();
+    }
+
+    private void setUpTableColumns() {
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        //fechaEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEnvio"));
+        //fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
+        estadoColumn.setCellValueFactory(new PropertyValueFactory<>("estado"));
+        numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
+        creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
+        rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
+        vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
     }
 
     private TableCell<Envio, String> createDateCell() {
@@ -108,13 +140,20 @@ public class EnvioController {
             }
         };
     }
+    
+
 
     private void loadInitialData() {
         try {
-            List<Envio> envios = envioService.findAll_XML(List.class);
+            List<Envio> envios = envioService.findAll_XML(new GenericType<List<Envio>>() {
+            });
             if (envios != null) {
                 envioList.setAll(envios);
                 table.setItems(envioList);
+                for (Envio e : envioList) {
+                    System.out.println(e);
+                }
+                LOGGER.info("Insertando datos.");
             }
         } catch (Exception ex) {
             Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, "Error cargando los datos iniciales.", ex);
@@ -125,7 +164,8 @@ public class EnvioController {
             if (newValue != null) {
                 String estadoSeleccionado = newValue.getEstado().toString();
                 try {
-                    List<Envio> enviosFiltrados = envioService.filterEstado_XML(List.class, estadoSeleccionado);
+                    List<Envio> enviosFiltrados = envioService.filterEstado_XML(new GenericType<List<Envio>>() {
+                    }, estadoSeleccionado);
                     envioList.setAll(enviosFiltrados);
                 } catch (Exception ex) {
                     Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, "Error al filtrar por estado", ex);
@@ -144,7 +184,8 @@ public class EnvioController {
                 throw new IllegalArgumentException("Debe llenar al menos uno de los campos de fecha.");
             }
 
-            List<Envio> filteredData = envioService.filterByDates_XML(List.class, from.toString(), to.toString());
+            List<Envio> filteredData = envioService.filterByDates_XML(new GenericType<List<Envio>>() {
+            }, from.toString(), to.toString());
             envioList.setAll(filteredData);
         } catch (IllegalArgumentException e) {
             new UtilsMethods().showAlert("Error de filtro", e.getMessage());
@@ -161,7 +202,8 @@ public class EnvioController {
                 throw new IllegalArgumentException("El campo de estado está vacío.");
             }
 
-            List<Envio> filteredData = envioService.filterEstado_XML(List.class, estado);
+            List<Envio> filteredData = envioService.filterEstado_XML(new GenericType<List<Envio>>() {
+            }, estado);
             envioList.setAll(filteredData);
         } catch (IllegalArgumentException e) {
             new UtilsMethods().showAlert("Error de filtro", e.getMessage());
@@ -183,7 +225,8 @@ public class EnvioController {
                 throw new IllegalArgumentException("El número de paquetes debe ser mayor a 0.");
             }
 
-            List<Envio> filteredData = envioService.filterNumPaquetes_XML(List.class, num);
+            List<Envio> filteredData = envioService.filterNumPaquetes_XML(new GenericType<List<Envio>>() {
+            }, num);
             envioList.setAll(filteredData);
         } catch (IllegalArgumentException e) {
             new UtilsMethods().showAlert("Error de filtro", e.getMessage());

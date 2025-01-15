@@ -8,6 +8,7 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
@@ -107,19 +108,19 @@ public class MenuController {
     @FXML
     private void handleEnvioMenuItemAction(Event event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/envio/envio.fxml"));
+             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/envio/envio.fxml"));
             Parent root = loader.load();
             EnvioController controller = loader.getController();
-            Stage stage = new Stage();
-            controller.setStage(stage);
-            controller.initialize(root);
+            Stage loginStage = new Stage();
+            controller.setStage(loginStage);
+            controller.initStage(root);
             LOGGER.info("Envio window opened");
             // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
         } catch (IOException ex) {
             LOGGER.severe("Error loading paquete window: " + ex);
-        } catch (SelectException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

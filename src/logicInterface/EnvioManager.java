@@ -1,9 +1,7 @@
 package logicInterface;
 
-import exception.SelectException;
-import exception.CreateException;
-import exception.UpdateException;
-import exception.DeleteException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 
 import models.Envio;
 
@@ -22,61 +20,61 @@ public interface EnvioManager {
      * Añade un nuevo envío al sistema en formato JSON.
      *
      * @param requestEntity el objeto JSON que representa el envío a crear.
-     * @throws CreateException si ocurre un error al crear el envío.
+     * @throws WebApplicationException si ocurre un error al crear el envío.
      */
-    public void create_JSON(Object requestEntity) throws CreateException;
+    public void create_JSON(Object requestEntity) throws WebApplicationException;
 
     /**
      * Añade un nuevo envío al sistema en formato XML.
      *
      * @param requestEntity el objeto XML que representa el envío a crear.
-     * @throws CreateException si ocurre un error al crear el envío.
+     * @throws WebApplicationException si ocurre un error al crear el envío.
      */
-    public void create_XML(Object requestEntity) throws CreateException;
+    public void create_XML(Object requestEntity) throws WebApplicationException;
 
     /**
      * Actualiza los datos de un envío existente en formato JSON.
      *
      * @param requestEntity el objeto JSON con los datos actualizados del envío.
      * @param id el identificador del envío a actualizar.
-     * @throws UpdateException si ocurre un error durante la actualización del envío.
+     * @throws WebApplicationException si ocurre un error durante la actualización del envío.
      */
-    public void edit_JSON(Object requestEntity, String id) throws UpdateException;
+    public void edit_JSON(Object requestEntity, String id) throws WebApplicationException;
 
     /**
      * Actualiza los datos de un envío existente en formato XML.
      *
      * @param requestEntity el objeto XML con los datos actualizados del envío.
      * @param id el identificador del envío a actualizar.
-     * @throws UpdateException si ocurre un error durante la actualización del envío.
+     * @throws WebApplicationException si ocurre un error durante la actualización del envío.
      */
-    public void edit_XML(Object requestEntity, String id) throws UpdateException;
+    public void edit_XML(Object requestEntity, String id) throws WebApplicationException;
 
     /**
      * Elimina un envío del sistema basado en su identificador.
      *
      * @param id el identificador del envío a eliminar.
-     * @throws DeleteException si ocurre un error al eliminar el envío.
+     * @throws WebApplicationException si ocurre un error al eliminar el envío.
      */
-    public void remove(Integer id) throws DeleteException;
+    public void remove(Integer id) throws WebApplicationException;
 
     /**
      * Obtiene una lista de todos los envíos registrados en el sistema en formato JSON.
      *
      * @param responseType el tipo de clase para mapear la respuesta JSON.
      * @return una lista de objetos {@link Envio} representados en formato JSON.
-     * @throws SelectException si ocurre un error al obtener los datos.
+     * @throws WebApplicationException si ocurre un error al obtener los datos.
      */
-    public <T> T findAll_JSON(Class<T> responseType) throws SelectException;
+    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException;
 
     /**
      * Obtiene una lista de todos los envíos registrados en el sistema en formato XML.
      *
      * @param responseType el tipo de clase para mapear la respuesta XML.
      * @return una lista de objetos {@link Envio} representados en formato XML.
-     * @throws SelectException si ocurre un error al obtener los datos.
+     * @throws WebApplicationException si ocurre un error al obtener los datos.
      */
-    public <T> T findAll_XML(Class<T> responseType) throws SelectException;
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException;
 
     /**
      * Filtra los envíos registrados en el sistema por un rango de fechas en formato JSON.
@@ -85,9 +83,9 @@ public interface EnvioManager {
      * @param firstDate la fecha inicial del rango.
      * @param secondDate la fecha final del rango.
      * @return una lista de objetos {@link Envio} que cumplen con el rango de fechas especificado.
-     * @throws SelectException si ocurre un error al filtrar los datos.
+     * @throws WebApplicationException si ocurre un error al filtrar los datos.
      */
-    public <T> T filterByDates_JSON(Class<T> responseType, String firstDate, String secondDate) throws SelectException;
+    public <T> T filterByDates_JSON(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
 
     /**
      * Filtra los envíos registrados en el sistema por un rango de fechas en formato XML.
@@ -96,9 +94,9 @@ public interface EnvioManager {
      * @param firstDate la fecha inicial del rango.
      * @param secondDate la fecha final del rango.
      * @return una lista de objetos {@link Envio} que cumplen con el rango de fechas especificado.
-     * @throws SelectException si ocurre un error al filtrar los datos.
+     * @throws WebApplicationException si ocurre un error al filtrar los datos.
      */
-    public <T> T filterByDates_XML(Class<T> responseType, String firstDate, String secondDate) throws SelectException;
+    public <T> T filterByDates_XML(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
 
     /**
      * Filtra los envíos registrados en el sistema por estado en formato JSON.
@@ -106,9 +104,9 @@ public interface EnvioManager {
      * @param responseType el tipo de clase para mapear la respuesta JSON.
      * @param estado el estado a filtrar (por ejemplo, "PREPARACION", "EN_REPARTO", "ENTREGADO").
      * @return una lista de objetos {@link Envio} que tienen el estado especificado.
-     * @throws SelectException si ocurre un error al filtrar los datos.
+     * @throws WebApplicationException si ocurre un error al filtrar los datos.
      */
-    public <T> T filterEstado_JSON(Class<T> responseType, String estado) throws SelectException;
+    public <T> T filterEstado_JSON(GenericType<T> responseType, String estado) throws WebApplicationException;
 
     /**
      * Filtra los envíos registrados en el sistema por estado en formato XML.
@@ -116,9 +114,9 @@ public interface EnvioManager {
      * @param responseType el tipo de clase para mapear la respuesta XML.
      * @param estado el estado a filtrar (por ejemplo, "PREPARACION", "EN_REPARTO", "ENTREGADO").
      * @return una lista de objetos {@link Envio} que tienen el estado especificado.
-     * @throws SelectException si ocurre un error al filtrar los datos.
+     * @throws WebApplicationException si ocurre un error al filtrar los datos.
      */
-    public <T> T filterEstado_XML(Class<T> responseType, String estado) throws SelectException;
+    public <T> T filterEstado_XML(GenericType<T> responseType, String estado) throws WebApplicationException;
 
     /**
      * Filtra los envíos registrados en el sistema por el número de paquetes en formato JSON.
@@ -126,9 +124,9 @@ public interface EnvioManager {
      * @param responseType el tipo de clase para mapear la respuesta JSON.
      * @param numPaquetes el número de paquetes a filtrar.
      * @return una lista de objetos {@link Envio} que cumplen con el número de paquetes especificado.
-     * @throws SelectException si ocurre un error al filtrar los datos.
+     * @throws WebApplicationException si ocurre un error al filtrar los datos.
      */
-    public <T> T filterNumPaquetes_JSON(Class<T> responseType, Integer numPaquetes) throws SelectException;
+    public <T> T filterNumPaquetes_JSON(GenericType<T> responseType, Integer numPaquetes) throws WebApplicationException;
 
     /**
      * Filtra los envíos registrados en el sistema por el número de paquetes en formato XML.
@@ -136,7 +134,7 @@ public interface EnvioManager {
      * @param responseType el tipo de clase para mapear la respuesta XML.
      * @param numPaquetes el número de paquetes a filtrar.
      * @return una lista de objetos {@link Envio} que cumplen con el número de paquetes especificado.
-     * @throws SelectException si ocurre un error al filtrar los datos.
+     * @throws WebApplicationException si ocurre un error al filtrar los datos.
      */
-    public <T> T filterNumPaquetes_XML(Class<T> responseType, Integer numPaquetes) throws SelectException;
+    public <T> T filterNumPaquetes_XML(GenericType<T> responseType, Integer numPaquetes) throws WebApplicationException;
 }
