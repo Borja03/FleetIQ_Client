@@ -8,6 +8,7 @@ package logicInterface;
 import exception.CreateException;
 import exception.SelectException;
 import exception.UpdateException;
+import javax.ws.rs.ClientErrorException;
 import models.User;
 
 /**
@@ -16,18 +17,20 @@ import models.User;
  */
 public interface UserManager {
 
+    public <T> T checkExist(Object requestEntity, Class<T> responseType) throws ClientErrorException;
+
+    public <T> T signUp(User requestEntity, Class<T> responseType) throws CreateException;
+
+    public <T> T signIn(User requestEntity, Class<T> responseType) throws SelectException;
+
     public void resetPassword(User requestEntity);
 
-    public boolean verifyCode(User requestEntity) throws SelectException;
+    public <T> T verifyCode(User requestEntity, Class<T> responseType) throws SelectException;
 
     public void updatePassword(User requestEntity) throws UpdateException;
-
-    public <T> T signin(User requestEntity, Class<T> responseType) throws SelectException;
 
     public void create(User requestEntity) throws CreateException;
 
     public <T> T findAll(Class<T> responseType) throws SelectException;
-
-    public <T> T signUp(User requestEntity, Class<T> responseType) throws CreateException;
 
 }

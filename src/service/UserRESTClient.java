@@ -36,25 +36,32 @@ public class UserRESTClient {
         webTarget = client.target(BASE_URI).path("user");
     }
 
+    public <T> T checkExist(Object requestEntity, Class<T> responseType) throws ClientErrorException {
+        return webTarget.path("check-exist")
+                        .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+    }
+
+    public <T> T signIn(User requestEntity, Class<T> responseType) throws ClientErrorException {
+        return webTarget.path("login")
+                        .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+    }
+
+    public <T> T signUp(User requestEntity, Class<T> responseType) throws ClientErrorException {
+        return webTarget.path("signup").request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+    }
+
     public void resetPassword(User requestEntity) throws ClientErrorException {
         webTarget.path("reset").request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public boolean verifyCode(User requestEntity) throws ClientErrorException {
-        Response response = webTarget.path("verify-code")
+    public <T> T verifyCode(User requestEntity, Class<T> responseType) throws ClientErrorException {
+        return webTarget.path("verify-code")
                         .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-
-        // Check if the HTTP status code is 200 (OK)
-        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-            // Assuming the response body contains "true" or "false"
-            String responseBody = response.readEntity(String.class);
-            return Boolean.parseBoolean(responseBody);
-        } else {
-            // Log or handle unexpected status codes as needed
-            return false;
-        }
+                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
     public void updatePassword(User requestEntity) throws ClientErrorException {
@@ -63,19 +70,6 @@ public class UserRESTClient {
                         .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T signin(User requestEntity, Class<T> responseType) throws ClientErrorException {
-        return webTarget.path("login")
-                        .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
-    }
-
-     public <T> T signUp(User requestEntity, Class<T> responseType) throws ClientErrorException {
-        return webTarget.path("signup").request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
-    }
-
-    
-    
     public void create(User requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
@@ -83,7 +77,8 @@ public class UserRESTClient {
 
     public <T> T findAll(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                        .get(responseType);
     }
 
     public void close() {

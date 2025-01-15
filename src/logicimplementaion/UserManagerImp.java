@@ -11,6 +11,7 @@ import exception.SelectException;
 import exception.UpdateException;
 import java.util.Date;
 import java.util.List;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 import models.Paquete;
 import models.PackageSize;
@@ -32,23 +33,33 @@ public class UserManagerImp implements UserManager {
     }
 
     @Override
+    public <T> T checkExist(Object requestEntity, Class<T> responseType) throws ClientErrorException {
+        return webClient.checkExist(requestEntity, responseType);
+    }
+
+    @Override
+    public <T> T signUp(User requestEntity, Class<T> responseType) throws CreateException {
+        return webClient.signUp(requestEntity, responseType);
+    }
+
+    @Override
+    public <T> T signIn(User requestEntity, Class<T> responseType) throws SelectException {
+        return webClient.signIn(requestEntity, responseType);
+    }
+
+    @Override
     public void resetPassword(User requestEntity) {
         webClient.resetPassword(requestEntity);
     }
 
     @Override
-    public boolean verifyCode(User requestEntity) throws SelectException {
-        return webClient.verifyCode(requestEntity);
+    public <T> T verifyCode(User requestEntity, Class<T> responseType) throws SelectException {
+        return webClient.verifyCode(requestEntity, responseType);
     }
 
     @Override
     public void updatePassword(User requestEntity) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <T> T signin(User requestEntity, Class<T> responseType) throws SelectException {
-        return webClient.signin(requestEntity, responseType);
+        webClient.updatePassword(requestEntity);
     }
 
     @Override
@@ -59,11 +70,6 @@ public class UserManagerImp implements UserManager {
     @Override
     public <T> T findAll(Class<T> responseType) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <T> T signUp(User requestEntity, Class<T> responseType) throws CreateException {
-        return webClient.signUp(requestEntity, responseType);
     }
 
 }

@@ -300,7 +300,7 @@ public class LogInController {
 
         User loggedInUser;
         try {
-            loggedInUser = SignableFactory.getSignable().signin(user, User.class);           
+            loggedInUser = SignableFactory.getSignable().signIn(user, User.class);           
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
             Parent root = null;
             try {
