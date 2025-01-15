@@ -1,7 +1,7 @@
 package factories;
 
 import logicInterface.Signable;
-import logicimplementaion.UserManagerImp;
+import logicimplementation.UserManagerImp;
 
 
 
