@@ -1,33 +1,34 @@
 package models;
 
+import java.io.Serializable;
+
 import java.util.Date;
 import java.util.List;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
-public class Ruta {
+@XmlRootElement
+public class Ruta implements Serializable {
 
     private Integer localizador;
+
     private String origen;
+
     private String destino;
+
     private Float distancia;
+
     private Integer tiempo;
+
     private Date fechaCreacion;
+
     private Integer numVehiculos;
 
-
-    // Constructor vacío
     public Ruta() {
     }
 
-    // Constructor parametrizado
-    public Ruta(Integer localizador, String origen, String destino, Float distancia, Integer tiempo, Date fechaCreacion, Integer numVehiculos) {
-        this.localizador = localizador;
-        this.origen = origen;
-        this.destino = destino;
-        this.distancia = distancia;
-        this.tiempo = tiempo;
-        this.fechaCreacion = fechaCreacion;
-        this.numVehiculos = numVehiculos;
-    }
+    private List<EnvioRutaVehiculo> envioRutaVehiculos;
 
     // Getters and Setters
     public Integer getLocalizador() {
@@ -78,7 +79,27 @@ public class Ruta {
         this.fechaCreacion = fechaCreacion;
     }
 
-    public Integer getNumVehiculos() {
+    public List<EnvioRutaVehiculo> getRutaVehiculos() {
+        return envioRutaVehiculos;
+    }
+
+    public void setRutaVehiculos(List<EnvioRutaVehiculo> rutaVehiculos) {
+        this.envioRutaVehiculos = rutaVehiculos;
+    }
+
+    public List<EnvioRutaVehiculo> getEnvioRutaVehiculos() {
+        return envioRutaVehiculos;
+    }
+
+    public void setEnvioRutaVehiculos(List<EnvioRutaVehiculo> envioRutaVehiculos) {
+        this.envioRutaVehiculos = envioRutaVehiculos;
+    }
+
+    public Integer getId() {
+        return localizador;
+    }
+    
+      public Integer getNumVehiculos() {
         return numVehiculos;
     }
 
@@ -88,14 +109,7 @@ public class Ruta {
 
     @Override
     public String toString() {
-        return "Ruta{" +
-                "localizador=" + localizador +
-                ", origen='" + origen + '\'' +
-                ", destino='" + destino + '\'' +
-                ", distancia=" + distancia +
-                ", tiempo=" + tiempo +
-                ", fechaCreacion=" + fechaCreacion +
-                ", numVehiculos=" + numVehiculos +
-                '}';
+        return "Ruta{" + "localizador=" + localizador + ", origen=" + origen + ", destino=" + destino + ", distancia=" + distancia + ", tiempo=" + tiempo + ", fechaCreacion=" + fechaCreacion + ", numVehiculos=" + numVehiculos;
     }
+
 }

@@ -3,6 +3,10 @@ package ui.resetpassword;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import exception.SelectException;
+import exception.UpdateException;
+import factories.SignableFactory;
+import java.util.logging.Level;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -15,6 +19,7 @@ import javafx.scene.Scene;
 
 import java.util.logging.Logger;
 import javafx.stage.Modality;
+import models.User;
 
 public class ResetPasswordController {
 
@@ -46,6 +51,8 @@ public class ResetPasswordController {
     @FXML
     private ImageView repeatedPasswordEyeIcon;
 
+    private User resetUserPass;
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -58,7 +65,7 @@ public class ResetPasswordController {
         stage.setTitle("Reset Password");
         stage.setResizable(false);
         stage.centerOnScreen();
-
+        resetUserPass = new User();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         stage.initModality(Modality.APPLICATION_MODAL);
         sendCodeBtn.setOnAction(event -> handleSendCode());
@@ -71,26 +78,70 @@ public class ResetPasswordController {
         stage.show();
     }
 
+//    private void handleSendCode() {
+//        String email = emailField.getText().trim();
+//        if (email.isEmpty() || !email.contains("@")) {
+//            showAlert(Alert.AlertType.ERROR, "Invalid Email", "Please enter a valid email address.");
+//        } else {
+//            resetUserPass.setEmail(email);
+//            User isUserExist = SignableFactory.getSignable().checkExist(resetUserPass,User.class);
+//            if (isUserExist.isActivo()) {
+//                System.out.println(isUserExist.toString());
+//                LOGGER.info("Verification code sent to email: " + email);
+//                SignableFactory.getSignable().resetPassword(resetUserPass);
+//                showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
+//            } else {
+//                LOGGER.info("This email: " + email + " does not exsit in our database");
+//                showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
+//            }
+//
+//        }
+//    }
     private void handleSendCode() {
         String email = emailField.getText().trim();
         if (email.isEmpty() || !email.contains("@")) {
             showAlert(Alert.AlertType.ERROR, "Invalid Email", "Please enter a valid email address.");
         } else {
-            LOGGER.info("Verification code sent to email: " + email);
-            showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
-            // Simulate code sending logic here.
+            try {
+                resetUserPass.setEmail(email);
+                User isUserExist = SignableFactory.getSignable().checkExist(resetUserPass, User.class);
+                // Only proceed if user exists and is active
+                if (isUserExist != null && isUserExist.isActivo()) {
+                    LOGGER.info("Verification code sent to email: " + email);
+                    SignableFactory.getSignable().resetPassword(resetUserPass);
+                    showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
+                } else {
+                    LOGGER.info("Email not found: " + email);
+                    showAlert(Alert.AlertType.ERROR, "Error", "This email is not registered in our system.");
+                }
+            } catch (javax.persistence.NoResultException e) {
+                LOGGER.info("Email not found: " + email);
+                showAlert(Alert.AlertType.ERROR, "Error", "This email is not registered in our system.");
+            } catch (Exception e) {
+                //LOGGER.sever("Error in password reset process", e);
+                showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred.");
+            }
         }
     }
 
     private void handleVerifyCode() {
-        String code = verificationCodeField.getText().trim();
-        if (code.equals("00000")) { // Simulate successful verification
-            LOGGER.info("Verification successful.");
-            passwordSection.setVisible(true); // Enable password reset section
-            showAlert(Alert.AlertType.INFORMATION, "Code Verified", "You can now set a new password.");
-        } else {
+        String codeVerification = verificationCodeField.getText().trim();
+        resetUserPass.setVerifcationCode(codeVerification);
+        try {
+            System.out.println(resetUserPass.toString());
+            User userIsCorrectCode = SignableFactory.getSignable().verifyCode(resetUserPass, User.class);
+            System.out.println("-------------------------" + userIsCorrectCode.isActivo());
+            if (userIsCorrectCode.isActivo()) {
+                LOGGER.info("Verification successful.");
+                passwordSection.setVisible(true);
+                showAlert(Alert.AlertType.INFORMATION, "Code Verified", "You can now set a new password.");
+            } else {
+                LOGGER.warning("Verification failed.");
+                showAlert(Alert.AlertType.ERROR, "Verification Failed", "The code you entered is incorrect.");
+            }
+        } catch (SelectException ex) {
             LOGGER.warning("Verification failed.");
-            showAlert(Alert.AlertType.ERROR, "Verification Failed", "The code you entered is incorrect.");
+            // showAlert(Alert.AlertType.ERROR, "Verification Failed", "The code you entered is incorrect.");
         }
     }
 
@@ -105,7 +156,13 @@ public class ResetPasswordController {
         } else {
             LOGGER.info("Password updated successfully.");
             showAlert(Alert.AlertType.INFORMATION, "Success", "Your password has been updated successfully!");
-            // Simulate password update logic here.
+            // to add  crypto her
+            resetUserPass.setPassword(newPassword);
+            try {
+                SignableFactory.getSignable().updatePassword(resetUserPass);
+            } catch (UpdateException ex) {
+                Logger.getLogger(ResetPasswordController.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             stage.close();
         }

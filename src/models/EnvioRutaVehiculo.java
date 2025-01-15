@@ -38,6 +38,7 @@ public class EnvioRutaVehiculo implements Serializable {
         this.ruta = ruta;
     }
 
+
     public void setVehiculo(Vehiculo vehiculo) {
         this.vehiculo = vehiculo;
     }

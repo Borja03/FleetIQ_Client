@@ -1,6 +1,6 @@
 package ui.vehicle;
 
-import models.Vehicle;
+import models.Vehiculo;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
@@ -28,7 +28,7 @@ import javafx.util.converter.IntegerStringConverter;
 import models.Vehiculo;
 
 /**
- * Controller for managing the Vehicle UI. Handles initialization,
+ * Controller for managing the Vehiculo UI. Handles initialization,
  * configuration, and event logic.
  *
  * @author Adrián
@@ -102,6 +102,7 @@ public class VehicleController {
 
     @FXML
     //private TableColumn<Ruta, String> fecha_asignacion;
+
     private Stage stage;
     private DateTimeFormatter dateFormatter;
     private LocalDate startDate;
@@ -218,7 +219,6 @@ public class VehicleController {
         registrationDateColumn.setCellValueFactory(new PropertyValueFactory<>("registrationDate"));
         itvDateColumn.setCellValueFactory(new PropertyValueFactory<>("itvDate"));
         activeColumn.setCellValueFactory(new PropertyValueFactory<>("active"));
-
 
         itvDateColumn.setCellFactory(column -> new TableCell<Vehiculo, LocalDate>() {
             @Override

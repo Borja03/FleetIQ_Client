@@ -8,39 +8,40 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
+import factories.PaqueteFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.DateCell;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import javax.ws.rs.core.GenericType;
 import models.Paquete;
 import service.PackageRESTClient;
 
-public class PackageController {
+public class PaqueteController {
 
-    private static final Logger LOGGER = Logger.getLogger(PackageController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PaqueteController.class.getName());
 
     @FXML
     private JFXDatePicker fromDatePicker;
@@ -125,6 +126,14 @@ public class PackageController {
         //fillTableWithExampleData();
         // Fill table with database data
         fillTableFromDataBase();
+
+        searchBtn.setOnAction(this::handleSearchAction);
+        applyFilterButton.setOnAction(this::handleDateFilterAction);
+        
+//        printReportBtn.setOnAction(this::handlePrintAction);
+//        removeShipmentBtn.setOnAction(this::handleRemoveShipmentAction);
+//        addShipmentBtn.setOnAction(this::handleAddShipmentAction);
+
         stage.show();
     }
 
@@ -178,7 +187,6 @@ public class PackageController {
         fromDatePicker.setConverter(converter);
         toDatePicker.setConverter(converter);
 
-
         // Listener for 'from' date picker
         fromDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -209,77 +217,99 @@ public class PackageController {
     }
 
     private void setUpSizeFilterComboBox() {
-        // Create a list with all enum values plus a null option
+        // Create an observable list starting with "No Filter" option
         ObservableList<PackageSize> sizeOptions = FXCollections.observableArrayList();
+        //sizeOptions.add();  // Represents "No Filter"
         sizeOptions.addAll(PackageSize.values());
+
+        // Set items to the ComboBox
         sizeFilterComboBox.setItems(sizeOptions);
 
-        // Custom converter to display "No filter" for null
+        // Set default value to "No Filter"
+        sizeFilterComboBox.setValue(null);
+
+        // Custom converter to handle null value and enum display
         sizeFilterComboBox.setConverter(new StringConverter<PackageSize>() {
             @Override
             public String toString(PackageSize size) {
-                return size == null ? "No Filter" : size.name();
+                return size == null ? "No Filter" : size.toString();
             }
 
             @Override
             public PackageSize fromString(String string) {
-                return string.equals("No Filter") ? null : PackageSize.valueOf(string);
+                if (string == null || string.equals("No Filter")) {
+                    return null;
+                }
+                try {
+                    return PackageSize.valueOf(string);
+                } catch (IllegalArgumentException e) {
+                    return null;
+                }
             }
+        });
+
+        // Add change listener to handle selection changes
+        sizeFilterComboBox.setOnAction(event -> {
+            PackageSize selectedSize = sizeFilterComboBox.getValue();
+            handleSizeFilterChange(selectedSize);
         });
     }
 
-    
-    
-    private void setUpTableColumns() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
-        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+    // Method to handle the filter change
+    private void handleSizeFilterChange(PackageSize selectedSize) {
+        List<Paquete> filteredPaqueteList = null;
 
-//        // Date column formatting
-//        dateColumn.setCellFactory(column -> new TableCell<Paquete,Date>() {
-//            @Override
-//            protected void updateItem(Date date, boolean empty) {
-//                super.updateItem(date, empty);
-//                setText(empty || date == null ? null : dateFormatter.format(date));
-//            }
-//        });
+        if (selectedSize == null) {
+            fillTableFromDataBase();
+        } else {
+            try {
+                filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackageBySize(selectedSize);
+                paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
+            } catch (SelectException ex) {
+                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
-//    private void fillTableWithExampleData() {
-//        ObservableList<Paquete> data = FXCollections.observableArrayList(
-//            new Paquete(1, "Alice", "Bob", 2.5, PackageSize.SMALL, LocalDate.now(), true),
-//            new Paquete(2, "Charlie", "Dave", 5.0, PackageSize.MEDIUM, LocalDate.now().minusDays(1), false),
-//            new Paquete(3, "Eve", "Frank", 10.0, PackageSize.LARGE, LocalDate.now().minusDays(2), true),
-//            new Paquete(4, "Grace", "Heidi", 7.5, PackageSize.MEDIUM, LocalDate.now().minusDays(3), false),
-//            new Paquete(5, "Ivan", "Jack", 15.0, PackageSize.EXTRA_LARGE, LocalDate.now().minusDays(4), true)
-//        );
-//
-//        paqueteTableView.setItems(data);
-//    }
-    
+    private void setUpTableColumns() {
+//        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+//        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
+//        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
+//        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
+//        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+//        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+//        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+    }
+
     // fill test data from server 
     private void fillTableFromDataBase() {
-        PackageRESTClient client = new PackageRESTClient(); // Manually manage the client
         try {
-            paqueteTableView.setItems(FXCollections.observableArrayList(client.findAllPackages()));
-        } catch (SelectException ex) {
-            Logger.getLogger(PackageController.class.getName()).log(Level.SEVERE, null, ex);
+            List<Paquete> paqueteList = PaqueteFactory.getPackageInstance().findAllPackages();
+            // Fetch data and populate the TableView
+            paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
+        } catch (Exception e) {
+            // Handle exceptions gracefully
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Data Fetching Failed");
+            alert.setContentText("Could not fetch data from the server. Please try again later.");
         }
-
     }
 
-    @FXML
-    private void onSearch() {
-        String query = searchTextField.getText().trim().toLowerCase();
+    private void handleSearchAction(ActionEvent event) {
+        System.out.println("Search clicked");
 
+        String query = searchTextField.getText().trim().toLowerCase();
+        List<Paquete> filteredPaqueteList = null;
         if (query.isEmpty()) {
-            // If no search query, reset to original data
-            //fillTableWithExampleData();
+            fillTableFromDataBase();
             return;
+        }
+        try {
+            filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByName(query);
+            System.out.println(filteredPaqueteList.toString());
+        } catch (SelectException ex) {
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         ObservableList<Paquete> originalData = paqueteTableView.getItems();
@@ -292,60 +322,80 @@ public class PackageController {
                 filteredData.add(paquete);
             }
 
-            // If query is a valid number, search by weight
-            try {
-                double weightQuery = Double.parseDouble(query);
-                if (paquete.getWeight() == weightQuery) {
-                    filteredData.add(paquete);
-                }
-            } catch (NumberFormatException e) {
-                // Not a valid number, ignore
-            }
         }
 
-        paqueteTableView.setItems(filteredData);
+        paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
     }
 
-    @FXML
-    private void onApplyFilter() {
-        ObservableList<Paquete> originalData = paqueteTableView.getItems();
-        ObservableList<Paquete> filteredData = FXCollections.observableArrayList();
-
-        LocalDate fromDate = fromDatePicker.getValue();
-        LocalDate toDate = toDatePicker.getValue();
-        PackageSize selectedSize = sizeFilterComboBox.getValue();
-
-        for (Paquete paquete : originalData) {
-            boolean dateMatch = true;
-            boolean sizeMatch = true;
-
-            // Date filtering
-//            if (fromDate != null && toDate != null) {
-//                dateMatch = !paquete.getCreationDate().isBefore(fromDate)
-//                                && !paquete.getCreationDate().isAfter(toDate);
-//            }
-
-            // Size filtering
-            if (selectedSize != null) {
-                sizeMatch = paquete.getSize() == selectedSize;
+    private void handleDateFilterAction(ActionEvent event) {
+        Date fromDate = null;
+        if (fromDatePicker.getValue() != null) {
+            fromDate = Date.from(fromDatePicker.getValue()
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
+        Date toDate = null;
+        if (toDatePicker.getValue() != null) {
+            toDate = Date.from(toDatePicker.getValue()
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
+        if (fromDate == null && toDate == null) {
+            fillTableFromDataBase();
+            return;
+        }
+        if (fromDate == null && toDate != null) {
+            filterPackagesBeforeDate(toDate);
+            return;
+        }
+        if (fromDate != null && toDate == null) {
+            filterPackagesAfterDate(fromDate);
+            return;
+        }
+        if (fromDate != null && toDate != null) {
+            if (fromDate.after(toDate)) {
+                // showDateRangeError();
+                return;
             }
+            filterPackagesBetweenDates(fromDate, toDate);
+        }
+    }
 
-            // Add to filtered list if both conditions are met
-            if (dateMatch && sizeMatch) {
-                filteredData.add(paquete);
-            }
+    private void filterPackagesAfterDate(Date fromDate) {
+        List<Paquete> paqueteList = null;
+        try {
+            paqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByDates(fromDate, null);
+        } catch (SelectException ex) {
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        paqueteTableView.setItems(filteredData);
+        paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
     }
 
-    @FXML
+    private void filterPackagesBeforeDate(Date toDate) {
+        List<Paquete> paqueteList = null;
+        try {
+            paqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByDates(null, toDate);
+        } catch (SelectException ex) {
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
+    }
+
+    private void filterPackagesBetweenDates(Date fromDate, Date toDate) {
+        List<Paquete> paqueteList = null;
+        try {
+            paqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByDates(fromDate, toDate);
+        } catch (SelectException ex) {
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
+    }
+
     private void onAddShipment() {
         // TODO: Implement add shipment logic
         System.out.println("Add Shipment clicked");
     }
 
-    @FXML
     private void onRemoveShipment() {
         Paquete selectedPaquete = paqueteTableView.getSelectionModel().getSelectedItem();
         if (selectedPaquete != null) {
@@ -353,7 +403,6 @@ public class PackageController {
         }
     }
 
-    @FXML
     private void onPrintReport() {
         // TODO: Implement print report logic
         System.out.println("Print Report clicked");

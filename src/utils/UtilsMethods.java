@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import models.User;
-import ui.paquete.PackageController;
+import ui.paquete.PaqueteController;
 
 /**
  * Clase que contiene métodos utilitarios para la validación de datos y la

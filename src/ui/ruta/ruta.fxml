@@ -82,7 +82,7 @@
     </top>
     
     <center>
-        <TableView fx:id="table" VBox.vgrow="ALWAYS">
+        <TableView fx:id="rutaTable" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="localizadorColumn" prefWidth="103.1999785900116" text="Localizador" />
                 <TableColumn fx:id="origenColumn" prefWidth="117.5999755859375" text="Origen" />
