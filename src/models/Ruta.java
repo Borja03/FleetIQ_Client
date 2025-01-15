@@ -28,8 +28,6 @@ public class Ruta implements Serializable {
     public Ruta() {
     }
 
-  
-
     private List<EnvioRutaVehiculo> envioRutaVehiculos;
 
     // Getters and Setters

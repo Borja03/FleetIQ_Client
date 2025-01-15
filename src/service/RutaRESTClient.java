@@ -151,13 +151,13 @@ public class RutaRESTClient implements RutaManager {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public <T> T filterBy2Dates_XML(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
+    public <T> T filterBy2Dates_XML(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterBy2Dates/{0}/{1}", new Object[]{firstDate, secondDate}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T filterBy2Dates_JSON(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
+    public <T> T filterBy2Dates_JSON(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("filterBy2Dates/{0}/{1}", new Object[]{firstDate, secondDate}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);

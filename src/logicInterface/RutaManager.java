@@ -49,9 +49,9 @@ public interface RutaManager {
 
     public void create_JSON(Object requestEntity) throws WebApplicationException;
 
-    public <T> T filterBy2Dates_XML(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
+    public <T> T filterBy2Dates_XML(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
 
-    public <T> T filterBy2Dates_JSON(Class<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
+    public <T> T filterBy2Dates_JSON(GenericType<T> responseType, String firstDate, String secondDate) throws WebApplicationException;
 
     public <T> T filterTiempoMenor_XML(GenericType<T> responseType, String tiempo) throws WebApplicationException;
 

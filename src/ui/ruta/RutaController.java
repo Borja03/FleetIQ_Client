@@ -13,9 +13,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -26,6 +28,7 @@ import javax.ws.rs.core.GenericType;
 import logicInterface.RutaManager;
 import models.Ruta;
 import service.RutaRESTClient;
+import utils.UtilsMethods;
 
 public class RutaController {
 
@@ -105,36 +108,8 @@ public class RutaController {
         this.stage = stage;
     }
 
-    private void loadRutaData() throws SelectException {
-        try {
-            // Llamar al servicio REST para obtener las rutas en formato XML
-            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
-            });
-
-            // Convertir la lista de rutas en un ObservableList para el TableView
-            rutaData = FXCollections.observableArrayList(rutas);
-
-            // Enlazar las columnas con las propiedades correspondientes de la clase Ruta
-            localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
-            origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
-            destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
-            distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
-            tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
-            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-
-            // Establecer los elementos en el TableView para mostrar las rutas
-            rutaTable.setItems(rutaData);
-        } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error loading ruta data", e);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected error", e);
-        }
-    }
-
     @FXML
     public void initialize(Parent root) {
-        // Asegúrate de que rutaManager esté inicializado
         rutaManager = RutaManagerFactory.getRutaManager();
 
         Scene scene = new Scene(root);
@@ -145,31 +120,49 @@ public class RutaController {
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         removeShipmentBtn.setDisable(true);
 
-        // Configurar opciones para los filtros de tamaño
         sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
         sizeFilterComboBox1.setItems(FXCollections.observableArrayList(">", "<", "="));
 
-        // Configurar acciones de los filtros
         sizeFilterComboBox.setOnAction(event -> updateUnitLabel());
-
-        // Configurar acción del botón "Apply"
         searchButton1.setOnAction(event -> applyFilterButtonAction());
-
-        // Configurar acción del botón "Search"
         searchButton.setOnAction(event -> searchByLocalizador());
 
         addShipmentBtn.setOnAction(event -> addShipment());
         removeShipmentBtn.setOnAction(event -> removeShipment());
         printReportBtn.setOnAction(event -> printReport());
 
+        rutaTable.setEditable(true);
+
         try {
-            // Llamar al método para cargar las rutas
             loadRutaData();
         } catch (SelectException ex) {
             Logger.getLogger(RutaController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         stage.show();
+    }
+
+    private void loadRutaData() throws SelectException {
+        try {
+            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
+            });
+
+            rutaData = FXCollections.observableArrayList(rutas);
+
+            localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
+            origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
+            destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
+            distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
+            tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
+            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+
+            rutaTable.setItems(rutaData);
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error loading ruta data", e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error", e);
+        }
     }
 
     private void updateUnitLabel() {
@@ -184,22 +177,37 @@ public class RutaController {
     }
 
     private void applyFilterButtonAction() {
-        // Get selected values from combo boxes and the text field
         String filterType = sizeFilterComboBox.getValue();
         String comparisonOperator = sizeFilterComboBox1.getValue();
         String filterValue = filterValueField.getText().trim();
 
+        // Si el campo de valor del filtro está vacío, recargar todas las rutas
         if (filterValue.isEmpty()) {
             try {
-                loadRutaData();  // Llamar al método que carga todas las rutas
-                logger.info("Recargando todas las rutas.");
+                loadRutaData();
+                logger.info("Recargando todas las rutas porque el campo de filtro está vacío.");
             } catch (SelectException e) {
                 logger.log(Level.SEVERE, "Error al recargar las rutas", e);
             }
-            return;  // Terminar el método para evitar buscar por localizador
+            return;
         }
 
-        // Apply filter based on selected type (Time or Distance)
+        try {
+            double value = Double.parseDouble(filterValue);
+            if (value < 0) {
+                showAlert("Error", "El valor del filtro no puede ser negativo.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showAlert("Error", "El valor del filtro debe ser un número válido.");
+            return;
+        }
+
+        if (comparisonOperator == null || comparisonOperator.isEmpty()) {
+            showAlert("Error", "Debe seleccionar un operador de comparación (>, <, =).");
+            return;
+        }
+
         try {
             if ("Filter by Time".equals(filterType)) {
                 applyTimeFilter(comparisonOperator, filterValue);
@@ -261,43 +269,65 @@ public class RutaController {
         rutaTable.setItems(rutaData);
     }
 
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     private void searchByLocalizador() {
-        String searchText = searchTextField.getText().trim(); // Obtener el texto del campo de búsqueda
+        String searchText = searchTextField.getText().trim();
         if (searchText.isEmpty()) {
-            // Si el campo está vacío, recargar todos los datos
             try {
-                loadRutaData();  // Llamar al método que carga todas las rutas
+                loadRutaData();
                 logger.info("Recargando todas las rutas.");
             } catch (SelectException e) {
                 logger.log(Level.SEVERE, "Error al recargar las rutas", e);
             }
-            return;  // Terminar el método para evitar buscar por localizador
+            return;
         }
 
         try {
-            // Intentar convertir el texto de búsqueda en un Integer
             Integer localizador = Integer.parseInt(searchText);
 
-            // Llamar al método del manager para obtener la ruta filtrada por localizador
             Ruta ruta = rutaManager.findByLocalizadorInteger_XML(Ruta.class, localizador);
 
             if (ruta != null) {
-                // Actualizar el ObservableList con la ruta encontrada (solo una)
-                rutaData.clear();  // Limpiar los resultados previos
-                rutaData.add(ruta);  // Añadir la ruta encontrada
-
-                rutaTable.setItems(rutaData);  // Mostrar la ruta en el TableView
+                rutaData.clear();
+                rutaData.add(ruta);
+                rutaTable.setItems(rutaData);
                 logger.info("Ruta filtrada cargada correctamente.");
             } else {
                 logger.info("No se encontró ninguna ruta con el localizador proporcionado.");
             }
         } catch (NumberFormatException e) {
-            // Manejar el caso cuando el texto no se puede convertir en un Integer
             logger.warning("El texto de búsqueda no es un número válido.");
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error al buscar por localizador", e);
         }
     }
+    
+     /*@FXML
+    private void applyDateFilter(ActionEvent event) {
+        try {
+            Date from = fromDatePicker.getValue() != null ? java.sql.Date.valueOf(fromDatePicker.getValue()) : null;
+            Date to = toDatePicker.getValue() != null ? java.sql.Date.valueOf(toDatePicker.getValue()) : null;
+
+            if (from == null && to == null) {
+                throw new IllegalArgumentException("Debe llenar al menos uno de los campos de fecha.");
+            }
+
+            List<Ruta> rutas = RutaManagerFactory.getRutaManager().filterBy2Dates_XML(new GenericType<List<Ruta>>() {
+            }, from.toString(), to.toString());
+            rutas.setAll(rutas);
+        } catch (IllegalArgumentException e) {
+            new UtilsMethods().showAlert("Error de filtro", e.getMessage());
+        } catch (Exception e) {
+            new UtilsMethods().showAlert("Error al filtrar por fechas", e.getMessage());
+        }
+    }*/
 
     private void addShipment() {
         // Lógica para agregar una nueva ruta
