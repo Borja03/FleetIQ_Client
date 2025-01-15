@@ -9,10 +9,10 @@ import exception.CreateException;
 import exception.DeleteException;
 import exception.SelectException;
 import exception.UpdateException;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import javax.ws.rs.ClientErrorException;
+import static javafx.scene.input.KeyCode.T;
+import javax.ws.rs.core.GenericType;
 import models.Vehiculo;
 
 /**
@@ -34,5 +34,7 @@ public interface VehicleManager {
     List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException;
 
     List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException;
+
+    List<Vehiculo> findVehiculosByRegistrationDateRange_XML(Date firstDate, Date secondDate) throws SelectException;
 
 }

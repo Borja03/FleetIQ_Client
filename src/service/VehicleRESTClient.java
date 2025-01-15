@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.Date;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -42,16 +43,16 @@ public class VehicleRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
-    public <T> T findVehiculosByItvDateRange_XML(Class<T> responseType, String endDate, String startDate) throws ClientErrorException {
+    public <T> T findVehiculosByItvDateRange_XML(GenericType<List<Vehiculo>> responseType, Date startDateConverted, Date endDateConverted) throws ClientErrorException {
         WebTarget resource = webTarget;
-        if (endDate != null) {
-            resource = resource.queryParam("endDate", endDate);
+        if (endDateConverted != null) {
+            resource = resource.queryParam(endDateConverted.toString());
         }
-        if (startDate != null) {
-            resource = resource.queryParam("startDate", startDate);
+        if (startDateConverted != null) {
+            resource = resource.queryParam(startDateConverted.toString());
         }
         resource = resource.path("filterByITVDate");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get((GenericType<T>) responseType);
     }
 
     public <T> T findVehiculosByItvDateRange_JSON(Class<T> responseType, String endDate, String startDate) throws ClientErrorException {
@@ -118,14 +119,16 @@ public class VehicleRESTClient {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public <T> T findVehiculosByRegistrationDateRange_XML(Class<T> responseType, String endDate, String startDate) throws ClientErrorException {
+    public <T> T findVehiculosByRegistrationDateRange_XML(GenericType<T> responseType, String endDate, String startDate) throws ClientErrorException {
         WebTarget resource = webTarget;
+
         if (endDate != null) {
             resource = resource.queryParam("endDate", endDate);
         }
         if (startDate != null) {
             resource = resource.queryParam("startDate", startDate);
         }
+
         resource = resource.path("filterByITVRegistration");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }

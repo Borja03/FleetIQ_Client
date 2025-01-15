@@ -9,9 +9,11 @@ import exception.CreateException;
 import exception.DeleteException;
 import exception.SelectException;
 import exception.UpdateException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import logicInterface.VehicleManager;
 import models.PackageSize;
@@ -89,6 +91,24 @@ public class VehicleManagerImp implements VehicleManager {
         List<Vehiculo> vehiclesList = webClient.findAllVehiculos(responseType);
         return vehiclesList;
 
+    }
+
+    @Override
+    public List<Vehiculo> findVehiculosByRegistrationDateRange_XML(Date firstDate, Date secondDate) throws SelectException {
+        try {
+            // Convertir Date a String en el formato adecuado (ejemplo: "yyyy-MM-dd")
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String startDate = sdf.format(firstDate);
+            String endDate = sdf.format(secondDate);
+
+            // Llamar al método REST con los parámetros correctos
+            return webClient.findVehiculosByRegistrationDateRange_XML(
+                    new GenericType<List<Vehiculo>>() {
+            }, endDate, startDate
+            );
+        } catch (Exception e) {
+            throw new SelectException("Error retrieving vehicles: " + e.getMessage(), e);
+        }
     }
 
 }
