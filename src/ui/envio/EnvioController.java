@@ -18,15 +18,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
+import models.EnvioRutaVehiculo;
 import models.Estado;
+import models.Ruta;
 import models.User;
-import ui.paquete.PackageController;
+import models.Vehiculo;
+import ui.paquete.PaqueteController;
 
 public class EnvioController {
 
@@ -94,7 +99,6 @@ public class EnvioController {
         stage.setTitle("Envio");
         stage.setResizable(false);
         stage.centerOnScreen();
-        removeShipmentBtn.setDisable(true);
 
         envioService = EnvioFactory.getEnvioInstance();
         envioList = FXCollections.observableArrayList();
@@ -103,14 +107,15 @@ public class EnvioController {
         idColumn.setEditable(false);
         estadoColumn.setEditable(false);
         rutaColumn.setEditable(false);
-        
+
         estadoFilterComboBox.getItems().setAll(Estado.ENTREGADO.toString(),
                 Estado.EN_REPARTO.toString(),
                 Estado.PREPARACION.toString());
-        
+
         setUpTableColumns();
-        fechaEnvioColumn.setCellFactory(column -> createDateCell());
-        fechaEntregaColumn.setCellFactory(column -> createDateCell());
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        configureRemoveButton();
 
         loadInitialData();
         stage.show();
@@ -118,30 +123,30 @@ public class EnvioController {
 
     private void setUpTableColumns() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        //fechaEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEnvio"));
-        //fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
         estadoColumn.setCellValueFactory(new PropertyValueFactory<>("estado"));
         numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
         creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
         rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
         vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
-    }
 
-    private TableCell<Envio, String> createDateCell() {
-        return new TableCell<Envio, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item);
-                }
+        fechaEnvioColumn.setCellValueFactory(cellData -> {
+            Date fechaEnvio = cellData.getValue().getFechaEnvio();
+            if (fechaEnvio != null) {
+                return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEnvio));
+            } else {
+                return new SimpleStringProperty("");
             }
-        };
+        });
+        
+        fechaEntregaColumn.setCellValueFactory(cellData -> {
+            Date fechaEntrega = cellData.getValue().getFechaEntrega();
+            if (fechaEntrega != null) {
+                return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEntrega));
+            } else {
+                return new SimpleStringProperty("");
+            }
+        });
     }
-    
-
 
     private void loadInitialData() {
         try {
@@ -159,19 +164,6 @@ public class EnvioController {
             Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, "Error cargando los datos iniciales.", ex);
             new UtilsMethods().showAlert("Error", "Error al cargar los datos iniciales.");
         }
-
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                String estadoSeleccionado = newValue.getEstado().toString();
-                try {
-                    List<Envio> enviosFiltrados = envioService.filterEstado_XML(new GenericType<List<Envio>>() {
-                    }, estadoSeleccionado);
-                    envioList.setAll(enviosFiltrados);
-                } catch (Exception ex) {
-                    Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, "Error al filtrar por estado", ex);
-                }
-            }
-        });
     }
 
     @FXML
@@ -239,6 +231,12 @@ public class EnvioController {
     private void addEnvio(ActionEvent event) {
         try {
             Envio nuevoEnvio = new Envio();
+//            EnvioRutaVehiculo fk = new EnvioRutaVehiculo();
+//            Ruta fkRuta = new Ruta();
+//            Vehiculo fkVehiculo = new Vehiculo();
+//            fk.setRuta(fkRuta);
+//            fk.setVehiculo(fkVehiculo);
+//            nuevoEnvio.setEnvioRutaVehiculo(fk);
             envioList.add(nuevoEnvio);
             envioService.create_XML(nuevoEnvio);
         } catch (Exception e) {
@@ -249,18 +247,30 @@ public class EnvioController {
     @FXML
     private void removeEnvio(ActionEvent event) {
         try {
-            Envio selectedEnvio = table.getSelectionModel().getSelectedItem();
-            if (selectedEnvio == null) {
-                throw new IllegalArgumentException("Debes seleccionar un envío para eliminar.");
+            ObservableList<Envio> selectedEnvios = table.getSelectionModel().getSelectedItems();
+            if (selectedEnvios.isEmpty()) {
+                throw new IllegalArgumentException("Debes seleccionar al menos un envío para eliminar.");
             }
 
-            envioService.remove(selectedEnvio.getId());
-            envioList.remove(selectedEnvio);
+            for (Envio envio : selectedEnvios) {
+                envioService.remove(envio.getId());
+                envioList.remove(envio);
+            }
         } catch (IllegalArgumentException e) {
             new UtilsMethods().showAlert("Error", e.getMessage());
         } catch (Exception e) {
-            new UtilsMethods().showAlert("Error al eliminar envío", e.getMessage());
+            new UtilsMethods().showAlert("Error al eliminar envío(s)", e.getMessage());
         }
+    }
+
+    private void configureRemoveButton() {
+        ObservableList<Envio> selectedItems = table.getSelectionModel().getSelectedItems();
+
+        selectedItems.addListener((ListChangeListener<Envio>) change -> {
+            removeShipmentBtn.setDisable(selectedItems.isEmpty());
+        });
+
+        removeShipmentBtn.setDisable(true);
     }
 
     @FXML
