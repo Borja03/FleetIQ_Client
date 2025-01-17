@@ -38,7 +38,7 @@ public class PackageRESTClient {
     
     public PackageRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("package");
+        webTarget = client.target(BASE_URI).path("paquete");
     }
 
     public List<Paquete> findPackagesByName(GenericType<List<Paquete>> responseType, String name) throws WebApplicationException {

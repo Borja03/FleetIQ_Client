@@ -3,8 +3,10 @@ package models;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -12,6 +14,8 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Omar
  */
 
+
+@XmlSeeAlso({Admin.class, Trabajador.class}) 
 @XmlRootElement
 public class User implements Serializable {
 
@@ -21,45 +25,58 @@ public class User implements Serializable {
     private String email;
     private String name;
     private String password;
-    private String country;
     private String city;
     private String street;
     private Integer zip;
     private String verifcationCode;
     private boolean activo;
-    private List<Envio> enviosList;
-    
+
+    //@Enumerated(EnumType.STRING)
+    private String user_type;
+
     public User() {
     }
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public User(String email, String name, String password, String country, String city, String street, Integer zip, String verifcationCode, boolean activo, List<Envio> enviosList) {
+    public User(Long id, String email, String name, String password, String city, String street, Integer zip, String verifcationCode, boolean activo, String user_type, List<Envio> enviosList) {
+        this.id = id;
         this.email = email;
         this.name = name;
         this.password = password;
-        this.country = country;
         this.city = city;
         this.street = street;
         this.zip = zip;
         this.verifcationCode = verifcationCode;
         this.activo = activo;
+        this.user_type = user_type;
         this.enviosList = enviosList;
     }
 
-    public User(String email, String password, String name, boolean active, int companyID, String street, String city, int zip) {
+    public User(String email, String name, String password, String city, String street, Integer zip, String verifcationCode, boolean activo) {
+        // anotation to be unnique
         this.email = email;
         this.name = name;
         this.password = password;
-        this.country = country;
         this.city = city;
         this.street = street;
         this.zip = zip;
+        this.verifcationCode = verifcationCode;
         this.activo = activo;
     }
+    
+   
+    public User(String email, String name, String password, String city, String street, Integer zip) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.city = city;
+        this.street = street;
+        this.zip = zip;
+        this.verifcationCode = verifcationCode;
+        this.user_type = user_type;
+    }
+
+
+    private List<Envio> enviosList;
 
     @XmlTransient
     public List<Envio> getEnviosList() {
@@ -92,14 +109,6 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public String getCity() {
@@ -150,6 +159,14 @@ public class User implements Serializable {
         this.verifcationCode = verifcationCode;
     }
 
+    public String getUser_type() {
+        return user_type;
+    }
+
+    public void setUser_type(String user_type) {
+        this.user_type = user_type;
+    }
+
     //
     @Override
     public int hashCode() {
@@ -160,9 +177,8 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + ", country=" + country + ", city=" + city + ", street=" + street + ", zip=" + zip + ", verifcationCode=" + verifcationCode + ", activo=" + activo + ", enviosList=" + enviosList + '}';
+        return "User{" + "id=" + id + ", email=" + email + ", name=" + name + ", password=" + password + ", city=" + city + ", street=" + street + ", zip=" + zip + ", verifcationCode=" + verifcationCode + ", activo=" + activo + ", enviosList=" + enviosList + '}';
     }
 
-  
-
 }
+

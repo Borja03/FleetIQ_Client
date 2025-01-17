@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.login.LogInController">
    <center>
@@ -24,7 +25,7 @@
                   <Insets left="250.0" />
                </VBox.margin>
             </ImageView>
-              <Pane fx:id="centralPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="385.0" prefWidth="600.0">
+              <Pane fx:id="centralPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="446.0" prefWidth="600.0">
                   <children>
                       <Label fx:id="labelEmail" layoutX="31.0" layoutY="53.0" prefHeight="17.0" prefWidth="69.0" text="Email" />
                       <Label fx:id="passwordLabel" layoutX="31.0" layoutY="174.0" prefHeight="17.0" prefWidth="135.0" text="Password" />
@@ -42,11 +43,25 @@
                           </graphic>
                       </Button>
       
-                      <VBox alignment="CENTER" layoutX="220.0" layoutY="270.0" spacing="5">
-                          <Button fx:id="logInButton" mnemonicParsing="false" onAction="#handleLogInButtonAction" prefHeight="54.0" prefWidth="123.0" text="Log in" />
-                          <Label fx:id="orLabelLogIn" text="or" />
-                          <Hyperlink fx:id="forgotPasswordHlink" ellipsisString="" onAction="#handleForgotPasswordLinkAction" text="forgot password" />
-                     <Hyperlink fx:id="createUserLink1" layoutX="38.0" layoutY="92.0" onAction="#handleCreateUserLinkAction" text="create user" />
+                      <VBox alignment="CENTER" layoutX="205.0" layoutY="242.0" prefHeight="203.0" prefWidth="171.0" spacing="5">
+                          <Button fx:id="logInButton" mnemonicParsing="false" onAction="#handleLogInButtonAction" prefHeight="43.0" prefWidth="123.0" text="Log in">
+                        <VBox.margin>
+                           <Insets bottom="10.0" top="20.0" />
+                        </VBox.margin>
+                        <font>
+                           <Font name="System Bold" size="14.0" />
+                        </font></Button>
+                          <Hyperlink fx:id="forgotPasswordHlink" ellipsisString="" onAction="#handleForgotPasswordLinkAction" prefHeight="28.0" prefWidth="145.0" text="Forgot password" textAlignment="CENTER">
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                        <font>
+                           <Font size="14.0" />
+                        </font></Hyperlink>
+                     <Hyperlink fx:id="createUserLink1" layoutX="38.0" layoutY="92.0" onAction="#handleCreateUserLinkAction" prefHeight="28.0" prefWidth="141.0" text="Create new user" textAlignment="CENTER">
+                        <font>
+                           <Font size="14.0" />
+                        </font></Hyperlink>
                       </VBox>
                   </children>
                <VBox.margin>

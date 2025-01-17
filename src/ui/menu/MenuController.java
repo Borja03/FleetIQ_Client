@@ -1,6 +1,5 @@
 package ui.menu;
 
-import exception.SelectException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,7 +7,6 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
@@ -16,7 +14,6 @@ import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import models.User;
-import ui.envio.EnvioController;
 import ui.login.LogInController;
 import ui.paquete.PaqueteController;
 import ui.profile.MainController;
@@ -84,18 +81,19 @@ public class MenuController {
     private static final Logger LOGGER = Logger.getLogger("package menu");
 
     public void initStage() {
+    
 
     }
 
     @FXML
     public void handlePaqueteMenuItemAction(Event event) {
-        try {
+       try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
             Parent root = loader.load();
             PaqueteController controller = loader.getController();
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
-            controller.initStage(root, connectedUser);
+            controller.initStage(root,connectedUser);
             LOGGER.info("Paquete window opened");
             // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
@@ -107,27 +105,12 @@ public class MenuController {
 
     @FXML
     private void handleEnvioMenuItemAction(Event event) {
-        try {
-             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/envio/envio.fxml"));
-            Parent root = loader.load();
-            EnvioController controller = loader.getController();
-            Stage loginStage = new Stage();
-            controller.setStage(loginStage);
-            controller.initStage(root);
-            LOGGER.info("Envio window opened");
-            // Close the current stage (the one with the menu)
-            Stage currentStage = (Stage) menuBar.getScene().getWindow();
-            currentStage.close();
-        } catch (IOException ex) {
-            LOGGER.severe("Error loading paquete window: " + ex);
-        } catch (Exception ex) {
-            Logger.getLogger(MenuController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        System.out.println("Envio menu item clicked");
     }
 
     @FXML
     private void handleRutaMenuItemAction(Event event) {
-        try {
+           try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/ruta/ruta.fxml"));
             Parent root = loader.load();
             RutaController controller = loader.getController();
@@ -200,33 +183,28 @@ public class MenuController {
 
     @FXML
     private void handleProfileMenuItemAction(Event event) {
-        connectedUser = new User();
-        connectedUser.setEmail("email@email.com");
-        connectedUser.setName("AdminTest");
-        connectedUser.setPassword("12345");
-        connectedUser.setCity("city");
-        connectedUser.setStreet("street");
-        connectedUser.setZip(1234);
-        try {
+            try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/profile/Main.fxml"));
             Parent root = loader.load();
 
             MainController controller = loader.getController();
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
-            controller.initStage(root, connectedUser);
+            controller.initStage(root);
             LOGGER.info("Finish session and open login window");
             // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
+
         } catch (IOException ex) {
             LOGGER.severe("Error loading login window: " + ex);
         }
     }
 
+
     @FXML
     private void handleLogoutMenuItemAction(Event event) {
-
+        
         // logic to finish session here 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/login/LogIn.fxml"));

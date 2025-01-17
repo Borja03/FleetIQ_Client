@@ -1,6 +1,7 @@
 package ui.profile;
 
-
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPasswordField;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Optional;
@@ -32,6 +33,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import models.User;
 import ui.login.LogInController;
+import ui.paquete.PaqueteController;
 import utils.UtilsMethods;
 
 /**
@@ -77,12 +79,41 @@ public class MainController {
     @FXML
     private Pane mainPane;
 
+    @FXML
+    private JFXButton btn_profile;
+
+    @FXML
+    private JFXButton btn_password;
+
+    @FXML
+    private VBox vb_profile;
+
+    @FXML
+    private VBox vb_password;
+
+    @FXML
+    private JFXPasswordField newPasswordField;
+
+    @FXML
+    private JFXButton showPasswordBtn;
+
+    @FXML
+    private JFXPasswordField repeatPasswordField;
+
+    @FXML
+    private JFXButton showRepeatedPasswordBtn;
+
+    @FXML
+    private JFXButton btn_update_password;
+
     // Image paths for the eye icons
     private final Image eyeClosed = new Image(getClass().getResourceAsStream("/image/eye-solid.png"));
     private final Image eyeOpen = new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png"));
 
     private boolean passwordIsVisible = false;
-
+    // Text fields to show passwords when visible
+    private TextField visibleNewPasswordField;
+    private TextField visibleRepeatPasswordField;
     // Context menus for copying selected text
     private ContextMenu contextMenu;
 
@@ -107,13 +138,13 @@ public class MainController {
      * @param root The root element of the scene.
      * @param user The user object containing the user's details.
      */
-    public void initStage(Parent root, User user) {
+    public void initStage(Parent root) {
         logger.info("Initializing MainController stage.");
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Main");
         stage.setResizable(false);
-       // stage.getIcons().add(new Image("/Images/userIcon.png"));
+        // stage.getIcons().add(new Image("/Images/userIcon.png"));
 
         // Set initial visibility of password fields
         passwordField.setVisible(true);
@@ -124,20 +155,19 @@ public class MainController {
         createContextMenu();
 
         // Link event handlers
-       
         eyeButton.setOnAction(this::togglePasswordVisibility);
-
+        //User user = PaqueteController.userSession;
         // Set user details in text fields
-        emailField.setText(user.getEmail());
-        nameField.setText(user.getName());
+        emailField.setText(PaqueteController.userSession.getEmail());
+        nameField.setText(PaqueteController.userSession.getName());
 
         // Concatenate street, city, and zip for the address field
-        String address = String.format("%s, %s, %d", user.getStreet(), user.getCity(), user.getZip());
+        String address = String.format("%s, %s, %d", PaqueteController.userSession.getStreet(), PaqueteController.userSession.getCity(), PaqueteController.userSession.getZip());
         addressField.setText(address);
 
         // Set the user's password (ensure that this is a secure way of handling passwords)
-        passwordField.setText(user.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
-
+        passwordField.setText(PaqueteController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
+        System.out.println(PaqueteController.userSession.toString());
         // menu
         // Initialize context menu
         initializeContextMenu();
@@ -148,6 +178,11 @@ public class MainController {
         // Load default theme
         //currentTheme = loadThemePreference();
         loadTheme(LogInController.currentTheme);
+
+        // Set initial visibility
+        vb_profile.setVisible(true);
+        vb_password.setVisible(false);
+        swichBetweenProfilePassword();
 
         logger.info("MainController initialized.");
         stage.show();
@@ -192,41 +227,39 @@ public class MainController {
      *
      * @param theme the theme preference to save
      */
-
-private void saveThemePreference(String theme) {
-    try {
-        Properties props = new Properties();
-        props.setProperty("theme", theme);
-        props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
-    } catch (IOException e) {
-        logger.severe("Error saving theme preference: " + e.getMessage());
+    private void saveThemePreference(String theme) {
+        try {
+            Properties props = new Properties();
+            props.setProperty("theme", theme);
+            props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
+        } catch (IOException e) {
+            logger.severe("Error saving theme preference: " + e.getMessage());
+        }
     }
-}
+
     /**
      * Loads the saved theme preference from a configuration file. If no
      * preference is found, returns the default theme "light".
      *
      * @return the saved theme preference, or "light" if no preference is found
      */
+    /**
+     * Loads the saved theme preference from a configuration file using
+     * ResourceBundle. If no preference is found, returns the default theme
+     * "light".
+     *
+     * @return the saved theme preference, or "light" if no preference is found
+     */
+    private String loadThemePreference() {
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
+            return bundle.getString("theme");
+        } catch (Exception e) {
+            // Log an error message if loading the theme preference fails
+        }
 
-
-/**
- * Loads the saved theme preference from a configuration file using ResourceBundle.
- * If no preference is found, returns the default theme "light".
- *
- * @return the saved theme preference, or "light" if no preference is found
- */
-private String loadThemePreference() {
-    try {
-        ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
-        return bundle.getString("theme");
-    } catch (Exception e) {
-        // Log an error message if loading the theme preference fails
+        return "light";
     }
-
-    return "light";
-}
-
 
     /**
      * Switches to the specified theme by loading it and saving the preference.
@@ -377,29 +410,29 @@ private String loadThemePreference() {
      */
     @FXML
     private void togglePasswordVisibility(ActionEvent event) {
-    // Check if the password is currently visible
-    if (passwordIsVisible) {
-        // Show the password field (masked) and hide the plain password field
-        passwordField.setVisible(true);
-        plainPasswordField.setVisible(false);
-        
-        // Change the eye icon to indicate the password is hidden
-        eyeImageView.setImage(eyeClosed);
-    } else {
-        // Hide the password field (masked) and show the plain password field
-        passwordField.setVisible(false);
-        plainPasswordField.setVisible(true);
-        
-        // Set the plain password field to show the actual password text
-        plainPasswordField.setText(passwordField.getText()); // Show the real password
-        
-        // Change the eye icon to indicate the password is visible
-        eyeImageView.setImage(eyeOpen);
+        // Check if the password is currently visible
+        if (passwordIsVisible) {
+            // Show the password field (masked) and hide the plain password field
+            passwordField.setVisible(true);
+            plainPasswordField.setVisible(false);
+
+            // Change the eye icon to indicate the password is hidden
+            eyeImageView.setImage(eyeClosed);
+        } else {
+            // Hide the password field (masked) and show the plain password field
+            passwordField.setVisible(false);
+            plainPasswordField.setVisible(true);
+
+            // Set the plain password field to show the actual password text
+            plainPasswordField.setText(passwordField.getText()); // Show the real password
+
+            // Change the eye icon to indicate the password is visible
+            eyeImageView.setImage(eyeOpen);
+        }
+
+        // Toggle the visibility state for the next action
+        passwordIsVisible = !passwordIsVisible;
     }
-    
-    // Toggle the visibility state for the next action
-    passwordIsVisible = !passwordIsVisible;
-}
 
     /**
      * Navigates to a different screen based on the provided FXML path and
@@ -409,68 +442,88 @@ private String loadThemePreference() {
      * @param windowTitle The title for the new window.
      */
     private void navigateToScreen(String fxmlPath, String windowTitle) {
-    try {
-        // Load the FXML file using the FXMLLoader
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-        
-        // Create the root node from the loaded FXML
-        Parent root = loader.load();
-        
-        // Get the controller associated with the loaded FXML
-        LogInController controller = loader.getController();
-        
-        // Close the current stage (window)
-        stage.close();
-        
-        // Create a new stage (window) for the next screen
-        Stage newStage = new Stage();
-        
-        // Pass the new stage to the controller for further initialization
-        controller.setStage(newStage);
-        
-        // Initialize the controller with the loaded root node
-        controller.initialize(root);
-    } catch (Exception e) {
-        // Log an error if the screen fails to load
-        logger.log(Level.SEVERE, "Failed to load {0} screen: " + e.getMessage(), windowTitle);
+        try {
+            // Load the FXML file using the FXMLLoader
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+
+            // Create the root node from the loaded FXML
+            Parent root = loader.load();
+
+            // Get the controller associated with the loaded FXML
+            LogInController controller = loader.getController();
+
+            // Close the current stage (window)
+            stage.close();
+
+            // Create a new stage (window) for the next screen
+            Stage newStage = new Stage();
+
+            // Pass the new stage to the controller for further initialization
+            controller.setStage(newStage);
+
+            // Initialize the controller with the loaded root node
+            controller.initialize(root);
+        } catch (Exception e) {
+            // Log an error if the screen fails to load
+            logger.log(Level.SEVERE, "Failed to load {0} screen: " + e.getMessage(), windowTitle);
+        }
     }
-}
+
+    private void swichBetweenProfilePassword() {
+        btn_profile.setOnAction(event -> {
+            vb_profile.setVisible(true);
+            vb_password.setVisible(false);
+
+        });
+
+        btn_password.setOnAction(event -> {
+            vb_profile.setVisible(false);
+            vb_password.setVisible(true);
+
+        });
+    }
+
+    private void updatePassword() {
+        // Implement your password update logic here
+
+        // TODO: Add your password validation and update logic
+        System.out.println("Update password called with: ");
+    }
 
     /**
      * Handles the exit action with confirmation dialog.
      *
      * @param event The event triggered when closing the stage.
      */
-   private void handleOnActionExit(Event event) {
-    try {
-        // Create a confirmation alert to ask the user if they want to exit
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Are you sure you want to exit the application?",
-                ButtonType.OK, ButtonType.CANCEL);
-        
-        // Show the alert and wait for the user's response
-        Optional<ButtonType> result = alert.showAndWait();
-        
-        // Check if the user confirmed the exit action
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // If confirmed, exit the application
-                    saveThemePreference(LogInController.currentTheme);
+    private void handleOnActionExit(Event event) {
+        try {
+            // Create a confirmation alert to ask the user if they want to exit
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                            "Are you sure you want to exit the application?",
+                            ButtonType.OK, ButtonType.CANCEL);
 
-            Platform.exit();
-        } else {
-            // If not confirmed, consume the event to prevent exit
-            event.consume();
+            // Show the alert and wait for the user's response
+            Optional<ButtonType> result = alert.showAndWait();
+
+            // Check if the user confirmed the exit action
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // If confirmed, exit the application
+                saveThemePreference(LogInController.currentTheme);
+
+                Platform.exit();
+            } else {
+                // If not confirmed, consume the event to prevent exit
+                event.consume();
+            }
+        } catch (Exception e) {
+            // If an error occurs while attempting to exit, show an error alert
+            String errorMsg = "Error exiting application: " + e.getMessage();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                            errorMsg,
+                            ButtonType.OK);
+
+            // Display the error alert
+            alert.showAndWait();
         }
-    } catch (Exception e) {
-        // If an error occurs while attempting to exit, show an error alert
-        String errorMsg = "Error exiting application: " + e.getMessage();
-        Alert alert = new Alert(Alert.AlertType.ERROR,
-                errorMsg,
-                ButtonType.OK);
-        
-        // Display the error alert
-        alert.showAndWait();
     }
 }
-}
-

@@ -32,6 +32,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
+import models.Admin;
 import ui.paquete.PaqueteController;
 import ui.profile.MainController;
 import ui.resetpassword.ResetPasswordController;
@@ -297,10 +298,9 @@ public class LogInController {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
-
         User loggedInUser;
         try {
-            loggedInUser = SignableFactory.getSignable().signIn(user, User.class);           
+            loggedInUser = SignableFactory.getSignable().signIn(user, User.class);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
             Parent root = null;
             try {
@@ -392,7 +392,7 @@ public class LogInController {
                 MainController controller = loader.getController();
                 Stage newStage = new Stage();
                 controller.setStage(newStage);
-                controller.initStage(root, user);
+                controller.initStage(root);
                 stage.close();
             }
 

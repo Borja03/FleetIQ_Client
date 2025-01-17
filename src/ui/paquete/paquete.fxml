@@ -32,7 +32,7 @@
                         <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="150.0" promptText="dd/MM/yyyy" scaleShape="false" />
                         <Label text="To: " />
                         <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="150.0" promptText="dd/MM/yyyy" />
-                        <JFXButton fx:id="applyFilterButton" prefHeight="30.0" text="Apply" />
+                        <JFXButton fx:id="filterDatesBtn" prefHeight="30.0" text="Apply" />
                     </HBox>
                 </VBox>
 

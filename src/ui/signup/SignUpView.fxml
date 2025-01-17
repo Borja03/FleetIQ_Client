@@ -365,9 +365,9 @@
                   <Insets />
                </VBox.margin>
                   </HBox>
-                  <HBox alignment="CENTER" layoutX="10.0" layoutY="475.0" prefHeight="80.0" prefWidth="520.0">
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="475.0" prefHeight="100.0" prefWidth="643.0">
                      <children>
-                        <Label fx:id="lbl_error" contentDisplay="CENTER" prefHeight="54.0" prefWidth="544.0" textAlignment="CENTER" textFill="#df0e0e" textOverrun="CLIP" wrapText="true">
+                        <Label fx:id="lbl_error" contentDisplay="CENTER" prefHeight="68.0" prefWidth="544.0" textAlignment="CENTER" textFill="#df0e0e" textOverrun="CLIP" wrapText="true">
                            <HBox.margin>
                               <Insets top="10.0" />
                            </HBox.margin>
