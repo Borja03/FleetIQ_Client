@@ -15,16 +15,21 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement
-public class Trabajador extends User implements Serializable {
+public class Trabajador extends User{
+
+//    private static final long serialVersionUID = 1L;
 
     private String departamento;
 
     public Trabajador() {
     }
 
-    public Trabajador(String email, String password, String name, boolean active, int companyID, String street, String city, int zip) {
-        super();
+    public Trabajador(String email, String name, String password, 
+                    String city, String street, Integer zip, String verifcationCode, boolean activo,String departamento) {
+        super(email, name, password, city, street, zip, verifcationCode, activo);
+        this.departamento = departamento;
     }
+
 
     public String getDepartamento() {
         return departamento;
@@ -56,8 +61,8 @@ public class Trabajador extends User implements Serializable {
 
     @Override
     public String toString() {
-        //  return "entitie.Trabajador[ id=" + id + " ]";
-        return null;
+          return "entitie.Trabajador[ id=" + id + " ]";
+
     }
 
 }

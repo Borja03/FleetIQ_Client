@@ -5,7 +5,6 @@
  */
 package models;
 
-import java.io.Serializable;
 import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -14,12 +13,20 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Omar
  */
 @XmlRootElement
-public class Admin extends User  implements Serializable {
+public class Admin extends User {
 
+    //private static final long serialVersionUID = 1L;
     private Date ultimoInicioSesion;
 
-    public Admin(String email, String password, String name, boolean active, int companyID, String street, String city, int zip) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Admin() {
+    }
+
+    // Modified constructor to match User's constructor pattern
+    public Admin(String email, String name, String password, String city,
+                    String street, Integer zip, String verifcationCode,
+                    boolean activo, Date ultimoInicioSesion) {
+        super(email, name, password, city, street, zip, verifcationCode, activo);
+        this.ultimoInicioSesion = ultimoInicioSesion;
     }
 
     public Date getUltimoInicioSesion() {
@@ -52,7 +59,8 @@ public class Admin extends User  implements Serializable {
 
     @Override
     public String toString() {
-        return "entitie.AdminEntity[ id=" + id + " ]";
+        return   super.toString() + "Admin{" + "ultimoInicioSesion=" + ultimoInicioSesion + '}';
     }
+
 
 }

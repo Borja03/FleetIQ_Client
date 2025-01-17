@@ -116,7 +116,6 @@
 
 
 
-/* section in rest password */
 .section-box {
     -fx-background-color: #f9f9f9;
     -fx-border-color: #e0e0e0;
@@ -130,4 +129,12 @@
     -fx-font-weight: bold;
     -fx-text-fill: #333333;
     -fx-padding: 5 0 10 0;
+}
+
+.table-view .table-column {
+    -fx-alignment: CENTER;
+}
+
+.table-view .column-header {
+    -fx-alignment: CENTER;
 }

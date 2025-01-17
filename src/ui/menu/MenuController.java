@@ -183,13 +183,6 @@ public class MenuController {
 
     @FXML
     private void handleProfileMenuItemAction(Event event) {
-        connectedUser = new User();
-         connectedUser.setEmail("email@email.com");
-        connectedUser.setName("AdminTest");
-        connectedUser.setPassword("12345");
-        connectedUser.setCity("city");
-        connectedUser.setStreet("street");
-        connectedUser.setZip(1234);
             try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/profile/Main.fxml"));
             Parent root = loader.load();
@@ -197,7 +190,7 @@ public class MenuController {
             MainController controller = loader.getController();
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
-            controller.initStage(root,connectedUser);
+            controller.initStage(root);
             LOGGER.info("Finish session and open login window");
             // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
