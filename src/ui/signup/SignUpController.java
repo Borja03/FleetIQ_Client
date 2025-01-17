@@ -595,7 +595,7 @@ private String loadThemePreference() {
      */
     private void performSignUp(String email, String password, String name, String street, String city, int zip) {
       //  User user = new User(email, password, name, isActive, street, city, zip);
-     User user = newUser(email,name, password,city,  street,  zip);
+     User user = new User(email,name, password,city,  street,  zip);
         user.setUser_type("admin");
         try {
             // Attempting to sign up the user
@@ -751,9 +751,6 @@ private String loadThemePreference() {
     alert.show();
 } 
 
-    private User newUser(String email, String name, String password, String city, String street, int zip) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
  
 
