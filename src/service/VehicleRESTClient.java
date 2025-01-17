@@ -30,7 +30,7 @@ public class VehicleRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/FleeIQServer/webresources";
+    private static final String BASE_URI = "http://localhost:8080/FleetIQServer/webresources";
 
     public VehicleRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
