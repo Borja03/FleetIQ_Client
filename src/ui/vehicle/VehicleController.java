@@ -25,6 +25,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import models.Vehiculo;
 
 /**
  * Controller for managing the Vehiculo UI. Handles initialization,
