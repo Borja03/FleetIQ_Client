@@ -31,7 +31,7 @@
                         <JFXDatePicker fx:id="fromDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="From Date" scaleShape="false" />
                         <Label text="To: " />
                         <JFXDatePicker fx:id="toDatePicker" defaultColor="#0078d7" prefHeight="30.0" prefWidth="130.0" promptText="To Date" />
-                        <JFXButton fx:id="applyDateFilterButton" prefHeight="30.0" text="Apply" onAction="#applyDateFilter"/>
+                        <JFXButton fx:id="applyDateFilterButton" onAction="#applyDateFilter" prefHeight="30.0" text="Apply" />
                     </HBox>
                 </VBox>
 
@@ -40,7 +40,7 @@
                     <HBox prefHeight="100.0" prefWidth="271.0">
                         <children>
                             <JFXComboBox fx:id="estadoFilterComboBox" prefHeight="30.0" prefWidth="116.0" promptText="Filter" />
-                            <JFXButton fx:id="applyEstadoFilterButton" prefHeight="30.0" text="Apply" onAction="#applyEstadoFilter"/>
+                            <JFXButton fx:id="applyEstadoFilterButton" onAction="#applyEstadoFilter" prefHeight="30.0" text="Apply" />
                         </children>
                     </HBox>
                 </VBox>
@@ -50,7 +50,7 @@
                         <HBox alignment="CENTER_LEFT" spacing="10">
                             <children>
                                 <JFXTextField fx:id="numeroPaquetesTextField" prefHeight="30.0" prefWidth="155.0" promptText="Numero de paquetes" HBox.hgrow="ALWAYS" />
-                                <JFXButton fx:id="applyNumPaquetesFilterButton" prefHeight="30.0" text="Apply" onAction="#applyNumPaquetesFilter"/>
+                                <JFXButton fx:id="applyNumPaquetesFilterButton" onAction="#applyNumPaquetesFilter" prefHeight="30.0" text="Apply" />
                             </children>
                         </HBox>
                     </children>
@@ -81,11 +81,11 @@
                 <Insets bottom="15" left="15" right="15" top="15" />
             </padding>
 
-            <JFXButton fx:id="addShipmentBtn" prefHeight="39.0" prefWidth="34.0" text=" " onAction="#addEnvio">
+            <JFXButton fx:id="addShipmentBtn" onAction="#addEnvio" prefHeight="39.0" prefWidth="34.0" text=" ">
                 <graphic>
                     <ImageView fitHeight="28.0" fitWidth="76.0" preserveRatio="true">
                         <image>
-                            <Image url="@../../image/addRoute.png" />
+                            <Image url="@../../image/addRoute%20-%20Copy.png" />
                         </image>
                     </ImageView>
                 </graphic>
@@ -94,7 +94,7 @@
                 </tooltip>
             </JFXButton>
 
-            <JFXButton fx:id="removeShipmentBtn" ellipsisString="" prefWidth="30.0" onAction="#removeEnvio">
+            <JFXButton fx:id="removeShipmentBtn" ellipsisString="" onAction="#removeEnvio" prefWidth="30.0">
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
