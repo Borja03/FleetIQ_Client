@@ -29,7 +29,7 @@
                      <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../image/package-add-icon.png" />
+                              <Image url="@../../image/envio.png" />
                            </image>
                         </ImageView>
                      </graphic></MenuItem>

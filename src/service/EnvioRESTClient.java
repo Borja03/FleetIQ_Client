@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -16,19 +17,20 @@ import models.Envio;
  * Jersey REST client generated for REST resource:EnvioFacadeREST [envio]<br>
  * USAGE:
  * <pre>
-        EnvioRESTClient client = new EnvioRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ * EnvioRESTClient client = new EnvioRESTClient();
+ * Object response = client.XXX(...);
+ * // do whatever with response
+ * client.close();
+ * </pre>
  *
  * @author Alder
  */
-public class EnvioRESTClient implements EnvioManager{
+public class EnvioRESTClient implements EnvioManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/Server/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("config/config")
+            .getString("RESTful.baseURI");
 
     public EnvioRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -63,12 +65,12 @@ public class EnvioRESTClient implements EnvioManager{
 
     @Override
     public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),Envio.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Envio.class);
     }
 
     @Override
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON),Envio.class);
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Envio.class);
     }
 
     public <T> T find_XML(GenericType<T> responseType, String id) throws WebApplicationException {
@@ -104,7 +106,7 @@ public class EnvioRESTClient implements EnvioManager{
         resource = resource.path("filterEstado");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-    
+
     @Override
     public <T> T filterEstado_JSON(GenericType<T> responseType, String estado) throws WebApplicationException {
         WebTarget resource = webTarget;
@@ -117,7 +119,7 @@ public class EnvioRESTClient implements EnvioManager{
 
     @Override
     public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),Envio.class);
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Envio.class);
     }
 
     @Override
@@ -171,5 +173,5 @@ public class EnvioRESTClient implements EnvioManager{
     public void close() {
         client.close();
     }
-    
+
 }
