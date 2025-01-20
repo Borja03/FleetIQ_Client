@@ -6,11 +6,13 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
 import factories.RutaManagerFactory;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -154,8 +156,26 @@ public class RutaController {
             destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
             distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
             tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+            //fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
             numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+
+            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+            fechaColumn.setCellFactory(column -> {
+                return new javafx.scene.control.TableCell<Ruta, Date>() {
+                    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+                    @Override
+                    protected void updateItem(Date item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            setText(dateFormat.format(item));
+                        }
+                    }
+                };
+            });
 
             rutaTable.setItems(rutaData);
         } catch (WebApplicationException e) {
@@ -308,8 +328,8 @@ public class RutaController {
             logger.log(Level.SEVERE, "Error al buscar por localizador", e);
         }
     }
-    
-     /*@FXML
+
+    /*@FXML
     private void applyDateFilter(ActionEvent event) {
         try {
             Date from = fromDatePicker.getValue() != null ? java.sql.Date.valueOf(fromDatePicker.getValue()) : null;
@@ -328,7 +348,6 @@ public class RutaController {
             new UtilsMethods().showAlert("Error al filtrar por fechas", e.getMessage());
         }
     }*/
-
     private void addShipment() {
         // Lógica para agregar una nueva ruta
     }
