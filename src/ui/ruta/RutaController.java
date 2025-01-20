@@ -37,70 +37,28 @@ public class RutaController {
     private static final Logger logger = Logger.getLogger(RutaController.class.getName());
 
     @FXML
-    private JFXDatePicker fromDatePicker;
-
+    private JFXDatePicker fromDatePicker, toDatePicker;
     @FXML
-    private JFXDatePicker toDatePicker;
-
+    private JFXButton applyFilterButton, searchButton, searchButton1, addShipmentBtn, removeShipmentBtn, printReportBtn;
     @FXML
-    private JFXButton applyFilterButton;
-
+    private JFXComboBox<String> sizeFilterComboBox, sizeFilterComboBox1;
     @FXML
-    private JFXComboBox<String> sizeFilterComboBox;
-
+    private JFXTextField filterValueField, searchTextField;
     @FXML
-    private JFXComboBox<String> sizeFilterComboBox1;
-
+    private TableView<Ruta> rutaTable;
     @FXML
-    private JFXTextField filterValueField;
-
+    private TableColumn<Ruta, Integer> localizadorColumn, tiempoColumn, numeroVehiculosColumn;
     @FXML
-    private JFXTextField searchTextField;
-
-    @FXML
-    private JFXButton searchButton;
-
-    @FXML
-    private JFXButton searchButton1;
-
-    @FXML
-    private TableColumn<Ruta, Integer> localizadorColumn;
-
-    @FXML
-    private TableColumn<Ruta, String> origenColumn;
-
-    @FXML
-    private TableColumn<Ruta, String> destinoColumn;
-
+    private TableColumn<Ruta, String> origenColumn, destinoColumn;
     @FXML
     private TableColumn<Ruta, Float> distanciaColumn;
-
-    @FXML
-    private TableColumn<Ruta, Integer> tiempoColumn;
-
     @FXML
     private TableColumn<Ruta, Date> fechaColumn;
-
-    @FXML
-    private TableColumn<Ruta, Integer> numeroVehiculosColumn;
-
-    @FXML
-    private JFXButton addShipmentBtn;
-
-    @FXML
-    private JFXButton removeShipmentBtn;
-
-    @FXML
-    private JFXButton printReportBtn;
-
     private RutaManager rutaManager;
 
     private ObservableList<Ruta> rutaData;
 
     private Stage stage;
-
-    @FXML
-    private TableView<Ruta> rutaTable;
 
     public Stage getStage() {
         return stage;
@@ -334,25 +292,6 @@ public class RutaController {
         }
     }
 
-    /*@FXML
-    private void applyDateFilter(ActionEvent event) {
-        try {
-            Date from = fromDatePicker.getValue() != null ? java.sql.Date.valueOf(fromDatePicker.getValue()) : null;
-            Date to = toDatePicker.getValue() != null ? java.sql.Date.valueOf(toDatePicker.getValue()) : null;
-
-            if (from == null && to == null) {
-                throw new IllegalArgumentException("Debe llenar al menos uno de los campos de fecha.");
-            }
-
-            List<Ruta> rutas = RutaManagerFactory.getRutaManager().filterBy2Dates_XML(new GenericType<List<Ruta>>() {
-            }, from.toString(), to.toString());
-            rutas.setAll(rutas);
-        } catch (IllegalArgumentException e) {
-            new UtilsMethods().showAlert("Error de filtro", e.getMessage());
-        } catch (Exception e) {
-            new UtilsMethods().showAlert("Error al filtrar por fechas", e.getMessage());
-        }
-    }*/
     private void addShipment() {
         // Lógica para agregar una nueva ruta
     }
