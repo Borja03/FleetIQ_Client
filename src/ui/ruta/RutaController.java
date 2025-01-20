@@ -135,6 +135,11 @@ public class RutaController {
 
         rutaTable.setEditable(true);
 
+        rutaTable.getSelectionModel().setSelectionMode(javafx.scene.control.SelectionMode.MULTIPLE);
+        rutaTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            removeShipmentBtn.setDisable(rutaTable.getSelectionModel().getSelectedItems().isEmpty());
+        });
+
         try {
             loadRutaData();
         } catch (SelectException ex) {
@@ -353,7 +358,26 @@ public class RutaController {
     }
 
     private void removeShipment() {
-        // Lógica para eliminar una ruta
+        List<Ruta> selectedRutas = rutaTable.getSelectionModel().getSelectedItems();
+
+        if (selectedRutas.isEmpty()) {
+            showAlert("Error", "No hay rutas seleccionadas para eliminar.");
+            return;
+        }
+
+        try {
+            for (Ruta ruta : selectedRutas) {
+                rutaManager.remove(String.valueOf(ruta.getLocalizador())); // Llama al método REST con el localizador
+            }
+            rutaData.removeAll(selectedRutas); // Elimina las rutas seleccionadas de la tabla
+            logger.info("Rutas eliminadas correctamente.");
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error al eliminar rutas", e);
+            showAlert("Error", "Ocurrió un error al eliminar las rutas.");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error inesperado", e);
+            showAlert("Error", "Error inesperado al eliminar rutas.");
+        }
     }
 
     private void printReport() {
