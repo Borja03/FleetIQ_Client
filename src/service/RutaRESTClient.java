@@ -6,6 +6,7 @@
 package service;
 
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -30,7 +31,8 @@ public class RutaRESTClient implements RutaManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/FleetIQ_Server/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("config/config")
+                    .getString("RESTful.baseURI");
 
     public RutaRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

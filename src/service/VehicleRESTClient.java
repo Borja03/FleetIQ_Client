@@ -7,6 +7,7 @@ package service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -30,7 +31,8 @@ public class VehicleRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/FleetIQServer/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("config/config")
+            .getString("RESTful.baseURI");
 
     public VehicleRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
