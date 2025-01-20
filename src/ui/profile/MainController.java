@@ -158,16 +158,16 @@ public class MainController {
         eyeButton.setOnAction(this::togglePasswordVisibility);
         //User user = PaqueteController.userSession;
         // Set user details in text fields
-        emailField.setText(PaqueteController.userSession.getEmail());
-        nameField.setText(PaqueteController.userSession.getName());
+        emailField.setText(LogInController.userSession.getEmail());
+        nameField.setText(LogInController.userSession.getName());
 
         // Concatenate street, city, and zip for the address field
-        String address = String.format("%s, %s, %d", PaqueteController.userSession.getStreet(), PaqueteController.userSession.getCity(), PaqueteController.userSession.getZip());
+        String address = String.format("%s, %s, %d", LogInController.userSession.getStreet(), LogInController.userSession.getCity(), LogInController.userSession.getZip());
         addressField.setText(address);
 
         // Set the user's password (ensure that this is a secure way of handling passwords)
-        passwordField.setText(PaqueteController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
-        System.out.println(PaqueteController.userSession.toString());
+        passwordField.setText(LogInController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
+        System.out.println(LogInController.userSession.toString());
         // menu
         // Initialize context menu
         initializeContextMenu();

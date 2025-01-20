@@ -119,7 +119,7 @@
                 <Insets bottom="15" left="15" right="15" top="15" />
             </padding>
 
-            <JFXButton fx:id="addShipmentBtn" prefWidth="30.0" text=" ">
+            <JFXButton fx:id="addShipmentBtn" prefHeight="40.0" prefWidth="53.0" text=" ">
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>
