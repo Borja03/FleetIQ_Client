@@ -128,6 +128,7 @@ public class LogInController {
     private boolean isPasswordVisible = false;
 
     public static String currentTheme = loadInitialTheme(); // Load theme from config
+    public static User userSession;
 
     /**
      * Método que se ejecuta al inicializar el controlador. Configura la escena,
@@ -145,7 +146,6 @@ public class LogInController {
         stage.setResizable(false);
         //stage.getIcons().add(new Image("/Images/userIcon.png"));
         stage.centerOnScreen();
-
         visiblePasswordField.setVisible(false);
         initializeContextMenu();
 
@@ -300,7 +300,8 @@ public class LogInController {
         user.setPassword(password);
         User loggedInUser;
         try {
-            loggedInUser = SignableFactory.getSignable().signIn(user, User.class);
+            userSession = (User) SignableFactory.getSignable().signIn(user, User.class);
+            System.out.println(userSession.toString());
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
             Parent root = null;
             try {
@@ -311,7 +312,7 @@ public class LogInController {
             PaqueteController controller = loader.getController();
             Stage newStage = new Stage();
             controller.setStage(newStage);
-            controller.initStage(root, user);
+            controller.initStage(root);
             stage.close();
 
         } catch (SelectException ex) {

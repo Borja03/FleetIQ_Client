@@ -29,8 +29,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import models.Paquete;
@@ -82,7 +84,7 @@ public class PaqueteController {
 
     @FXML
     private JFXButton filterDatesBtn;
-    public static User userSession;
+//    public static User userSession;
     private Stage stage;
     private DateTimeFormatter dateFormatter;
     private LocalDate startDate;
@@ -96,7 +98,7 @@ public class PaqueteController {
         this.stage = stage;
     }
 
-    public void initStage(Parent root, User connectedUser) {
+    public void initStage(Parent root) {
         LOGGER.info("Initialising Paquete window.");
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -104,9 +106,11 @@ public class PaqueteController {
         stage.setResizable(false);
         stage.centerOnScreen();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
-        this.userSession = connectedUser;
+
         //
         removeShipmentBtn.setDisable(true);
+        paqueteTableView.setEditable(true);
+        idColumn.setEditable(false);
         // Load configurations
         loadConfigurations();
         // Set up date pickers
@@ -128,6 +132,38 @@ public class PaqueteController {
         removeShipmentBtn.setOnAction(this::handleRemoveShipmentAction);
         addShipmentBtn.setOnAction(this::handleAddShipmentAction);
 
+        senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        senderColumn.setOnEditCommit(new EventHandler<CellEditEvent<Paquete, String>>() {
+            @Override
+            public void handle(CellEditEvent<Paquete, String> t) {
+                ((Paquete) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow())).setSender(t.getNewValue());
+            }
+        }
+        );
+
+        receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        receiverColumn.setOnEditCommit(new EventHandler<CellEditEvent<Paquete, String>>() {
+            @Override
+            public void handle(CellEditEvent<Paquete, String> t) {
+                ((Paquete) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow())).setReceiver(t.getNewValue());
+            }
+        }
+        );
+
+//        weightColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+//        
+//        weightColumn.setOnEditCommit(new EventHandler<CellEditEvent<Paquete, double>>() {
+//            @Override
+//            public void handle(CellEditEvent<Paquete, double> t) {
+//                ((Paquete) t.getTableView().getItems().get(
+//                                t.getTablePosition().getRow())).setWeight(t.getNewValue());
+//            }
+//        }
+//        );
+//
+//        
         stage.show();
     }
 

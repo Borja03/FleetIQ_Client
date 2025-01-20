@@ -93,7 +93,7 @@ public class MenuController {
             PaqueteController controller = loader.getController();
             Stage loginStage = new Stage();
             controller.setStage(loginStage);
-            controller.initStage(root,connectedUser);
+            controller.initStage(root);
             LOGGER.info("Paquete window opened");
             // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
