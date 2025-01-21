@@ -68,8 +68,12 @@ public class UserManagerImp implements UserManager {
     }
 
     @Override
-    public <T> T findAll(Class<T> responseType) throws SelectException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<User> findAll() {
+        GenericType<List<User>> responseType = new GenericType<List<User>>() {
+        };
+        List<User> userList = webClient.findAll(responseType);
+        return userList;
+
     }
 
 }

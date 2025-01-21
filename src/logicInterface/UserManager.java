@@ -9,6 +9,7 @@ import exception.CreateException;
 import exception.SelectException;
 import exception.UpdateException;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.GenericType;
 import models.User;
 
 /**
@@ -31,6 +32,6 @@ public interface UserManager {
 
     public void create(User requestEntity) throws CreateException;
 
-    public <T> T findAll(Class<T> responseType) throws SelectException;
+    public <T> T findAll() throws SelectException;
 
 }
