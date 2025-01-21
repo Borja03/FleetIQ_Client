@@ -7,6 +7,7 @@ package service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -30,7 +31,8 @@ public class VehicleRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/FleetIQServer/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("config/config")
+            .getString("RESTful.baseURI");
 
     public VehicleRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -156,12 +158,6 @@ public class VehicleRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findByPlate_XML(Class<T> responseType, String matricula) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("plate/{0}", new Object[]{matricula}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
     public <T> T findByPlate_JSON(Class<T> responseType, String matricula) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("plate/{0}", new Object[]{matricula}));
@@ -174,6 +170,12 @@ public class VehicleRESTClient {
 
     public void close() {
         client.close();
+    }
+
+    public List<Vehiculo> findByPlate_XML(GenericType<List<Vehiculo>> responseType, String matricula) {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("plate/{0}", new Object[]{matricula}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
 }

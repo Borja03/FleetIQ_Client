@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package logicimplementaion;
+package logicimplementation;
 
 import exception.CreateException;
 import exception.DeleteException;
 import exception.SelectException;
 import exception.UpdateException;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -57,7 +58,15 @@ public class VehicleManagerImp implements VehicleManager {
 
     @Override
     public void deleteVehiculo(Integer idVehiculo) throws DeleteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (idVehiculo == null || idVehiculo <= 0) {
+            throw new DeleteException("Vehicle ID cannot be null or negative.");
+        }
+
+        try {
+            webClient.remove(String.valueOf(idVehiculo));
+        } catch (ClientErrorException e) {
+            throw new DeleteException("Error deleting vehicle with ID: " + idVehiculo + " - " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -65,10 +74,7 @@ public class VehicleManagerImp implements VehicleManager {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+  
 
     @Override
     public List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException {
@@ -110,5 +116,20 @@ public class VehicleManagerImp implements VehicleManager {
             throw new SelectException("Error retrieving vehicles: " + e.getMessage(), e);
         }
     }
+
+    @Override
+public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
+    if (matricula == null || matricula.isEmpty()) {
+        throw new SelectException("License plate cannot be null or empty.");
+    }
+
+    try {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {};
+        return webClient.findByPlate_XML(responseType, matricula);
+    } catch (ClientErrorException e) {
+        throw new SelectException("Error retrieving vehicles with plate: " + matricula + " - " + e.getMessage(), e);
+    }
+}
+
 
 }

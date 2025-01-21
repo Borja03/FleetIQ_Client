@@ -5,7 +5,7 @@
  */
 package factories;
 
-import logicimplementaion.PackageManagerImp;
+import logicimplementation.PackageManagerImp;
 import logicInterface.PaqueteManager;
 
 

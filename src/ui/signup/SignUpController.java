@@ -15,6 +15,7 @@ import exception.InvalidStreetFormatException;
 import exception.InvalidZipFormatException;
 import exception.ServerErrorException;
 import exception.UserAlreadyExistsException;
+import factories.SignableFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,7 +50,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import models.Admin;
+import models.Trabajador;
 import models.User;
+import models.UserType;
 import ui.login.LogInController;
 
 /**
@@ -418,7 +422,7 @@ private String loadThemePreference() {
             validateInputs(email, password, confirmPassword, name, street, city, zip);
 
             // Proceed with sign-up logic
-            performSignUp(email, password, name, 1, street, city, Integer.parseInt(zip), isActive);
+            performSignUp(email, password, name, street, city, Integer.parseInt(zip));
             LOGGER.info("Performing signup");
         } catch (Exception e) {
             lbl_error.setText(e.getMessage());
@@ -589,34 +593,35 @@ private String loadThemePreference() {
      * @param zip the zip code of the user.
      * @param isActive the active status of the user.
      */
-    private void performSignUp(String email, String password, String name, int companyID, String street, String city, int zip, boolean isActive) {
-        User user = new User(email, password, name, isActive, companyID, street, city, zip);
-
-//        try {
-//            // Attempting to sign up the user
-//            User nuevoUser = SignableFactory.getSignable().signUp(user);
-//            // If the sign-up is successful
-//            if (nuevoUser != null) {
-//                showAlert();
-//                LOGGER.info("User signed up successfully: " + email);
-//            }
+    private void performSignUp(String email, String password, String name, String street, String city, int zip) {
+      //  User user = new User(email, password, name, isActive, street, city, zip);
+     User user = new User(email,name, password,city,  street,  zip);
+        user.setUser_type("admin");
+        try {
+            // Attempting to sign up the user
+            User nuevoUser = SignableFactory.getSignable().signUp(user,User.class);
+            // If the sign-up is successful
+            if (nuevoUser != null) {
+                showAlert();
+                LOGGER.info("User signed up successfully: " + email);
+            }
 //        } catch (UserAlreadyExistsException e) {
 //            // Handle duplicate email error
 //            utils.showAlert("Error", "Email already exists. Please use another email.");
 //            LOGGER.warning("Email already exists: " + email);
 //        } catch (ServerErrorException e) {
 //            // Handle server error
-//            utils.showAlert("Error", "Server is not available at the moment. Please try again later.");
+//           // utils.showAlert("Error", "Server is not available at the moment. Please try again later.");
 //            LOGGER.warning("Server error occurred during sign-up: " + e.getMessage());
 //        } catch (ConnectionException e) {
 //            // Handle connection exceptions
-//            utils.showAlert("Error", "Problemas de conexión a la base de datos.");
+//           // utils.showAlert("Error", "Problemas de conexión a la base de datos.");
 //            LOGGER.warning("Connection error during sign-up: " + e.getMessage());
-//        } catch (Exception e) {
-//            // Handle unexpected errors
-//            utils.showAlert("Error", "An unexpected error occurred: " + e.getMessage());
-//            LOGGER.log(Level.SEVERE, "Unexpected error in performSignUp", e);
-//        }
+        } catch (Exception e) {
+            // Handle unexpected errors
+            //utils.showAlert("Error", "An unexpected error occurred: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Unexpected error in performSignUp", e);
+        }
     }
 
     /**
@@ -745,6 +750,7 @@ private String loadThemePreference() {
     // Show the alert
     alert.show();
 } 
+
 
  
 

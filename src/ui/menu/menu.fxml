@@ -17,10 +17,38 @@
             <menus>
                 <Menu fx:id="menuGoTo" mnemonicParsing="false" text="Go to">
                     <items>
-                        <MenuItem fx:id="menuItemPaquete" mnemonicParsing="false" onAction="#handlePaqueteMenuItemAction" text="Paquete" />
-                        <MenuItem fx:id="menuItemEnvio" mnemonicParsing="false" onAction="#handleEnvioMenuItemAction" text="Envio" />
-                        <MenuItem fx:id="menuItemRuta" mnemonicParsing="false" onAction="#handleRutaMenuItemAction" text="Ruta" />
-                        <MenuItem fx:id="menuItemVehiculo" mnemonicParsing="false" onAction="#handleVehiculoMenuItemAction" text="Vehiculo" />
+                        <MenuItem fx:id="menuItemPaquete" mnemonicParsing="false" onAction="#handlePaqueteMenuItemAction" text="Paquete">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/package%20(1).png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                        <MenuItem fx:id="menuItemEnvio" mnemonicParsing="false" onAction="#handleEnvioMenuItemAction" text="Envio">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/envio.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                        <MenuItem fx:id="menuItemRuta" mnemonicParsing="false" onAction="#handleRutaMenuItemAction" text="Ruta">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/route.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                        <MenuItem fx:id="menuItemVehiculo" mnemonicParsing="false" onAction="#handleVehiculoMenuItemAction" text="Vehiculo">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/vehicle.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
                     </items>
                 </Menu>
                 <Menu fx:id="menuView" mnemonicParsing="false" text="View">
@@ -32,18 +60,60 @@
                 </Menu>
                 <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" onAction="#handleAboutPaqueteMenuItemAction" text="About Paquete" />
-                        <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" onAction="#handleAboutRutaMenuItemAction" text="About Ruta" />
-                        <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" onAction="#handleAboutEnvioMenuItemAction" text="About Envio" />
-                        <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" onAction="#handleAboutVehiculoMenuItemAction" text="About Vehiculo" />
+                        <MenuItem fx:id="menuItemAboutPaquete" mnemonicParsing="false" onAction="#handleAboutPaqueteMenuItemAction" text="About Paquete">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/about%20package.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                        <MenuItem fx:id="menuItemAboutRuta" mnemonicParsing="false" onAction="#handleAboutRutaMenuItemAction" text="About Ruta">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/about%20route.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                        <MenuItem fx:id="menuItemAboutEnvio" mnemonicParsing="false" onAction="#handleAboutEnvioMenuItemAction" text="About Envio">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/about%20package.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
+                        <MenuItem fx:id="menuItemAboutVehiculo" mnemonicParsing="false" onAction="#handleAboutVehiculoMenuItemAction" text="About Vehiculo">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/about%20%20vehicle.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
                     </items>
                 </Menu>
             </menus>
         </MenuBar>
         <MenuButton fx:id="menuLogout" ellipsisString="" minHeight="30.0" minWidth="30.0" prefHeight="30.0" prefWidth="122.0">
             <items>
-                <MenuItem fx:id="menuItemProfile" mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile" />
-                <MenuItem fx:id="menuItemLogout" mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout" />
+                <MenuItem fx:id="menuItemProfile" mnemonicParsing="false" onAction="#handleProfileMenuItemAction" text="Profile">
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../image/user-solid.png" />
+                     </image>
+                  </ImageView>
+               </graphic></MenuItem>
+                <MenuItem fx:id="menuItemLogout" mnemonicParsing="false" onAction="#handleLogoutMenuItemAction" text="Logout">
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../image/logout.png" />
+                     </image>
+                  </ImageView>
+               </graphic></MenuItem>
             </items>
             <graphic>
                 <ImageView fitHeight="26.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">

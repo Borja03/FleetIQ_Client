@@ -4,25 +4,21 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Entidad JPA que representa la relación entre Envío, Ruta y Vehículo.
  */
-
 @XmlRootElement
 public class EnvioRutaVehiculo implements Serializable {
 
     private Integer id;
 
-    
     private List<Envio> envios;
 
     private Ruta ruta;
 
     private Vehiculo vehiculo;
 
-    
     private Date fechaAsignacion;
 
     // Getters y Setters
@@ -34,28 +30,14 @@ public class EnvioRutaVehiculo implements Serializable {
         this.id = id;
     }
 
-    @XmlTransient
-    public List<Envio> getEnvios() {
-        return envios;
-    }
-
     public void setEnvios(List<Envio> envios) {
         this.envios = envios;
-    }
-
-    @XmlTransient
-    public Ruta getRuta() {
-        return ruta;
     }
 
     public void setRuta(Ruta ruta) {
         this.ruta = ruta;
     }
 
-    @XmlTransient
-    public Vehiculo getVehiculo() {
-        return vehiculo;
-    }
 
     public void setVehiculo(Vehiculo vehiculo) {
         this.vehiculo = vehiculo;
