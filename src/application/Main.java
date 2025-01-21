@@ -1,7 +1,11 @@
 package application;
 
+import exception.SelectException;
+import factories.PaqueteFactory;
 import factories.RutaManagerFactory;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,24 +14,19 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
+import models.Paquete;
 import models.Ruta;
 
 public class Main extends Application {
 
     public static void main(String[] args) {
-      launch(args);
-      /*List <Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType <List<Ruta>>() {});
-       for (Ruta r : rutas){
-           System.out.println(r.toString());
-                   
-       }*/
+        launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML
         Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
-
 
         // Crear la escena
         Scene scene = new Scene(root);
@@ -38,7 +37,6 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image("/image/fleet_icon.png"));
 
         primaryStage.setResizable(false);  // Aquí se desactiva la opción de redimensionar
-        
 
         // Mostrar la ventana
         primaryStage.show();

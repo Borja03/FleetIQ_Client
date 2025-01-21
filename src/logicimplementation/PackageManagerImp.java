@@ -32,7 +32,9 @@ public class PackageManagerImp implements PaqueteManager {
 
     @Override
     public Paquete addPackage(Paquete paquete) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+             GenericType<Paquete> responseType = new GenericType<Paquete>() {};
+        return webClient.createPackage(paquete, responseType);
+ 
     }
 
     @Override
@@ -41,8 +43,8 @@ public class PackageManagerImp implements PaqueteManager {
     }
 
     @Override
-    public void deletePackages(Integer idPaquete) throws DeleteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deletePackages(Long idPaquete) throws DeleteException {
+        webClient.deletePackage(idPaquete);
     }
 
     @Override

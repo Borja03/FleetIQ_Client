@@ -57,7 +57,7 @@ public class PackageRESTClient {
                         .get(responseType);
     }
 
-    public Paquete createPackage(Object requestEntity, GenericType<Paquete> responseType) throws WebApplicationException {
+    public Paquete createPackage(Paquete requestEntity, GenericType<Paquete> responseType) throws WebApplicationException {
         return webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
@@ -74,7 +74,7 @@ public class PackageRESTClient {
                         .get(responseType);
     }
 
-    public void deletePackage(String id) throws WebApplicationException {
+    public void deletePackage(Long id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
                         .request()
                         .delete(Paquete.class);
