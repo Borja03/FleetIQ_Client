@@ -16,15 +16,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.converter.FloatStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import logicInterface.RutaManager;
@@ -97,6 +102,8 @@ public class RutaController {
         rutaTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             removeShipmentBtn.setDisable(rutaTable.getSelectionModel().getSelectedItems().isEmpty());
         });
+
+        configureEditableColumns();
 
         try {
             loadRutaData();
@@ -293,16 +300,37 @@ public class RutaController {
     }
 
     private void addShipment() {
-        // Lógica para agregar una nueva ruta
+        try {
+            // Crear una nueva ruta vacía
+            Ruta nuevaRuta = new Ruta();
+            nuevaRuta.setOrigen("");
+            nuevaRuta.setDestino("");
+            nuevaRuta.setDistancia(0.0f);
+            nuevaRuta.setTiempo(0);
+            nuevaRuta.setNumVehiculos(0);
+            nuevaRuta.setFechaCreacion(new Date());
+
+            // Enviar la nueva ruta al servidor
+            rutaManager.edit_XML(nuevaRuta, "0"); // Usar "0" o el ID correspondiente para el servidor
+
+            // Refrescar la tabla recargando los datos desde el servidor
+            loadRutaData();
+
+            logger.info("Nueva ruta vacía añadida y tabla actualizada correctamente.");
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error al añadir una nueva ruta", e);
+            showAlert("Error", "No se pudo añadir la nueva ruta.");
+        } catch (SelectException e) {
+            logger.log(Level.SEVERE, "Error al refrescar la tabla después de añadir la ruta", e);
+            showAlert("Error", "No se pudo actualizar la tabla después de añadir la ruta.");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error inesperado", e);
+            showAlert("Error", "Error inesperado al añadir la nueva ruta.");
+        }
     }
 
     private void removeShipment() {
         List<Ruta> selectedRutas = rutaTable.getSelectionModel().getSelectedItems();
-
-        if (selectedRutas.isEmpty()) {
-            showAlert("Error", "No hay rutas seleccionadas para eliminar.");
-            return;
-        }
 
         try {
             for (Ruta ruta : selectedRutas) {
@@ -322,4 +350,99 @@ public class RutaController {
     private void printReport() {
         // Lógica para imprimir un informe
     }
+
+    private void configureEditableColumns() {
+    // Editable "Origen" column
+    origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+    origenColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<Ruta, String>>() {
+        @Override
+        public void handle(CellEditEvent<Ruta, String> t) {
+            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            ruta.setOrigen(t.getNewValue());
+
+            try {
+                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                logger.info("Origen actualizado en el servidor: " + t.getNewValue());
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar origen en el servidor", e);
+                showAlert("Error", "No se pudo actualizar el origen.");
+            }
+        }
+    });
+
+    // Editable "Destino" column
+    destinoColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+    destinoColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<Ruta, String>>() {
+        @Override
+        public void handle(CellEditEvent<Ruta, String> t) {
+            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            ruta.setDestino(t.getNewValue());
+
+            try {
+                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                logger.info("Destino actualizado en el servidor: " + t.getNewValue());
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar destino en el servidor", e);
+                showAlert("Error", "No se pudo actualizar el destino.");
+            }
+        }
+    });
+
+    // Editable "Distancia" column (corrected for Float)
+    distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
+    distanciaColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<Ruta, Float>>() {
+        @Override
+        public void handle(CellEditEvent<Ruta, Float> t) {
+            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            Float nuevaDistancia = t.getNewValue();
+
+            // Validar si la distancia es un valor positivo
+            if (nuevaDistancia < 0) {
+                showAlert("Error", "La distancia no puede ser negativa.");
+                return;
+            }
+
+            ruta.setDistancia(nuevaDistancia);
+
+            try {
+                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                showAlert("Error", "No se pudo actualizar la distancia.");
+            }
+        }
+    });
+
+    // Editable "Tiempo" column (corrected for Integer)
+    tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+    tiempoColumn.setOnEditCommit(
+            new EventHandler<CellEditEvent<Ruta, Integer>>() {
+        @Override
+        public void handle(CellEditEvent<Ruta, Integer> t) {
+            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            Integer nuevoTiempo = t.getNewValue();
+
+            // Validar si el tiempo es un valor positivo
+            if (nuevoTiempo < 0) {
+                showAlert("Error", "El tiempo no puede ser negativo.");
+                return;
+            }
+
+            ruta.setTiempo(nuevoTiempo);
+
+            try {
+                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
+                showAlert("Error", "No se pudo actualizar el tiempo.");
+            }
+        }
+    });
+    }
+
 }
