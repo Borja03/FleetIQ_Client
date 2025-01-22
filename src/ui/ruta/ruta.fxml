@@ -93,7 +93,6 @@
                 <TableColumn fx:id="numeroVehiculosColumn" prefWidth="232.0001220703125" text="Número Vehículos" />
             </columns>
         </TableView>
-
     </center>
 
     <bottom>
