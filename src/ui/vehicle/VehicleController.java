@@ -5,6 +5,8 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import exception.CreateException;
+import exception.SelectException;
 import factories.VehicleFactory;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,15 +17,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DateCell;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -33,8 +38,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import javax.ws.rs.WebApplicationException;
 import models.EnvioRutaVehiculo;
 import models.Vehiculo;
+import static utils.UtilsMethods.logger;
 
 /**
  * Controller for managing the Vehiculo UI. Handles initialization,
@@ -116,6 +123,7 @@ public class VehicleController {
     private DateTimeFormatter dateFormatter;
     private LocalDate startDate;
     private LocalDate endDate;
+    private ObservableList<Vehiculo> data;
 
     /**
      * Gets the stage for this controller.
@@ -172,6 +180,7 @@ public class VehicleController {
         searchButton.setOnAction(event -> onSearchButtonClicked());
         removeShipmentBtn.setOnAction(event -> onRemoveShipmentClicked());
         configureRemoveShipmentButton();
+        addShipmentBtn.setOnAction(event -> handleAddShipmentAction());
 
         LOGGER.info("Vehicle window and capacity controls initialized.");
 
@@ -254,32 +263,7 @@ public class VehicleController {
                 vehicleTableView.getSelectionModel().clearSelection(); // Deselecciona la fila seleccionada
             }
         });
-
-    }
-
-    /**
-     * Initializes the event handlers for incrementing and decrementing the
-     * capacity value.
-     */
-    @FXML
-    private void initialize() {
-        // Initialize event handlers for the buttons
-        plusButton.setOnAction(event -> modifyCapacity(1));
-        minusButton.setOnAction(event -> modifyCapacity(-1));
-
-        // Set default value for capacityTextField if empty
-        if (capacityTextField.getText().isEmpty()) {
-            capacityTextField.setText("0");
-
-            TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change
-                    -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
-            capacityTextField.setTextFormatter(formatter);
-        }
-
-        // Add event handler for search button
-        searchButton.setOnAction(event -> onSearchButtonClicked());
-
-        LOGGER.info("Capacity controls initialized.");
+        vehicleTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     /**
@@ -305,39 +289,110 @@ public class VehicleController {
         }
     }
 
+    private void handleAddShipmentAction() {
+
+        try {
+            List<Vehiculo> infovehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
+            Vehiculo defaultVehiculo = null;
+            defaultVehiculo = new Vehiculo();
+            defaultVehiculo.setId(infovehicleList.get(infovehicleList.size() - 1).getId() + 1);
+            defaultVehiculo.setMatricula("");
+            defaultVehiculo.setModelo("Default Model");
+            defaultVehiculo.setCapacidadCarga(1);
+            defaultVehiculo.setRegistrationDate(new Date());
+            defaultVehiculo.setItvDate(new Date());
+            defaultVehiculo.setActivo(true);
+
+            infovehicleList.add(defaultVehiculo);
+            Vehiculo v2 = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
+            System.out.println(v2.toString());
+            vehicleTableView.setItems(FXCollections.observableArrayList(infovehicleList));
+
+        } catch (Exception ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            // show alert
+            System.out.println("Somthinr is woripgn");
+        }
+
+    }
+
+    private void addShipment() {
+        try {
+            // Crear una nueva ruta vacía
+            Vehiculo defaultVehiculo = new Vehiculo();
+            defaultVehiculo.setCapacidadCarga(0);
+            defaultVehiculo.setMatricula("");
+            defaultVehiculo.setModelo("");
+            defaultVehiculo.setItvDate(new Date());
+            defaultVehiculo.setActivo(false);
+            defaultVehiculo.setRegistrationDate(new Date());
+
+            // Enviar la nueva ruta al servidor
+            Vehiculo createVehicle = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
+            // rutaManager.edit_XML(nuevaRuta, "0"); // Usar "0" o el ID correspondiente para el servidor
+
+            // Refrescar la tabla recargando los datos desde el servidor
+            //loadRutaData();
+            logger.info("Nueva ruta vacía añadida y tabla actualizada correctamente.");
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error al añadir una nueva ruta", e);
+            // showAlert("Error", "No se pudo añadir la nueva ruta.");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error inesperado", e);
+            //  showAlert("Error", "Error inesperado al añadir la nueva ruta.");
+        }
+    }
+
     @FXML
     private void onRemoveShipmentClicked() {
-        Vehiculo selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
+        ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
 
-        if (selectedVehicle == null) {
+        if (selectedVehicles.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No Selection");
-            alert.setHeaderText("No Vehicle Selected");
-            alert.setContentText("Please select a vehicle to remove.");
+            alert.setHeaderText("No Vehicles Selected");
+            alert.setContentText("Please select at least one vehicle to remove.");
             alert.showAndWait();
             return;
         }
 
-        // Confirm deletion
+        // Confirm deletion for multiple vehicles
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Confirm Deletion");
-        confirmAlert.setHeaderText("Delete Vehicle");
-        confirmAlert.setContentText("Are you sure you want to delete the selected vehicle?");
+        confirmAlert.setHeaderText("Delete Vehicles");
+        confirmAlert.setContentText("Are you sure you want to delete the selected vehicles?");
 
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == javafx.scene.control.ButtonType.OK) {
-                vehicleTableView.getItems().remove(selectedVehicle);
+                // Create an array to hold the IDs of the selected vehicles
+                int[] vehicleIdsToDelete = new int[selectedVehicles.size()];
+                for (int i = 0; i < selectedVehicles.size(); i++) {
+                    vehicleIdsToDelete[i] = selectedVehicles.get(i).getId();
+                }
 
-                // Optionally delete from database
+                // Deleting from the database
                 try {
-                    VehicleFactory.getVehicleInstance().deleteVehiculo(selectedVehicle.getId());
-                    LOGGER.info("Vehicle removed successfully: " + selectedVehicle.getMatricula());
+                    // Deleting each vehicle from the database
+                    for (int vehicleId : vehicleIdsToDelete) {
+                        VehicleFactory.getVehicleInstance().deleteVehiculo(vehicleId);
+                    }
+                    LOGGER.info("Vehicles removed successfully");
+
+                    // Remove vehicles from TableView
+                    vehicleTableView.getItems().removeAll(selectedVehicles);
+
+                    // Inform the user of the successful removal
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Success");
+                    successAlert.setHeaderText("Vehicles Removed");
+                    successAlert.setContentText("The selected vehicles have been removed successfully.");
+                    successAlert.showAndWait();
                 } catch (Exception e) {
-                    LOGGER.severe("Error deleting vehicle: " + e.getMessage());
+                    LOGGER.severe("Error deleting vehicles: " + e.getMessage());
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                     errorAlert.setTitle("Error");
                     errorAlert.setHeaderText("Deletion Failed");
-                    errorAlert.setContentText("An error occurred while deleting the vehicle.");
+                    errorAlert.setContentText("An error occurred while deleting one or more vehicles.");
                     errorAlert.showAndWait();
                 }
             }
@@ -392,53 +447,6 @@ public class VehicleController {
         }
     }
 
-    /*
-    @FXML
-    private void onApplyFilter() {
-        // Obtener la selección actual de la ComboBox
-        String selectedFilterType = filterTypeComboBox.getValue();
-
-        // Obtener las fechas de los DatePicker
-        LocalDate startDate = fromDatePicker.getValue();
-        LocalDate endDate = toDatePicker.getValue();
-
-        // Comprobar si se seleccionaron valores válidos
-        if (selectedFilterType == null || startDate == null || endDate == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Invalid Input");
-            alert.setHeaderText("Invalid Filter Configuration");
-            alert.setContentText("Please ensure both filter type and date range are selected.");
-            alert.showAndWait();
-            return;
-        }
-
-        // Convertir LocalDate a Date
-        Date startDateConverted = convertToDate(startDate);
-        Date endDateConverted = convertToDate(endDate);
-
-        try {
-            // Llamar a la función correcta según el tipo de filtro seleccionado
-            if ("ITV Date".equals(selectedFilterType)) {
-                // Llamar a la función para filtrar por fecha ITV
-                List<Vehiculo> filteredVehicles = VehicleFactory.getVehicleInstance()
-                        .findVehiculosByItvDateRange(startDateConverted, endDateConverted);
-                vehicleTableView.setItems(FXCollections.observableArrayList(filteredVehicles));
-            } else if ("Registration Date".equals(selectedFilterType)) {
-                // Llamar a la función para filtrar por fecha de registro
-                List<Vehiculo> filteredVehicles = VehicleFactory.getVehicleInstance()
-                        .findVehiculosByRegistrationDateRange(startDateConverted, endDateConverted);
-                vehicleTableView.setItems(FXCollections.observableArrayList(filteredVehicles));
-            }
-        } catch (Exception e) {
-            LOGGER.severe("Error applying filter: " + e.getMessage());
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Filter Application Failed");
-            alert.setContentText("An error occurred while applying the filter. Please try again later.");
-            alert.showAndWait();
-        }
-    }
-     */
     /**
      * Convierte un LocalDate a un objeto Date.
      *
@@ -514,28 +522,6 @@ private void onUpdateVehicle() {
     } catch (Exception e) {
         LOGGER.severe("Error updating vehicle: " + e.getMessage());
         showAlert(Alert.AlertType.ERROR, "Error", "Failed to update vehicle. Please check the input values.");
-    }
-}
-     */
- /*
-    @FXML
-private void onDeleteVehicle() {
-    Vehiculo selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
-    if (selectedVehicle == null) {
-        showAlert(Alert.AlertType.WARNING, "Warning", "Please select a vehicle to delete.");
-        return;
-    }
-    try {
-        // Delete the selected vehicle
-        VehicleFactory.getVehicleInstance().deleteVehicle(selectedVehicle.getId());
-
-        // Refresh the table view
-        fillTableFromDataBase();
-
-        showAlert(Alert.AlertType.INFORMATION, "Success", "Vehicle deleted successfully.");
-    } catch (Exception e) {
-        LOGGER.severe("Error deleting vehicle: " + e.getMessage());
-        showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete vehicle.");
     }
 }
      */

@@ -47,11 +47,6 @@ public class VehicleManagerImp implements VehicleManager {
     }
 
     @Override
-    public void addVehiculo(Vehiculo vehiculo) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void updateVehiculo(Vehiculo vehiculo) throws UpdateException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -73,8 +68,6 @@ public class VehicleManagerImp implements VehicleManager {
     public List<Vehiculo> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-  
 
     @Override
     public List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException {
@@ -118,18 +111,25 @@ public class VehicleManagerImp implements VehicleManager {
     }
 
     @Override
-public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
-    if (matricula == null || matricula.isEmpty()) {
-        throw new SelectException("License plate cannot be null or empty.");
+    public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
+        if (matricula == null || matricula.isEmpty()) {
+            throw new SelectException("License plate cannot be null or empty.");
+        }
+
+        try {
+            GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+            };
+            return webClient.findByPlate_XML(responseType, matricula);
+        } catch (ClientErrorException e) {
+            throw new SelectException("Error retrieving vehicles with plate: " + matricula + " - " + e.getMessage(), e);
+        }
     }
 
-    try {
-        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {};
-        return webClient.findByPlate_XML(responseType, matricula);
-    } catch (ClientErrorException e) {
-        throw new SelectException("Error retrieving vehicles with plate: " + matricula + " - " + e.getMessage(), e);
+    @Override
+    public Vehiculo createVehicle(Vehiculo vehiculo) throws CreateException {
+        GenericType<Vehiculo> responseType = new GenericType<Vehiculo>() {
+        };
+        return webClient.createVehicle(vehiculo, responseType);
     }
-}
-
 
 }
