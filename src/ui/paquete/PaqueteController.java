@@ -1,7 +1,9 @@
 package ui.paquete;
 
+import cellFactories.PaqueteDateEditingCell;
+import cellFactories.PaqueteCBoxEditingCell;
+import cellFactories.PaqueteFragileEditingCell;
 import models.PackageSize;
-import models.User;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -16,42 +18,42 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-
+import javafx.scene.control.cell.PropertyValueFactory;
+import java.util.Date;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import models.Paquete;
-import models.Vehiculo;
 
 public class PaqueteController {
 
     private static final Logger LOGGER = Logger.getLogger(PaqueteController.class.getName());
 
+    @FXML
+    private BorderPane root;
     @FXML
     private JFXDatePicker fromDatePicker;
 
@@ -78,7 +80,7 @@ public class PaqueteController {
     @FXML
     private TableColumn<Paquete, PackageSize> sizeColumn;
     @FXML
-    private TableColumn<Paquete, String> dateColumn;
+    private TableColumn<Paquete, Date> dateColumn;
     @FXML
     private TableColumn<Paquete, Boolean> fragileColumn;
 
@@ -121,33 +123,32 @@ public class PaqueteController {
         stage.setResizable(false);
         stage.centerOnScreen();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
-
-        removeShipmentBtn.setDisable(true);
-        paqueteTableView.setEditable(true);
-
+        
         // Load configurations
         loadConfigurations();
 
         // Set up filters
         setUpDatePickers();
         setUpSizeFilterComboBox();
+
+        // Set up columns
+        paqueteTableView.setEditable(true);
+        idColumn.setEditable(false);
+        dateColumn.setEditable(true);
         // allow multiple row select
         paqueteTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        // Set up columns
-        idColumn.setEditable(false);
+        removeShipmentBtn.setDisable(true);
 
         setUpTableColumns();
 
         // Fill table data
         data = FXCollections.observableArrayList();
+
         // load data from data base
         fillTableFromDataBase();
         // Setup button actions
-        searchBtn.setOnAction(this::handleSearchAction);
-        filterDatesBtn.setOnAction(this::handleFilterByDatesAction);
-        printReportBtn.setOnAction(this::handlePrintReportAction);
-        removeShipmentBtn.setOnAction(this::handleRemoveShipmentAction);
-        addShipmentBtn.setOnAction(this::handleAddShipmentAction);
+
+        initHandlerActions();
 
         stage.show();
     }
@@ -170,10 +171,18 @@ public class PaqueteController {
         }
     }
 
+    private void initHandlerActions() {
+        searchBtn.setOnAction(this::handleSearchAction);
+        filterDatesBtn.setOnAction(this::handleFilterByDatesAction);
+        printReportBtn.setOnAction(this::handlePrintReportAction);
+        removeShipmentBtn.setOnAction(this::handleRemoveShipmentAction);
+        addShipmentBtn.setOnAction(this::handleAddShipmentAction);
+    }
+
     private void setUpDatePickers() {
         // Set default values
-//        fromDatePicker.setValue(LocalDate.now());
-//        toDatePicker.setValue(LocalDate.now().plusDays(7));
+        fromDatePicker.setValue(LocalDate.now());
+        toDatePicker.setValue(LocalDate.now().plusDays(7));
 
         // Prevent selecting dates before today for both pickers
         fromDatePicker.setDayCellFactory(picker -> new DateCell() {
@@ -251,44 +260,32 @@ public class PaqueteController {
 //
 
     private void setUpTableColumns() {
-
-        paqueteTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Paquete>() {
-            @Override
-            public void changed(ObservableValue<? extends Paquete> obs, Paquete oldValue, Paquete newValue) {
-                removeShipmentBtn.setDisable(newValue == null);
-            }
-        });
-
-// Add a mouse event listener to handle clicks outside rows
-        paqueteTableView.setOnMouseClicked(event -> {
-            // Check if the click happened outside the actual rows
-            if (event.getTarget().toString().contains("TableViewSkin")) {
+        // Add click event handler to the root container
+        paqueteTableView.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            // Check if the click target is not the TableView or its children
+            if (!paqueteTableView.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())) {
                 paqueteTableView.getSelectionModel().clearSelection();
-            }
-        });
-
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
-        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        dateColumn.setCellValueFactory(cellData -> {
-            Date fechaEnvio = cellData.getValue().getCreationDate();
-            if (fechaEnvio != null) {
-                return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEnvio));
+                removeShipmentBtn.setDisable(true);
             } else {
-                return new SimpleStringProperty("");
+                removeShipmentBtn.setDisable(false);
             }
         });
-        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
 
+        //idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        //senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
+        //receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
+        //weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
+        //sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        // dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        //fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+        //
         senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         senderColumn.setOnEditCommit(event -> event.getRowValue().setSender(event.getNewValue()));
-
+        //
         receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         receiverColumn.setOnEditCommit(event -> event.getRowValue().setReceiver(event.getNewValue()));
 
+        //
         weightColumn.setCellFactory(TextFieldTableCell.forTableColumn(
                         new StringConverter<Double>() {
             @Override
@@ -309,12 +306,19 @@ public class PaqueteController {
 
         weightColumn.setOnEditCommit(event -> event.getRowValue().setWeight(event.getNewValue()));
 
-        TableColumn<Paquete, Date> dateColumn = new TableColumn<>("Fecha");
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        dateColumn.setCellFactory(column -> new DateEditingCellPaquete());
-        dateColumn.setOnEditCommit(event -> {
+        //
+        // Set the custom PaqueteCBoxEditingCell
+        // Assign the PaqueteCBoxEditingCell without an explicit Callback
+        sizeColumn.setCellFactory(column -> new PaqueteCBoxEditingCell());
+        // Setup the date column
+        dateColumn.setCellFactory(column -> new PaqueteDateEditingCell());
+        // Setup the fragile column
+        fragileColumn.setCellFactory(column -> new PaqueteFragileEditingCell());
+        // Optional: add commit handler if you need to respond to changes
+        fragileColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
-            paquete.setCreationDate(event.getNewValue());
+            paquete.setFragile(event.getNewValue());
+            // Add any additional handling (like saving to database)
         });
 
     }

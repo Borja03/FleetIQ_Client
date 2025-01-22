@@ -5,7 +5,6 @@ package logicimplementation;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import exception.CreateException;
 import exception.DeleteException;
 import exception.SelectException;
@@ -32,14 +31,17 @@ public class PackageManagerImp implements PaqueteManager {
 
     @Override
     public Paquete addPackage(Paquete paquete) throws CreateException {
-             GenericType<Paquete> responseType = new GenericType<Paquete>() {};
+        GenericType<Paquete> responseType = new GenericType<Paquete>() {
+        };
         return webClient.createPackage(paquete, responseType);
- 
+
     }
 
     @Override
     public Paquete updatePackage(Paquete paquete) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        GenericType<Paquete> responseType = new GenericType<Paquete>() {
+        };
+        return webClient.updatePackage(paquete, responseType, paquete.getId());
     }
 
     @Override

@@ -62,7 +62,7 @@ public class PackageRESTClient {
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
-    public Paquete updatePackage(Object requestEntity, GenericType<Paquete> responseType, String id) throws WebApplicationException {
+    public Paquete updatePackage(Object requestEntity, GenericType<Paquete> responseType, Long id) throws WebApplicationException {
         return webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
                         .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);

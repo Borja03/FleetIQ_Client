@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.paquete.PaqueteController">
+<BorderPane fx:id="root" maxHeight="720.0" maxWidth="1024.0" minHeight="720.0" minWidth="1024.0" prefHeight="720.0" prefWidth="1024.0" stylesheets="@../../style/style.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.paquete.PaqueteController">
     <top>
         <VBox>
             <fx:include source="../menu/menu.fxml" />
@@ -67,7 +67,7 @@
         <TableView fx:id="paqueteTableView" VBox.vgrow="ALWAYS">
             <columns>
                 
-                <TableColumn fx:id="idColumn" prefWidth="91.0" text="ID">
+                <TableColumn fx:id="idColumn" prefWidth="85.0" text="ID">
                     <cellValueFactory>           
                          <PropertyValueFactory property="id" />
                     </cellValueFactory>
@@ -90,7 +90,7 @@
                          <PropertyValueFactory property="weight" />
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="sizeColumn" prefWidth="160.0" text="Size">
+                <TableColumn fx:id="sizeColumn" prefWidth="155.0" text="Size">
                       <cellValueFactory>           
                          <PropertyValueFactory property="size" />
                     </cellValueFactory>
