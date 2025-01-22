@@ -1,5 +1,6 @@
 package ui.envio;
 
+import cellFactories.EnvioDateEditingCell;
 import com.jfoenix.controls.*;
 import exception.SelectException;
 import factories.EnvioFactory;
@@ -63,10 +64,10 @@ public class EnvioController {
     private TableColumn<Envio, Integer> idColumn;
 
     @FXML
-    private TableColumn<Envio, String> fechaEnvioColumn;
+    private TableColumn<Envio, Date> fechaEnvioColumn;
 
     @FXML
-    private TableColumn<Envio, String> fechaEntregaColumn;
+    private TableColumn<Envio, Date> fechaEntregaColumn;
 
     @FXML
     private TableColumn<Envio, Estado> estadoColumn;
@@ -176,21 +177,31 @@ public class EnvioController {
             rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
             vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
 
-            fechaEnvioColumn.setCellValueFactory(cellData -> {
-                Date fechaEnvio = cellData.getValue().getFechaEnvio();
-                if (fechaEnvio != null) {
-                    return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEnvio));
-                } else {
-                    return new SimpleStringProperty("");
+            fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
+            fechaEntregaColumn.setCellFactory(column -> new EnvioDateEditingCell());
+            fechaEntregaColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Date newDate = event.getNewValue();
+                envio.setFechaEntrega(newDate);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
             });
 
-            fechaEntregaColumn.setCellValueFactory(cellData -> {
-                Date fechaEntrega = cellData.getValue().getFechaEntrega();
-                if (fechaEntrega != null) {
-                    return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEntrega));
-                } else {
-                    return new SimpleStringProperty("");
+            fechaEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEnvio"));
+            fechaEnvioColumn.setCellFactory(column -> new EnvioDateEditingCell());
+            fechaEnvioColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Date newDate = event.getNewValue();
+                envio.setFechaEnvio(newDate);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
             });
         } catch (SelectException ex) {

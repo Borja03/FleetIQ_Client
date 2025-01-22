@@ -17,21 +17,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Paquete  implements Serializable {
-    private Integer id;
+    private Long id;
     private String sender;
     private String receiver;
     private double weight;
     @XmlElement
     private PackageSize size;
-
     private Date creationDate;
     private boolean fragile;
-
     public Paquete() {
     }
 
     
-    public Paquete(Integer id, String sender, String receiver, double weight, 
+    public Paquete(Long id, String sender, String receiver, double weight, 
                    PackageSize size, Date creationDate, boolean fragile) {
         this.id = id;
         this.sender = sender;
@@ -44,11 +42,11 @@ public class Paquete  implements Serializable {
 
     
     
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

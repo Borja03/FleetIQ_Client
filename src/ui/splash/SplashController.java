@@ -87,7 +87,7 @@ public class SplashController  {
         } catch (IOException e) {
            System.out.println("Not Able to connect to google ");
 
-            return false;
+            return true;
         }
     }
 

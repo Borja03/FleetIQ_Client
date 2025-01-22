@@ -1,46 +1,59 @@
 package ui.paquete;
 
+import cellFactories.PaqueteDateEditingCell;
+import cellFactories.PaqueteCBoxEditingCell;
+import cellFactories.PaqueteFragileEditingCell;
 import models.PackageSize;
-import models.User;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import exception.CreateException;
+import exception.DeleteException;
 import exception.SelectException;
 import factories.PaqueteFactory;
+import java.text.SimpleDateFormat;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.cell.PropertyValueFactory;
+import java.util.Date;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DateCell;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import models.Paquete;
 
 public class PaqueteController {
 
     private static final Logger LOGGER = Logger.getLogger(PaqueteController.class.getName());
 
+    @FXML
+    private BorderPane root;
     @FXML
     private JFXDatePicker fromDatePicker;
 
@@ -67,7 +80,7 @@ public class PaqueteController {
     @FXML
     private TableColumn<Paquete, PackageSize> sizeColumn;
     @FXML
-    private TableColumn<Paquete, LocalDate> dateColumn;
+    private TableColumn<Paquete, Date> dateColumn;
     @FXML
     private TableColumn<Paquete, Boolean> fragileColumn;
 
@@ -84,11 +97,16 @@ public class PaqueteController {
 
     @FXML
     private JFXButton filterDatesBtn;
-//    public static User userSession;
+
     private Stage stage;
+
     private DateTimeFormatter dateFormatter;
+
     private LocalDate startDate;
+
     private LocalDate endDate;
+
+    private ObservableList<Paquete> data;
 
     public Stage getStage() {
         return stage;
@@ -99,71 +117,39 @@ public class PaqueteController {
     }
 
     public void initStage(Parent root) {
-        LOGGER.info("Initialising Paquete window.");
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
+        LOGGER.info("Initializing Paquete window.");
+        stage.setScene(new Scene(root));
         stage.setTitle("Paquete");
         stage.setResizable(false);
         stage.centerOnScreen();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
-
-        //
-        removeShipmentBtn.setDisable(true);
-        paqueteTableView.setEditable(true);
-        idColumn.setEditable(false);
+        
         // Load configurations
         loadConfigurations();
-        // Set up date pickers
-        setUpDatePickers();
 
-        // Set up size filter combo box
+        // Set up filters
+        setUpDatePickers();
         setUpSizeFilterComboBox();
 
-        // Set up table columns
-        // setUpTableColumns();
-        // Fill table with example data
-        //fillTableWithExampleData();
-        // Fill table with database data
+        // Set up columns
+        paqueteTableView.setEditable(true);
+        idColumn.setEditable(false);
+        dateColumn.setEditable(true);
+        // allow multiple row select
+        paqueteTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        removeShipmentBtn.setDisable(true);
+
+        setUpTableColumns();
+
+        // Fill table data
+        data = FXCollections.observableArrayList();
+
+        // load data from data base
         fillTableFromDataBase();
+        // Setup button actions
 
-        searchBtn.setOnAction(this::handleSearchAction);
-        filterDatesBtn.setOnAction(this::handleFilterByDatesAction);
-        printReportBtn.setOnAction(this::handlePrintReportAction);
-        removeShipmentBtn.setOnAction(this::handleRemoveShipmentAction);
-        addShipmentBtn.setOnAction(this::handleAddShipmentAction);
+        initHandlerActions();
 
-        senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        senderColumn.setOnEditCommit(new EventHandler<CellEditEvent<Paquete, String>>() {
-            @Override
-            public void handle(CellEditEvent<Paquete, String> t) {
-                ((Paquete) t.getTableView().getItems().get(
-                                t.getTablePosition().getRow())).setSender(t.getNewValue());
-            }
-        }
-        );
-
-        receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        receiverColumn.setOnEditCommit(new EventHandler<CellEditEvent<Paquete, String>>() {
-            @Override
-            public void handle(CellEditEvent<Paquete, String> t) {
-                ((Paquete) t.getTableView().getItems().get(
-                                t.getTablePosition().getRow())).setReceiver(t.getNewValue());
-            }
-        }
-        );
-
-//        weightColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-//        
-//        weightColumn.setOnEditCommit(new EventHandler<CellEditEvent<Paquete, double>>() {
-//            @Override
-//            public void handle(CellEditEvent<Paquete, double> t) {
-//                ((Paquete) t.getTableView().getItems().get(
-//                                t.getTablePosition().getRow())).setWeight(t.getNewValue());
-//            }
-//        }
-//        );
-//
-//        
         stage.show();
     }
 
@@ -185,10 +171,18 @@ public class PaqueteController {
         }
     }
 
+    private void initHandlerActions() {
+        searchBtn.setOnAction(this::handleSearchAction);
+        filterDatesBtn.setOnAction(this::handleFilterByDatesAction);
+        printReportBtn.setOnAction(this::handlePrintReportAction);
+        removeShipmentBtn.setOnAction(this::handleRemoveShipmentAction);
+        addShipmentBtn.setOnAction(this::handleAddShipmentAction);
+    }
+
     private void setUpDatePickers() {
         // Set default values
-//        fromDatePicker.setValue(LocalDate.now());
-//        toDatePicker.setValue(LocalDate.now().plusDays(7));
+        fromDatePicker.setValue(LocalDate.now());
+        toDatePicker.setValue(LocalDate.now().plusDays(7));
 
         // Prevent selecting dates before today for both pickers
         fromDatePicker.setDayCellFactory(picker -> new DateCell() {
@@ -264,22 +258,79 @@ public class PaqueteController {
         }
     }
 //
-//    private void setUpTableColumns() {
-//        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-//        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-//        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
-//        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-//        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-//        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-//        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
-//    }
+
+    private void setUpTableColumns() {
+        // Add click event handler to the root container
+        paqueteTableView.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            // Check if the click target is not the TableView or its children
+            if (!paqueteTableView.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())) {
+                paqueteTableView.getSelectionModel().clearSelection();
+                removeShipmentBtn.setDisable(true);
+            } else {
+                removeShipmentBtn.setDisable(false);
+            }
+        });
+
+        //idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        //senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
+        //receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
+        //weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
+        //sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        // dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        //fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+        //
+        senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        senderColumn.setOnEditCommit(event -> event.getRowValue().setSender(event.getNewValue()));
+        //
+        receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        receiverColumn.setOnEditCommit(event -> event.getRowValue().setReceiver(event.getNewValue()));
+
+        //
+        weightColumn.setCellFactory(TextFieldTableCell.forTableColumn(
+                        new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                return object != null ? object.toString() : "";
+            }
+
+            @Override
+            public Double fromString(String string) {
+                try {
+                    return Double.valueOf(string);
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Invalid weight: " + string);
+                    return null;
+                }
+            }
+        }));
+
+        weightColumn.setOnEditCommit(event -> event.getRowValue().setWeight(event.getNewValue()));
+
+        //
+        // Set the custom PaqueteCBoxEditingCell
+        // Assign the PaqueteCBoxEditingCell without an explicit Callback
+        sizeColumn.setCellFactory(column -> new PaqueteCBoxEditingCell());
+        // Setup the date column
+        dateColumn.setCellFactory(column -> new PaqueteDateEditingCell());
+        // Setup the fragile column
+        fragileColumn.setCellFactory(column -> new PaqueteFragileEditingCell());
+        // Optional: add commit handler if you need to respond to changes
+        fragileColumn.setOnEditCommit(event -> {
+            Paquete paquete = event.getRowValue();
+            paquete.setFragile(event.getNewValue());
+            // Add any additional handling (like saving to database)
+        });
+
+    }
 
     // fill test data from server 
     private void fillTableFromDataBase() {
+
         try {
             List<Paquete> paqueteList = PaqueteFactory.getPackageInstance().findAllPackages();
             // Fetch data and populate the TableView
-            paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
+            data.addAll(paqueteList);
+            paqueteTableView.setItems(data);
         } catch (Exception e) {
             // Handle exceptions gracefully
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -300,7 +351,6 @@ public class PaqueteController {
         }
         try {
             filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByName(query);
-            System.out.println(filteredPaqueteList.toString());
 
         } catch (SelectException ex) {
             Logger.getLogger(PaqueteController.class
@@ -397,15 +447,32 @@ public class PaqueteController {
 
     //
     private void handleAddShipmentAction(ActionEvent event) {
-        // TODO: Implement add shipment logic
-        System.out.println("Add Shipment clicked");
+
+        try {
+            Paquete defaultPaquete = new Paquete(data.get(data.size() - 1).getId() + 1, "Sender", "Receiver", 1.0, PackageSize.MEDIUM, new Date(), false);
+            data.add(defaultPaquete);
+            Paquete p2 = PaqueteFactory.getPackageInstance().addPackage(defaultPaquete);
+            System.out.println(p2.toString());
+        } catch (CreateException ex) {
+            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+            // show alert
+            System.out.println("Somthinr is woripgn");
+        }
+
     }
 
     //
     private void handleRemoveShipmentAction(ActionEvent event) {
         Paquete selectedPaquete = paqueteTableView.getSelectionModel().getSelectedItem();
+
         if (selectedPaquete != null) {
             paqueteTableView.getItems().remove(selectedPaquete);
+            try {
+                PaqueteFactory.getPackageInstance().deletePackages(selectedPaquete.getId());
+                LOGGER.info("Paquete with id  deleted");
+            } catch (DeleteException ex) {
+                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
