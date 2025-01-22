@@ -1,5 +1,6 @@
 package ui.ruta;
 
+import cellFactories.RutaDateEditingCell;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
@@ -119,6 +120,8 @@ public class RutaController {
         rutaTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             removeShipmentBtn.setDisable(rutaTable.getSelectionModel().getSelectedItems().isEmpty());
         });
+        
+        fechaColumn.setEditable(true);
 
         configureEditableColumns();
 
@@ -483,8 +486,23 @@ public class RutaController {
                 }
             }
         });
+        
+          fechaColumn.setCellValueFactory(new PropertyValueFactory<>("Fecha Creacion"));
+            fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
+            fechaColumn.setOnEditCommit(event -> {
+                Ruta ruta = event.getRowValue();
+                Date newDate = event.getNewValue();
+                ruta.setFechaCreacion(newDate);
+                try {
+                    rutaManager.edit_XML(ruta, ruta.getLocalizador().toString());
+                } catch (Exception e) {
+                    logger.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
     }
     
+   
      private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addVehicleMenuItem = new MenuItem("Añadir Vehículo");
@@ -567,29 +585,4 @@ public class RutaController {
             showAlert("Error", "No se pudieron cargar los vehículos");
         }
     }
-
-  /*  private void loadVehiculos() {
-        try {
-            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
-           // ObservableList<String> vehiculosNames = FXCollections.observableArrayList();
-            for (Vehiculo vehiculo : vehicleList) {
-               // vehiculosNames.add(vehiculo.getMatricula());
-                System.out.println(vehiculo.getMatricula());
-            }
-            
-            vehiculosNames.add(5, "Seleccionar vehículo");
-vehiculoChoiceBox.setItems(vehiculosNames);
-
-
-          //  vehiculoChoiceBox.setItems(vehiculosNames);
-        } catch (SelectException e) {
-            // Manejo de errores si no se pueden cargar los vehículos
-            logger.log(Level.SEVERE, "Error al cargar los vehículos", e);
-            showAlert("Error", "No se pudieron cargar los vehículos.");
-        } catch (Exception e) {
-            // Capturar cualquier otro error general
-            logger.log(Level.SEVERE, "Error inesperado", e);
-            showAlert("Error", "Ha ocurrido un error inesperado al cargar los vehículos.");
-        }
-    }*/
 }
