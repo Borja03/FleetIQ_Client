@@ -4,7 +4,9 @@ import cellFactories.EnvioDateEditingCell;
 import com.jfoenix.controls.*;
 import exception.SelectException;
 import factories.EnvioFactory;
+import factories.EnvioRutaVehiculoFactory;
 import factories.SignableFactory;
+import factories.VehicleFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,6 +32,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
+import logicInterface.EnvioRutaVehiculoManager;
 import logicInterface.PaqueteManager;
 import logicInterface.UserManager;
 import logicInterface.VehicleManager;
@@ -94,12 +97,15 @@ public class EnvioController {
     private PaqueteManager paqueteService;
     private UserManager userService;
     private VehicleManager vehicleService;
+    private EnvioRutaVehiculoManager envioRutaVehiculoService;
     private ObservableList<Envio> envioList;
-    private ObservableList<Paquete> paqueteList;
+    private ArrayList<Paquete> paqueteList;
     private ArrayList<User> userList = new ArrayList<>();
-    private ObservableList<Vehiculo> vehiculoList;
+    private List<Vehiculo> vehiculoList = new ArrayList<>();
+    private List<EnvioRutaVehiculo> envioRutaVehiculoList = new ArrayList<>();
 
     private List<String> userNamesList = new ArrayList<>();
+    private List<String> vehiculoMatriculaList = new ArrayList<>();
 
     private Stage stage;
 
@@ -119,6 +125,8 @@ public class EnvioController {
         envioService = EnvioFactory.getEnvioInstance();
         envioList = FXCollections.observableArrayList();
         userService = SignableFactory.getSignable();
+        vehicleService = VehicleFactory.getVehicleInstance();
+        envioRutaVehiculoService = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
         table.setEditable(true);
         idColumn.setEditable(false);
@@ -155,6 +163,7 @@ public class EnvioController {
             });
 
             numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
+
             creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
             userList = userService.findAll();
 
@@ -174,8 +183,55 @@ public class EnvioController {
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
             });
+
+            
+            
             rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
+
+            
+            
             vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
+            vehiculoList = vehicleService.findAllVehiculos();
+
+            for (Vehiculo vehiculo : vehiculoList) {
+                vehiculoMatriculaList.add(vehiculo.getMatricula());
+            }
+            ObservableList<String> vehiclesNamesObservableList = FXCollections.observableArrayList(vehiculoMatriculaList);
+            vehiculoColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(vehiclesNamesObservableList));
+            vehiculoColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                String matricula="";
+                if(event.getNewValue()!=null)
+                matricula = event.getNewValue();
+                else return;
+//                String localizador = "";
+              try {
+                    Vehiculo vehiculo = vehicleService.findAllVehiculosByPlate(matricula).get(0);
+//                    envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
+//                    });
+//                    
+//                    int i=0;
+//                    boolean encontrado = false;
+//                    while (i<envioRutaVehiculoList.size()|| !encontrado){
+//                        if(envioRutaVehiculoList.get(i).getVehiculo().getMatricula().equalsIgnoreCase(matricula)){
+//                           localizador =  envioRutaVehiculoList.get(i).getRuta().getLocalizador().toString();
+//                           encontrado=true;
+//                        }
+//                    }
+//
+                } catch (SelectException ex) {
+                    Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+//
+//                envio.setRuta(localizador);
+                envio.setVehiculo(matricula);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el creador del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
 
             fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
             fechaEntregaColumn.setCellFactory(column -> new EnvioDateEditingCell());

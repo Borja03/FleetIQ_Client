@@ -1,14 +1,5 @@
 package cellFactories;
 
-//public class PaqueteDateEditingCell extends TableCell<Paquete,Date> {
-//    private DatePicker datePicker;
-//    private DateTimeFormatter dateFormatter;
-//
-//    public PaqueteDateEditingCell() {
-//        dateFormat = ResourceBundle.getBundle("config/config")
-//                        .getString("date.format");
-//        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-//    }
 import com.jfoenix.controls.JFXDatePicker;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
