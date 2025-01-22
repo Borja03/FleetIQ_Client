@@ -24,14 +24,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
@@ -67,12 +71,11 @@ public class RutaController {
     private TableColumn<Ruta, Float> distanciaColumn;
     @FXML
     private TableColumn<Ruta, Date> fechaColumn;
-
     @FXML
-    private JFXComboBox<String> vehiculoChoiceBox; // Cambia el tipo de JFXComboBox si lo necesitas.
+    private ChoiceBox<String> vehiculoChoiceBox;
 
     private RutaManager rutaManager;
-   // private VehicleManager vehicleManager;
+    private VehicleManager vehicleManager;
 
     private ObservableList<Ruta> rutaData;
 
@@ -89,7 +92,7 @@ public class RutaController {
     @FXML
     public void initialize(Parent root) {
         rutaManager = RutaManagerFactory.getRutaManager();
-       // vehicleManager = VehicleFactory.getVehicleInstance();
+        vehicleManager = VehicleFactory.getVehicleInstance();
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -118,10 +121,11 @@ public class RutaController {
         });
 
         configureEditableColumns();
-loadVehiculos();
+
         // Llamamos al método setupContextMenu para configurar el menú contextual
         setupContextMenu();
-        
+      
+
 
         try {
             loadRutaData();
@@ -480,44 +484,104 @@ loadVehiculos();
             }
         });
     }
-
-    private void setupContextMenu() {
-        // Crear el menú contextual
+    
+     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-
-        // Crear la opción "Añadir Vehículo"
         MenuItem addVehicleMenuItem = new MenuItem("Añadir Vehículo");
+        
         addVehicleMenuItem.setOnAction(event -> {
-            // Aquí iría la lógica para "Añadir Vehículo", si fuera necesario.
-            // Por ahora, solo la opción en el menú.
+            Ruta selectedRuta = rutaTable.getSelectionModel().getSelectedItem();
+            if (selectedRuta != null) {
+                showVehicleSelectionDialog(selectedRuta);
+            }
         });
-
-        // Añadir la opción al menú contextual
+        
         contextMenu.getItems().add(addVehicleMenuItem);
-
-        // Establecer el menú contextual a la tabla
+        
         rutaTable.setContextMenu(contextMenu);
     }
 
-    private void loadVehiculos() {
+    private void showVehicleSelectionDialog(Ruta ruta) {
+        // Create a new stage for the vehicle selection
+        Stage vehicleStage = new Stage();
+        vehicleStage.setTitle("Seleccionar Vehículo");
+        
+        // Create a ComboBox for vehicle selection
+        JFXComboBox<String> vehicleComboBox = new JFXComboBox<>();
+        
         try {
-            // Obtener la lista de vehículos desde la base de datos o API
+            // Get all vehicles
+            List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
+            ObservableList<String> matriculas = FXCollections.observableArrayList();
+            
+            for (Vehiculo vehiculo : vehiculos) {
+                matriculas.add(vehiculo.getMatricula());
+            }
+            
+            vehicleComboBox.setItems(matriculas);
+            
+            // Create confirm button
+            JFXButton confirmButton = new JFXButton("Confirmar");
+            confirmButton.setOnAction(e -> {
+                String selectedMatricula = vehicleComboBox.getValue();
+                if (selectedMatricula != null) {
+                    try {
+                        // Add vehicle to route logic here
+                        // You'll need to implement the actual connection between route and vehicle
+                        logger.info("Añadiendo vehículo " + selectedMatricula + " a la ruta " + ruta.getLocalizador());
+                        
+                        // Update the number of vehicles in the route
+                        ruta.setNumVehiculos(ruta.getNumVehiculos() + 1);
+                        rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                        
+                        // Refresh the table
+                        loadRutaData();
+                        
+                        // Close the vehicle selection window
+                        vehicleStage.close();
+                        
+                    } catch (Exception ex) {
+                        logger.log(Level.SEVERE, "Error al añadir vehículo a la ruta", ex);
+                        showAlert("Error", "No se pudo añadir el vehículo a la ruta");
+                    }
+                }
+            });
+            
+            // Layout
+            VBox layout = new VBox(10); // 10 is the spacing between elements
+            layout.getStyleClass().add("jfx-popup-container");
+            layout.setPadding(new javafx.geometry.Insets(10));
+            layout.getChildren().addAll(vehicleComboBox, confirmButton);
+            
+            // Set up the scene
+            Scene scene = new Scene(layout);
+            vehicleStage.setScene(scene);
+            vehicleStage.setWidth(250);
+            vehicleStage.setHeight(120);
+            
+            // Show the window
+            vehicleStage.show();
+            
+        } catch (SelectException ex) {
+            logger.log(Level.SEVERE, "Error al cargar los vehículos", ex);
+            showAlert("Error", "No se pudieron cargar los vehículos");
+        }
+    }
+
+  /*  private void loadVehiculos() {
+        try {
             List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
-
-            // Comprobar si la lista está vacía o nula
-            if (vehicleList == null || vehicleList.isEmpty()) {
-                showAlert("Advertencia", "No se encontraron vehículos.");
-                return; // Si no hay vehículos, no continuamos
-            }
-
-            // Crear una lista de Strings para agregar al ChoiceBox usando la matrícula de cada vehículo
-            ObservableList<String> vehiculosNames = FXCollections.observableArrayList();
+           // ObservableList<String> vehiculosNames = FXCollections.observableArrayList();
             for (Vehiculo vehiculo : vehicleList) {
-                vehiculosNames.add(vehiculo.getMatricula()); // Asegúrate de que 'getMatricula' esté presente
+               // vehiculosNames.add(vehiculo.getMatricula());
+                System.out.println(vehiculo.getMatricula());
             }
+            
+            vehiculosNames.add(5, "Seleccionar vehículo");
+vehiculoChoiceBox.setItems(vehiculosNames);
 
-            // Establecer la lista de vehículos en el ChoiceBox
-            vehiculoChoiceBox.setItems(vehiculosNames);
+
+          //  vehiculoChoiceBox.setItems(vehiculosNames);
         } catch (SelectException e) {
             // Manejo de errores si no se pueden cargar los vehículos
             logger.log(Level.SEVERE, "Error al cargar los vehículos", e);
@@ -527,5 +591,5 @@ loadVehiculos();
             logger.log(Level.SEVERE, "Error inesperado", e);
             showAlert("Error", "Ha ocurrido un error inesperado al cargar los vehículos.");
         }
-    }
+    }*/
 }
