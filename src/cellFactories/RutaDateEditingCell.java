@@ -1,5 +1,14 @@
 package cellFactories;
 
+//public class PaqueteDateEditingCell extends TableCell<Paquete,Date> {
+//    private DatePicker datePicker;
+//    private DateTimeFormatter dateFormatter;
+//
+//    public PaqueteDateEditingCell() {
+//        dateFormat = ResourceBundle.getBundle("config/config")
+//                        .getString("date.format");
+//        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+//    }
 import com.jfoenix.controls.JFXDatePicker;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -10,7 +19,8 @@ import java.util.ResourceBundle;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.input.KeyCode;
-import models.Ruta;  // Use the appropriate model here (Ruta instead of Envio)
+import models.Paquete;
+import models.Ruta;
 
 public class RutaDateEditingCell extends TableCell<Ruta, Date> {
 
@@ -29,6 +39,8 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
      * Configures the JFXDatePicker with event handling and style.
      */
     private void configureDatePicker() {
+
+        datePicker = new JFXDatePicker();
         datePicker.setShowWeekNumbers(false);
         // Disable weekends (Saturdays and Sundays)
         datePicker.setDayCellFactory(picker -> new DateCell() {
@@ -43,7 +55,6 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
                 }
             }
         });
-        
         // Handle date selection
         datePicker.setOnAction(e -> {
             if (datePicker.getValue() != null) {

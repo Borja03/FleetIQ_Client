@@ -120,15 +120,11 @@ public class RutaController {
         rutaTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             removeShipmentBtn.setDisable(rutaTable.getSelectionModel().getSelectedItems().isEmpty());
         });
-        
-        fechaColumn.setEditable(true);
 
         configureEditableColumns();
 
         // Llamamos al método setupContextMenu para configurar el menú contextual
         setupContextMenu();
-      
-
 
         try {
             loadRutaData();
@@ -486,36 +482,38 @@ public class RutaController {
                 }
             }
         });
-        
-          fechaColumn.setCellValueFactory(new PropertyValueFactory<>("Fecha Creacion"));
-            fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
-            fechaColumn.setOnEditCommit(event -> {
-                Ruta ruta = event.getRowValue();
-                Date newDate = event.getNewValue();
-                ruta.setFechaCreacion(newDate);
-                try {
-                    rutaManager.edit_XML(ruta, ruta.getLocalizador().toString());
-                } catch (Exception e) {
-                    logger.severe("Error al actualizar el estado del envío: " + e.getMessage());
-                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
-                }
-            });
+
+        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+        fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
+        fechaColumn.setOnEditCommit(event -> {
+            Ruta ruta = event.getRowValue();
+            Date newDate = event.getNewValue();
+            ruta.setFechaCreacion(newDate);
+            try {
+                rutaManager.edit_XML(ruta, ruta.getLocalizador().toString());
+            } catch (Exception e) {
+                logger.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+            }
+        });
     }
     
    
-     private void setupContextMenu() {
+     
+
+    private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addVehicleMenuItem = new MenuItem("Añadir Vehículo");
-        
+
         addVehicleMenuItem.setOnAction(event -> {
             Ruta selectedRuta = rutaTable.getSelectionModel().getSelectedItem();
             if (selectedRuta != null) {
                 showVehicleSelectionDialog(selectedRuta);
             }
         });
-        
+
         contextMenu.getItems().add(addVehicleMenuItem);
-        
+
         rutaTable.setContextMenu(contextMenu);
     }
 
@@ -523,21 +521,21 @@ public class RutaController {
         // Create a new stage for the vehicle selection
         Stage vehicleStage = new Stage();
         vehicleStage.setTitle("Seleccionar Vehículo");
-        
+
         // Create a ComboBox for vehicle selection
         JFXComboBox<String> vehicleComboBox = new JFXComboBox<>();
-        
+
         try {
             // Get all vehicles
             List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
             ObservableList<String> matriculas = FXCollections.observableArrayList();
-            
+
             for (Vehiculo vehiculo : vehiculos) {
                 matriculas.add(vehiculo.getMatricula());
             }
-            
+
             vehicleComboBox.setItems(matriculas);
-            
+
             // Create confirm button
             JFXButton confirmButton = new JFXButton("Confirmar");
             confirmButton.setOnAction(e -> {
@@ -547,39 +545,39 @@ public class RutaController {
                         // Add vehicle to route logic here
                         // You'll need to implement the actual connection between route and vehicle
                         logger.info("Añadiendo vehículo " + selectedMatricula + " a la ruta " + ruta.getLocalizador());
-                        
+
                         // Update the number of vehicles in the route
                         ruta.setNumVehiculos(ruta.getNumVehiculos() + 1);
                         rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                        
+
                         // Refresh the table
                         loadRutaData();
-                        
+
                         // Close the vehicle selection window
                         vehicleStage.close();
-                        
+
                     } catch (Exception ex) {
                         logger.log(Level.SEVERE, "Error al añadir vehículo a la ruta", ex);
                         showAlert("Error", "No se pudo añadir el vehículo a la ruta");
                     }
                 }
             });
-            
+
             // Layout
             VBox layout = new VBox(10); // 10 is the spacing between elements
             layout.getStyleClass().add("jfx-popup-container");
             layout.setPadding(new javafx.geometry.Insets(10));
             layout.getChildren().addAll(vehicleComboBox, confirmButton);
-            
+
             // Set up the scene
             Scene scene = new Scene(layout);
             vehicleStage.setScene(scene);
             vehicleStage.setWidth(250);
             vehicleStage.setHeight(120);
-            
+
             // Show the window
             vehicleStage.show();
-            
+
         } catch (SelectException ex) {
             logger.log(Level.SEVERE, "Error al cargar los vehículos", ex);
             showAlert("Error", "No se pudieron cargar los vehículos");
