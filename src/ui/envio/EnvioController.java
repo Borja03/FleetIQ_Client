@@ -295,14 +295,12 @@ public class EnvioController {
 
             LOGGER.info("Iniciando la eliminación de los envíos seleccionados.");
             for (Envio envio : selectedEnvios) {
-                LOGGER.info("Eliminando envío con ID: " + envio.getId());
                 if (envio.getEnvioRutaVehiculo() != null) {
                     envioService.remove(envio.getId());
                 }
                 envioService.remove(envio.getId());
                 envioList.remove(envio);
                 table.refresh();
-                LOGGER.info("Envío con ID: " + envio.getId() + " eliminado correctamente.");
             }
 
         } catch (IllegalArgumentException e) {
