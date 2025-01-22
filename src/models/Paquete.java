@@ -29,8 +29,7 @@ public class Paquete  implements Serializable {
     }
 
     
-    public Paquete(Long id, String sender, String receiver, double weight, 
-                   PackageSize size, Date creationDate, boolean fragile) {
+    public Paquete(Long id, String sender, String receiver, double weight, PackageSize size, Date creationDate, boolean fragile) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;

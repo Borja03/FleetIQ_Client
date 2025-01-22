@@ -29,9 +29,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import models.EnvioRutaVehiculo;
 import models.Vehiculo;
 
 /**
@@ -105,10 +107,10 @@ public class VehicleController {
     private JFXTextField capacityTextField;
 
     @FXML
-    private TableColumn<?, ?> ruta;
+    private TableColumn<EnvioRutaVehiculo, Integer> rutaColumn;
 
     @FXML
-    //private TableColumn<Ruta, String> fecha_asignacion;
+    private TableColumn<EnvioRutaVehiculo, Date> fecha_asignacionColumn;
 
     private Stage stage;
     private DateTimeFormatter dateFormatter;
@@ -140,17 +142,38 @@ public class VehicleController {
      */
     public void initStage(Parent root) {
         LOGGER.info("Initializing Vehicle window.");
+
+        // Configure the scene and stage properties
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Vehicle Management");
         stage.setResizable(false);
         stage.centerOnScreen();
 
-//        loadConfigurations();
-//        setUpDatePickers();
+        // Populate combo box
         filterTypeComboBox.getItems().setAll("ITV Date", "Registration Date");
         setUpTableColumns();
         fillTableFromDataBase();
+
+        // Initialize event handlers for the buttons
+        plusButton.setOnAction(event -> modifyCapacity(1));
+        minusButton.setOnAction(event -> modifyCapacity(-1));
+
+        // Set default value for capacityTextField if empty
+        if (capacityTextField.getText().isEmpty()) {
+            capacityTextField.setText("0");
+
+            TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change
+                    -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
+            capacityTextField.setTextFormatter(formatter);
+        }
+
+        // Add event handlers for other buttons
+        searchButton.setOnAction(event -> onSearchButtonClicked());
+        removeShipmentBtn.setOnAction(event -> onRemoveShipmentClicked());
+        configureRemoveShipmentButton();
+
+        LOGGER.info("Vehicle window and capacity controls initialized.");
 
         stage.show();
     }
@@ -158,8 +181,10 @@ public class VehicleController {
     private void fillTableFromDataBase() {
         try {
             List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
+
             // Fetch data and populate the TableView
             vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+
         } catch (Exception e) {
             // Handle exceptions gracefully
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -167,6 +192,17 @@ public class VehicleController {
             alert.setHeaderText("Data Fetching Failed");
             alert.setContentText("Could not fetch data from the server. Please try again later.");
         }
+    }
+
+    // Método para inicializar la lógica de deshabilitación del botón
+    private void configureRemoveShipmentButton() {
+        // Listener para deshabilitar el botón si no hay ninguna fila seleccionada
+        vehicleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            removeShipmentBtn.setDisable(newSelection == null);
+        });
+
+        // Deshabilitar el botón al inicio, ya que no hay selección por defecto
+        removeShipmentBtn.setDisable(true);
     }
 
     /**
@@ -210,6 +246,15 @@ public class VehicleController {
                 }
             }
         });
+
+        // Supongamos que 'tableView' es tu instancia de TableView
+        vehicleTableView.getScene().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            // Verifica si el clic no ocurrió dentro de la tabla
+            if (!vehicleTableView.getBoundsInParent().contains(event.getSceneX(), event.getSceneY())) {
+                vehicleTableView.getSelectionModel().clearSelection(); // Deselecciona la fila seleccionada
+            }
+        });
+
     }
 
     /**
@@ -230,6 +275,10 @@ public class VehicleController {
                     -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
             capacityTextField.setTextFormatter(formatter);
         }
+
+        // Add event handler for search button
+        searchButton.setOnAction(event -> onSearchButtonClicked());
+
         LOGGER.info("Capacity controls initialized.");
     }
 
@@ -253,6 +302,71 @@ public class VehicleController {
         } catch (NumberFormatException e) {
             LOGGER.warning("Invalid capacity value: " + capacityTextField.getText());
             capacityTextField.setText("0");
+        }
+    }
+
+    @FXML
+    private void onRemoveShipmentClicked() {
+        Vehiculo selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
+
+        if (selectedVehicle == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Selection");
+            alert.setHeaderText("No Vehicle Selected");
+            alert.setContentText("Please select a vehicle to remove.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Confirm deletion
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirm Deletion");
+        confirmAlert.setHeaderText("Delete Vehicle");
+        confirmAlert.setContentText("Are you sure you want to delete the selected vehicle?");
+
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                vehicleTableView.getItems().remove(selectedVehicle);
+
+                // Optionally delete from database
+                try {
+                    VehicleFactory.getVehicleInstance().deleteVehiculo(selectedVehicle.getId());
+                    LOGGER.info("Vehicle removed successfully: " + selectedVehicle.getMatricula());
+                } catch (Exception e) {
+                    LOGGER.severe("Error deleting vehicle: " + e.getMessage());
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText("Deletion Failed");
+                    errorAlert.setContentText("An error occurred while deleting the vehicle.");
+                    errorAlert.showAndWait();
+                }
+            }
+        });
+    }
+
+    /**
+     * Filters the vehicle list by license plate (matricula) when the search
+     * button is clicked.
+     */
+    @FXML
+    private void onSearchButtonClicked() {
+        String matricula = searchTextField.getText().trim();
+
+        if (matricula.isEmpty()) {
+            fillTableFromDataBase();
+            return;
+        }
+
+        try {
+            List<Vehiculo> filteredVehicles = VehicleFactory.getVehicleInstance().findAllVehiculosByPlate(matricula);
+            vehicleTableView.setItems(FXCollections.observableArrayList(filteredVehicles));
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by matricula: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 

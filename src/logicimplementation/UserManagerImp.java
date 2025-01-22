@@ -73,7 +73,6 @@ public class UserManagerImp implements UserManager {
         };
         List<User> userList = webClient.findAll(responseType);
         return userList;
-
     }
 
 }

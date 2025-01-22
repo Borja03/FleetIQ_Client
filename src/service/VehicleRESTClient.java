@@ -158,12 +158,6 @@ public class VehicleRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findByPlate_XML(Class<T> responseType, String matricula) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("plate/{0}", new Object[]{matricula}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
     public <T> T findByPlate_JSON(Class<T> responseType, String matricula) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("plate/{0}", new Object[]{matricula}));
@@ -176,6 +170,12 @@ public class VehicleRESTClient {
 
     public void close() {
         client.close();
+    }
+
+    public List<Vehiculo> findByPlate_XML(GenericType<List<Vehiculo>> responseType, String matricula) {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("plate/{0}", new Object[]{matricula}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
 }

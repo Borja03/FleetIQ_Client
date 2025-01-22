@@ -124,7 +124,6 @@ public class EnvioController {
 
         envioService = EnvioFactory.getEnvioInstance();
         envioList = FXCollections.observableArrayList();
-        userService = SignableFactory.getSignable();
         vehicleService = VehicleFactory.getVehicleInstance();
         envioRutaVehiculoService = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
@@ -359,7 +358,6 @@ public class EnvioController {
     private void removeEnvio(ActionEvent event) {
         try {
             ObservableList<Envio> selectedEnvios = table.getSelectionModel().getSelectedItems();
-
             LOGGER.info("Iniciando la eliminación de los envíos seleccionados.");
             for (Envio envio : selectedEnvios) {
                 if (envio.getEnvioRutaVehiculo() != null) {

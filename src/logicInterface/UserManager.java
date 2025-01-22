@@ -9,7 +9,6 @@ import exception.CreateException;
 import exception.SelectException;
 import exception.UpdateException;
 import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.GenericType;
 import models.User;
 
 /**

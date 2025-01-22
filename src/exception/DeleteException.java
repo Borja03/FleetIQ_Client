@@ -7,6 +7,8 @@
 
 package exception;
 
+import javax.ws.rs.ClientErrorException;
+
  /*
  * @author Alder
  */
@@ -28,6 +30,10 @@ public class DeleteException extends Exception {
      */
     public DeleteException(String msg) {
         super(msg);
+    }
+
+    public DeleteException(String string, ClientErrorException e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 
