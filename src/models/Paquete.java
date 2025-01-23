@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package models;
 
 /**
@@ -16,21 +15,23 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Paquete  implements Serializable {
+public class Paquete implements Serializable {
+
     private Long id;
     private String sender;
     private String receiver;
     private double weight;
-    @XmlElement
     private PackageSize size;
     private Date creationDate;
     private boolean fragile;
+
+    
+    
     public Paquete() {
     }
 
-    
-    public Paquete(Long id, String sender, String receiver, double weight, 
-                   PackageSize size, Date creationDate, boolean fragile) {
+    public Paquete(Long id, String sender, String receiver, double weight,
+                    PackageSize size, Date creationDate, boolean fragile) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
@@ -40,8 +41,15 @@ public class Paquete  implements Serializable {
         this.fragile = fragile;
     }
 
-    
-    
+    public Paquete(String sender, String receiver, double weight, PackageSize packageSize, Date creationDate, boolean fragile) {
+        this.sender = sender;
+        this.receiver = receiver;
+        this.weight = weight;
+        this.size = packageSize;
+        this.creationDate = creationDate;
+        this.fragile = fragile;
+    }
+
     public Long getId() {
         return id;
     }
@@ -74,7 +82,6 @@ public class Paquete  implements Serializable {
         this.weight = weight;
     }
 
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -91,16 +98,17 @@ public class Paquete  implements Serializable {
         this.fragile = fragile;
     }
 
-    public PackageSize getSize() { 
+    public PackageSize getSize() {
         return size;
+    }
+
+    public void setSize(PackageSize size) {
+        this.size = size;
     }
 
     @Override
     public String toString() {
         return "Paquete{" + "id=" + id + ", sender=" + sender + ", receiver=" + receiver + ", weight=" + weight + ", size=" + size + ", creationDate=" + creationDate + ", fragile=" + fragile + '}';
     }
-    
-    
-    
-}
 
+}

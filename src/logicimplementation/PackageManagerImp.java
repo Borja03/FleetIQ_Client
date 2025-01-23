@@ -65,15 +65,15 @@ public class PackageManagerImp implements PaqueteManager {
         return packagesList;
     }
 
-    @Override
-    public List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException {
-        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
-        };
-        System.out.println(firstDate.toString());
-        System.out.println(secondDate.toString());
-        List<Paquete> packagesList = webClient.findPackagesByDates(responseType, firstDate.toString(), secondDate.toString());
-        return packagesList;
-    }
+//    @Override
+//    public List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException {
+//        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+//        };
+//        System.out.println(firstDate.toString());
+//        System.out.println(secondDate.toString());
+//        List<Paquete> packagesList = webClient.findPackagesByDates(responseType, firstDate.toString(), secondDate.toString());
+//        return packagesList;
+//    }
 
     @Override
     public List<Paquete> findAllPackagesByName(String senderOrReceiverName) throws SelectException {
@@ -82,6 +82,27 @@ public class PackageManagerImp implements PaqueteManager {
         List<Paquete> packagesList = webClient.findPackagesByName(responseType, senderOrReceiverName);
         return packagesList;
 
+    }
+
+    @Override
+    public List<Paquete> findPackagesBeforeDate(String endDate) throws SelectException {
+        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+        };
+        return webClient.findPackagesBeforeDate(responseType, endDate);
+    }
+
+    @Override
+    public List<Paquete> findPackagesAfterDate(String startDate) throws SelectException {
+        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+        };
+        return webClient.findPackagesAfterDate(responseType, startDate);
+    }
+
+    @Override
+    public List<Paquete> findPackagesBetweenDates(String endDate, String startDate) throws SelectException {
+        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+        };
+        return webClient.findPackagesBetweenDates(responseType, endDate,startDate);
     }
 
 }

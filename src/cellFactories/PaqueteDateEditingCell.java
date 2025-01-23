@@ -50,7 +50,7 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
                 // Check if the day is Saturday or Sunday
                 if (date != null && (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY)) {
                     setDisable(true); // Disable the date
-                    setStyle("-fx-background-color: #f08080;"); // Optional: Add a visual style
+                    setStyle("-fx-background-color: #f08080;"); 
                 }
             }
         });

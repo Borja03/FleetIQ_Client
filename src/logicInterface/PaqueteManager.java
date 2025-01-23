@@ -29,7 +29,7 @@ public interface PaqueteManager {
      * @param paquete the paquete with updated information
      * @throws UpdateException if an error occurs during the update
      */
-    Paquete  updatePackage(Paquete paquete) throws UpdateException;
+    Paquete updatePackage(Paquete paquete) throws UpdateException;
 
     /**
      * Deletes a paquete by its ID.
@@ -38,6 +38,7 @@ public interface PaqueteManager {
      * @throws DeleteException if an error occurs during deletion
      */
     void deletePackages(Long idPaquete) throws DeleteException;
+
     // multi delte ??
     // 
     // void deletePaquete(Integer idPaquete) throws DeleteException;
@@ -56,7 +57,7 @@ public interface PaqueteManager {
      * @return a list of matching paquetes
      * @throws SelectException if an error occurs during retrieval
      */
-    List<Paquete> findAllPackageBySize(PackageSize size) throws SelectException ;
+    List<Paquete> findAllPackageBySize(PackageSize size) throws SelectException;
 
     /**
      * Retrieves paquetes within a date range.
@@ -66,7 +67,7 @@ public interface PaqueteManager {
      * @return a list of matching paquetes
      * @throws SelectException if an error occurs during retrieval
      */
-    List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException;
+//    List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException;
 
     /**
      * Retrieves paquetes by sender or receiver name.
@@ -76,4 +77,11 @@ public interface PaqueteManager {
      * @throws SelectException if an error occurs during retrieval
      */
     List<Paquete> findAllPackagesByName(String senderOrReceiverName) throws SelectException;
+
+    public List<Paquete> findPackagesBeforeDate(String endDate) throws SelectException;
+
+    public List<Paquete> findPackagesAfterDate(String startDate) throws SelectException;
+
+    public List<Paquete> findPackagesBetweenDates(String endDate, String startDate) throws SelectException;
+
 }

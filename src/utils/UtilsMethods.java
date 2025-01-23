@@ -52,7 +52,10 @@ public class UtilsMethods {
      * @param title el título de la alerta
      * @param message el mensaje a mostrar en la alerta
      */
-    public void showAlert(String title, String message) {
+    
+    
+    
+    public static void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -60,7 +63,7 @@ public class UtilsMethods {
         alert.showAndWait();
     }
 
-    
+
     
 
 
