@@ -155,6 +155,7 @@ public class EnvioController {
             if (envios != null) {
                 envioList.setAll(envios);
                 table.setItems(envioList);
+                
                 for (Envio e : envioList) {
                     System.out.println(e);
                 }
