@@ -8,17 +8,12 @@ import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -27,9 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -45,9 +38,7 @@ import javax.ws.rs.core.GenericType;
 import logicInterface.RutaManager;
 import logicInterface.VehicleManager;
 import models.Ruta;
-import models.User;
 import models.Vehiculo;
-import service.RutaRESTClient;
 import utils.UtilsMethods;
 
 public class RutaController {
@@ -102,9 +93,8 @@ public class RutaController {
         stage.centerOnScreen();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         removeShipmentBtn.setDisable(true);
-        
-        applyFilterButton.setOnAction(event -> filterByDates());
 
+        applyFilterButton.setOnAction(event -> filterByDates());
 
         sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
         sizeFilterComboBox1.setItems(FXCollections.observableArrayList(">", "<", "="));
@@ -126,7 +116,6 @@ public class RutaController {
 
         configureEditableColumns();
 
-        // Llamamos al método setupContextMenu para configurar el menú contextual
         setupContextMenu();
 
         try {
@@ -150,7 +139,6 @@ public class RutaController {
             destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
             distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
             tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-
             numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
 
             rutaTable.setItems(rutaData);
@@ -171,35 +159,32 @@ public class RutaController {
             sizeFilterComboBox1.setPromptText("Unit");
         }
     }
-    
+
     @FXML
-private void filterByDates() {
-    // Validar que se hayan seleccionado ambas fechas
-    if (fromDatePicker.getValue() == null || toDatePicker.getValue() == null) {
-        logger.log(Level.WARNING, "Both dates must be selected.");
-        return;
+    private void filterByDates() {
+        if (fromDatePicker.getValue() == null || toDatePicker.getValue() == null) {
+            logger.log(Level.WARNING, "Both dates must be selected.");
+            return;
+        }
+
+        // Convertir las fechas seleccionadas a String en formato ISO (yyyy-MM-dd)
+        String fromDate = fromDatePicker.getValue().toString();
+        String toDate = toDatePicker.getValue().toString();
+
+        try {
+            List<Ruta> filteredRutas = rutaManager.filterBy2Dates_XML(new GenericType<List<Ruta>>() {
+            }, fromDate, toDate);
+
+            rutaData = FXCollections.observableArrayList(filteredRutas);
+            rutaTable.setItems(rutaData);
+
+            logger.log(Level.INFO, "Routes filtered successfully by dates: {0} to {1}", new Object[]{fromDate, toDate});
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error filtering routes by dates from REST service", e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error while filtering routes by dates", e);
+        }
     }
-
-    // Convertir las fechas seleccionadas a String en formato ISO (yyyy-MM-dd)
-    String fromDate = fromDatePicker.getValue().toString();
-    String toDate = toDatePicker.getValue().toString();
-
-    try {
-        // Llamar al cliente REST para obtener las rutas filtradas
-        List<Ruta> filteredRutas = rutaManager.filterBy2Dates_XML(new GenericType<List<Ruta>>() {}, fromDate, toDate);
-
-        // Actualizar los datos en la tabla
-        rutaData = FXCollections.observableArrayList(filteredRutas);
-        rutaTable.setItems(rutaData);
-
-        logger.log(Level.INFO, "Routes filtered successfully by dates: {0} to {1}", new Object[]{fromDate, toDate});
-    } catch (WebApplicationException e) {
-        logger.log(Level.SEVERE, "Error filtering routes by dates from REST service", e);
-    } catch (Exception e) {
-        logger.log(Level.SEVERE, "Unexpected error while filtering routes by dates", e);
-    }
-}
-
 
     private void applyFilterButtonAction() {
         String filterType = sizeFilterComboBox.getValue();
@@ -343,7 +328,7 @@ private void filterByDates() {
             nuevaRuta.setNumVehiculos(0);
             nuevaRuta.setFechaCreacion(new Date());
 
-            rutaManager.edit_XML(nuevaRuta, "0"); 
+            rutaManager.edit_XML(nuevaRuta, "0");
 
             loadRutaData();
 
@@ -377,9 +362,9 @@ private void filterByDates() {
             if (response == ButtonType.OK) {
                 try {
                     for (Ruta ruta : selectedRutas) {
-                        rutaManager.remove(String.valueOf(ruta.getLocalizador())); 
+                        rutaManager.remove(String.valueOf(ruta.getLocalizador()));
                     }
-                    rutaData.removeAll(selectedRutas); 
+                    rutaData.removeAll(selectedRutas);
                     logger.info("Rutas eliminadas correctamente.");
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al eliminar rutas", e);
@@ -436,93 +421,92 @@ private void filterByDates() {
         });
 
        distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
-distanciaColumn.setOnEditCommit(
-    new EventHandler<CellEditEvent<Ruta, Float>>() {
-        @Override
-        public void handle(CellEditEvent<Ruta, Float> t) {
-            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            Float nuevaDistancia;
+        distanciaColumn.setOnEditCommit(
+                new EventHandler<CellEditEvent<Ruta, Float>>() {
+            @Override
+            public void handle(CellEditEvent<Ruta, Float> t) {
+                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                Float nuevaDistancia;
 
-            try {
-                nuevaDistancia = t.getNewValue();
-            } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("El valor ingresado no es un número válido.");
-                alert.showAndWait();
-                t.getTableView().refresh(); 
-                return;
+                try {
+                    nuevaDistancia = t.getNewValue();
+                } catch (NumberFormatException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("El valor ingresado no es un número válido.");
+                    alert.showAndWait();
+                    t.getTableView().refresh();
+                    return;
+                }
+
+                if (nuevaDistancia < 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("La distancia no puede ser negativa.");
+                    alert.showAndWait();
+                    t.getTableView().refresh();
+                    return;
+                }
+
+                ruta.setDistancia(nuevaDistancia);
+
+                try {
+                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                    logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
+                } catch (WebApplicationException e) {
+                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("No se pudo actualizar la distancia.");
+                    alert.showAndWait();
+                    t.getTableView().refresh();
+                }
             }
+        });
 
-            if (nuevaDistancia < 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("La distancia no puede ser negativa.");
-                alert.showAndWait();
-                t.getTableView().refresh(); // Refresca la tabla directamente
-                return;
+        tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        tiempoColumn.setOnEditCommit(
+                new EventHandler<CellEditEvent<Ruta, Integer>>() {
+            @Override
+            public void handle(CellEditEvent<Ruta, Integer> t) {
+                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                Integer nuevoTiempo;
+
+                try {
+                    nuevoTiempo = t.getNewValue();
+                } catch (NumberFormatException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("El valor ingresado no es un número válido.");
+                    alert.showAndWait();
+                    t.getTableView().refresh(); 
+                    return;
+                }
+
+                if (nuevoTiempo < 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("El tiempo no puede ser negativo.");
+                    alert.showAndWait();
+                    t.getTableView().refresh(); 
+                    return;
+                }
+
+                ruta.setTiempo(nuevoTiempo);
+
+                try {
+                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                    logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
+                } catch (WebApplicationException e) {
+                    logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("No se pudo actualizar el tiempo.");
+                    alert.showAndWait();
+                    t.getTableView().refresh();
+                }
             }
-
-            ruta.setDistancia(nuevaDistancia);
-
-            try {
-                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
-            } catch (WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("No se pudo actualizar la distancia.");
-                alert.showAndWait();
-                t.getTableView().refresh(); // Refresca la tabla directamente
-            }
-        }
-    });
-
-tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-tiempoColumn.setOnEditCommit(
-    new EventHandler<CellEditEvent<Ruta, Integer>>() {
-        @Override
-        public void handle(CellEditEvent<Ruta, Integer> t) {
-            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-            Integer nuevoTiempo;
-
-            try {
-                nuevoTiempo = t.getNewValue();
-            } catch (NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("El valor ingresado no es un número válido.");
-                alert.showAndWait();
-               t.getTableView().refresh(); // Refresca la tabla directamente
-                return;
-            }
-
-            if (nuevoTiempo < 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("El tiempo no puede ser negativo.");
-                alert.showAndWait();
-               t.getTableView().refresh(); // Refresca la tabla directamente
-                return;
-            }
-
-            ruta.setTiempo(nuevoTiempo);
-
-            try {
-                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
-            } catch (WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("No se pudo actualizar el tiempo.");
-                alert.showAndWait();
-                t.getTableView().refresh(); // Refresca la tabla directamente
-            }
-        }
-    });
-
+        });
 
         fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
         fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
@@ -537,7 +521,7 @@ tiempoColumn.setOnEditCommit(
                 new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
             }
         });
-        
+
     }
 
     private void setupContextMenu() {
@@ -557,15 +541,12 @@ tiempoColumn.setOnEditCommit(
     }
 
     private void showVehicleSelectionDialog(Ruta ruta) {
-        // Create a new stage for the vehicle selection
         Stage vehicleStage = new Stage();
         vehicleStage.setTitle("Seleccionar Vehículo");
 
-        // Create a ComboBox for vehicle selection
         JFXComboBox<String> vehicleComboBox = new JFXComboBox<>();
 
         try {
-            // Get all vehicles
             List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
             ObservableList<String> matriculas = FXCollections.observableArrayList();
 
@@ -575,24 +556,18 @@ tiempoColumn.setOnEditCommit(
 
             vehicleComboBox.setItems(matriculas);
 
-            // Create confirm button
             JFXButton confirmButton = new JFXButton("Confirmar");
             confirmButton.setOnAction(e -> {
                 String selectedMatricula = vehicleComboBox.getValue();
                 if (selectedMatricula != null) {
                     try {
-                        // Add vehicle to route logic here
-                        // You'll need to implement the actual connection between route and vehicle
                         logger.info("Añadiendo vehículo " + selectedMatricula + " a la ruta " + ruta.getLocalizador());
 
-                        // Update the number of vehicles in the route
                         ruta.setNumVehiculos(ruta.getNumVehiculos() + 1);
                         rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
 
-                        // Refresh the table
                         loadRutaData();
 
-                        // Close the vehicle selection window
                         vehicleStage.close();
 
                     } catch (Exception ex) {
@@ -602,19 +577,16 @@ tiempoColumn.setOnEditCommit(
                 }
             });
 
-            // Layout
-            VBox layout = new VBox(10); // 10 is the spacing between elements
+            VBox layout = new VBox(10);
             layout.getStyleClass().add("jfx-popup-container");
             layout.setPadding(new javafx.geometry.Insets(10));
             layout.getChildren().addAll(vehicleComboBox, confirmButton);
 
-            // Set up the scene
             Scene scene = new Scene(layout);
             vehicleStage.setScene(scene);
             vehicleStage.setWidth(250);
             vehicleStage.setHeight(120);
 
-            // Show the window
             vehicleStage.show();
 
         } catch (SelectException ex) {
