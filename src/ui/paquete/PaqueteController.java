@@ -8,6 +8,7 @@ import models.PackageSize;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextField;
 import exception.CreateException;
 import exception.DeleteException;
@@ -32,11 +33,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -44,8 +49,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import models.Paquete;
@@ -126,7 +134,7 @@ public class PaqueteController {
         // Set up filters
         setUpDatePickers();
         setUpSizeFilterComboBox();
-
+        setUpContextMenu();
         // Set up columns
         paqueteTableView.setEditable(true);
         idColumn.setEditable(false);
@@ -148,6 +156,7 @@ public class PaqueteController {
 
         stage.show();
     }
+    // end of initStage 
 
     private void setUpDatePickers() {
         fromDatePicker.setShowWeekNumbers(false);
@@ -177,6 +186,7 @@ public class PaqueteController {
         });
     }
 
+    //private void set
     private void initHandlerActions() {
         searchBtn.setOnAction(this::handleSearchAction);
         filterDatesBtn.setOnAction(this::handleFilterByDatesAction);
@@ -219,6 +229,24 @@ public class PaqueteController {
         }
     }
 //
+
+    private void setUpContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+
+        // First menu item
+        MenuItem addItem = new MenuItem("Add New Package");
+        addItem.setOnAction(this::handleAddShipmentAction);
+
+        // Second menu item
+        MenuItem deleteItem = new MenuItem("Delete Package");
+        deleteItem.setOnAction(this::handleRemoveShipmentAction);
+
+        MenuItem printItem = new MenuItem("Print Report");
+        printItem.setOnAction(this::handlePrintReportAction);
+        // Add menu items to the context menu
+        contextMenu.getItems().addAll(addItem, deleteItem, printItem);
+        paqueteTableView.setContextMenu(contextMenu);
+    }
 
     private void setUpTableColumns() {
         // Add click event handler to the root container
