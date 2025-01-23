@@ -8,7 +8,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -81,22 +80,19 @@
                     </HBox>
                 </VBox>
             </HBox>
-         <TextField />
         </VBox>
     </top>
 
     <center>
         <TableView fx:id="vehicleTableView" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="idColumn" prefWidth="40.0" text="ID" />
-                <TableColumn fx:id="matriculaColumn" prefWidth="120.0" text="License plate" />
-                <TableColumn fx:id="modelColumn" prefWidth="160.0" text="Model" />
-                <TableColumn fx:id="capacityColumn" prefWidth="70.0" text="Capacity" />
-                <TableColumn fx:id="registrationDateColumn" prefWidth="130.0" text="Registration date" />
-                <TableColumn fx:id="itvDateColumn" prefWidth="130.0" text="ITV Date" />
-                <TableColumn fx:id="activeColumn" maxWidth="148.0" minWidth="80.0" text="Active" />
-            <TableColumn fx:id="ruta" prefWidth="75.0" text="Ruta" />
-            <TableColumn fx:id="fecha_asignacion" prefWidth="130.0" text="Fecha asignación" />
+                <TableColumn fx:id="idColumn" editable="false" prefWidth="67.19998097419739" text="ID" />
+                <TableColumn fx:id="matriculaColumn" editable="false" prefWidth="148.00006103515625" text="License plate" />
+                <TableColumn fx:id="modelColumn" prefWidth="183.20001220703125" text="Model" />
+                <TableColumn fx:id="capacityColumn" minWidth="0.0" prefWidth="136.79998779296875" text="Capacity" />
+                <TableColumn fx:id="registrationDateColumn" prefWidth="174.39996337890625" text="Registration date" />
+                <TableColumn fx:id="itvDateColumn" editable="false" prefWidth="195.20001220703125" text="ITV Date" />
+                <TableColumn fx:id="activeColumn" maxWidth="227.20001220703125" minWidth="76.0" prefWidth="80.800048828125" text="Active" />
             </columns>
             <BorderPane.margin>
                 <Insets left="15.0" right="15.0" />

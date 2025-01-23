@@ -6,7 +6,7 @@
 package factories;
 
 import logicInterface.VehicleManager;
-import logicimplementaion.VehicleManagerImp;
+import logicimplementation.VehicleManagerImp;
 
 /**
  *

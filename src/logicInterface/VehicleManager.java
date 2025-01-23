@@ -21,7 +21,7 @@ import models.Vehiculo;
  */
 public interface VehicleManager {
 
-    void addVehiculo(Vehiculo vehiculo) throws CreateException;
+    Vehiculo createVehicle(Vehiculo vehiculo) throws CreateException;
 
     void updateVehiculo(Vehiculo vehiculo) throws UpdateException;
 
