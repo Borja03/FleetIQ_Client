@@ -1,5 +1,7 @@
 package ui.vehicle;
 
+import cellFactories.VehicleActiveEditingCell;
+import cellFactories.VehicleDateEditingCell;
 import models.Vehiculo;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -80,7 +82,7 @@ public class VehicleController {
     private TableColumn<Vehiculo, String> modelColumn;
 
     @FXML
-    private TableColumn<Vehiculo, Double> capacityColumn;
+    private TableColumn<Vehiculo, Integer> capacityColumn;
 
     @FXML
     private TableColumn<Vehiculo, Date> registrationDateColumn;
@@ -186,6 +188,9 @@ public class VehicleController {
 
         vehicleTableView.setEditable(true);
         matriculaColumn.setEditable(true);
+        capacityColumn.setEditable(true);
+        itvDateColumn.setEditable(true);
+        activeColumn.setEditable(true);
 
         LOGGER.info("Vehicle window and capacity controls initialized.");
 
@@ -283,6 +288,75 @@ public class VehicleController {
             }
         });
 
+        modelColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        modelColumn.setOnEditCommit(event -> {
+            Vehiculo vehiculo = event.getRowValue();
+            System.out.println(vehiculo.toString());
+            vehiculo.setModelo(event.getNewValue());
+            try {
+                // Add any additional handling (like saving to database)
+                VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
+            } catch (UpdateException ex) {
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(
+                new StringConverter<Integer>() {
+            @Override
+            public String toString(Integer object) {
+                return object != null ? object.toString() : "";
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                try {
+                    return Integer.valueOf(string);
+                } catch (NumberFormatException e) {
+                    LOGGER.warning("Invalid weight: " + string);
+                    return null;
+                }
+            }
+        }
+        ));
+
+        capacityColumn.setOnEditCommit(event -> event.getRowValue().setCapacidadCarga(event.getNewValue()));
+        capacityColumn.setOnEditCommit(event -> {
+            Vehiculo vehiculo = event.getRowValue();
+            vehiculo.setCapacidadCarga(event.getNewValue());
+            try {
+                // Add any additional handling (like saving to database)
+                VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
+            } catch (UpdateException ex) {
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        activeColumn.setCellFactory(column -> new VehicleActiveEditingCell());
+        activeColumn.setOnEditCommit(event -> {
+            Vehiculo vehiculo = event.getRowValue();
+
+            vehiculo.setActivo(event.getNewValue());
+            try {
+                VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
+            } catch (UpdateException ex) {
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        itvDateColumn.setCellFactory(column -> new VehicleDateEditingCell());
+        itvDateColumn.setOnEditCommit(event -> {
+            Vehiculo vehiculo = event.getRowValue();
+            vehiculo.setItvDate(event.getNewValue());
+
+            try {
+                // Add any additional handling (like saving to database)
+                VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
+            } catch (UpdateException ex) {
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
     }
 
     /**
@@ -356,33 +430,32 @@ public class VehicleController {
          */
     }
 
-    private void addShipment() {
-        try {
-            // Crear una nueva ruta vacía
-            Vehiculo defaultVehiculo = new Vehiculo();
-            defaultVehiculo.setCapacidadCarga(0);
-            defaultVehiculo.setMatricula("");
-            defaultVehiculo.setModelo("");
-            defaultVehiculo.setItvDate(new Date());
-            defaultVehiculo.setActivo(false);
-            defaultVehiculo.setRegistrationDate(new Date());
-
-            // Enviar la nueva ruta al servidor
-            Vehiculo createVehicle = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
-            // rutaManager.edit_XML(nuevaRuta, "0"); // Usar "0" o el ID correspondiente para el servidor
-
-            // Refrescar la tabla recargando los datos desde el servidor
-            //loadRutaData();
-            logger.info("Nueva ruta vacía añadida y tabla actualizada correctamente.");
-        } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error al añadir una nueva ruta", e);
-            // showAlert("Error", "No se pudo añadir la nueva ruta.");
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error inesperado", e);
-            //  showAlert("Error", "Error inesperado al añadir la nueva ruta.");
-        }
-    }
-
+//    private void addShipment() {
+//        try {
+//            // Crear una nueva ruta vacía
+//            Vehiculo defaultVehiculo = new Vehiculo();
+//            defaultVehiculo.setCapacidadCarga(0);
+//            defaultVehiculo.setMatricula("");
+//            defaultVehiculo.setModelo("");
+//            defaultVehiculo.setItvDate(new Date());
+//            defaultVehiculo.setActivo(false);
+//            defaultVehiculo.setRegistrationDate(new Date());
+//
+//            // Enviar la nueva ruta al servidor
+//            Vehiculo createVehicle = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
+//            // rutaManager.edit_XML(nuevaRuta, "0"); // Usar "0" o el ID correspondiente para el servidor
+//
+//            // Refrescar la tabla recargando los datos desde el servidor
+//            //loadRutaData();
+//            logger.info("Nueva ruta vacía añadida y tabla actualizada correctamente.");
+//        } catch (WebApplicationException e) {
+//            logger.log(Level.SEVERE, "Error al añadir una nueva ruta", e);
+//            // showAlert("Error", "No se pudo añadir la nueva ruta.");
+//        } catch (Exception e) {
+//            logger.log(Level.SEVERE, "Error inesperado", e);
+//            //  showAlert("Error", "Error inesperado al añadir la nueva ruta.");
+//        }
+//    }
     @FXML
     private void onRemoveShipmentClicked() {
         ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
