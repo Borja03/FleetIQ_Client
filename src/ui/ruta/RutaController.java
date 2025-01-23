@@ -150,23 +150,8 @@ public class RutaController {
             //fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
             numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
 
-            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
-            fechaColumn.setCellFactory(column -> {
-                return new javafx.scene.control.TableCell<Ruta, Date>() {
-                    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-                    @Override
-                    protected void updateItem(Date item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        if (empty || item == null) {
-                            setText(null);
-                        } else {
-                            setText(dateFormat.format(item));
-                        }
-                    }
-                };
-            });
+           // fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+           
 
             rutaTable.setItems(rutaData);
         } catch (WebApplicationException e) {
