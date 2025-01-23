@@ -84,13 +84,13 @@
     <center>
         <TableView fx:id="rutaTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="localizadorColumn" prefWidth="103.1999785900116" text="Localizador" />
-                <TableColumn fx:id="origenColumn" prefWidth="117.5999755859375" text="Origen" />
-                <TableColumn fx:id="destinoColumn" prefWidth="121.59999084472656" text="Destino" />
-                <TableColumn fx:id="distanciaColumn" prefWidth="165.60003662109375" text="Distancia" />
-                <TableColumn fx:id="tiempoColumn" prefWidth="151.2000732421875" text="Tiempo" />
-                <TableColumn fx:id="fechaColumn" prefWidth="163.99993896484375" text="Fecha Creación" />
-                <TableColumn fx:id="numeroVehiculosColumn" prefWidth="232.0001220703125" text="Número Vehículos" />
+                <TableColumn fx:id="localizadorColumn" prefWidth="90.40002131462097" text="Localizador" />
+                <TableColumn fx:id="origenColumn" prefWidth="164.8000030517578" text="Origen" />
+                <TableColumn fx:id="destinoColumn" prefWidth="177.5999755859375" text="Destino" />
+                <TableColumn fx:id="distanciaColumn" prefWidth="111.99996948242188" text="Distancia (km)" />
+                <TableColumn fx:id="tiempoColumn" prefWidth="113.60003662109375" text="Tiempo (h)" />
+                <TableColumn fx:id="fechaColumn" prefWidth="159.99993896484375" text="Fecha Creación" />
+                <TableColumn fx:id="numeroVehiculosColumn" prefWidth="248.79998779296875" text="Número Vehículos" />
             </columns>
         </TableView>
     </center>

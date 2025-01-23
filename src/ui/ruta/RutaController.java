@@ -102,6 +102,9 @@ public class RutaController {
         stage.centerOnScreen();
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         removeShipmentBtn.setDisable(true);
+        
+        applyFilterButton.setOnAction(event -> filterByDates());
+
 
         sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
         sizeFilterComboBox1.setItems(FXCollections.observableArrayList(">", "<", "="));
@@ -147,11 +150,8 @@ public class RutaController {
             destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
             distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
             tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-            //fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
-            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
 
-           // fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
-           
+            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
 
             rutaTable.setItems(rutaData);
         } catch (WebApplicationException e) {
@@ -171,13 +171,41 @@ public class RutaController {
             sizeFilterComboBox1.setPromptText("Unit");
         }
     }
+    
+    @FXML
+private void filterByDates() {
+    // Validar que se hayan seleccionado ambas fechas
+    if (fromDatePicker.getValue() == null || toDatePicker.getValue() == null) {
+        logger.log(Level.WARNING, "Both dates must be selected.");
+        return;
+    }
+
+    // Convertir las fechas seleccionadas a String en formato ISO (yyyy-MM-dd)
+    String fromDate = fromDatePicker.getValue().toString();
+    String toDate = toDatePicker.getValue().toString();
+
+    try {
+        // Llamar al cliente REST para obtener las rutas filtradas
+        List<Ruta> filteredRutas = rutaManager.filterBy2Dates_XML(new GenericType<List<Ruta>>() {}, fromDate, toDate);
+
+        // Actualizar los datos en la tabla
+        rutaData = FXCollections.observableArrayList(filteredRutas);
+        rutaTable.setItems(rutaData);
+
+        logger.log(Level.INFO, "Routes filtered successfully by dates: {0} to {1}", new Object[]{fromDate, toDate});
+    } catch (WebApplicationException e) {
+        logger.log(Level.SEVERE, "Error filtering routes by dates from REST service", e);
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Unexpected error while filtering routes by dates", e);
+    }
+}
+
 
     private void applyFilterButtonAction() {
         String filterType = sizeFilterComboBox.getValue();
         String comparisonOperator = sizeFilterComboBox1.getValue();
         String filterValue = filterValueField.getText().trim();
 
-        // Si el campo de valor del filtro está vacío, recargar todas las rutas
         if (filterValue.isEmpty()) {
             try {
                 loadRutaData();
@@ -307,7 +335,6 @@ public class RutaController {
 
     private void addShipment() {
         try {
-            // Crear una nueva ruta vacía
             Ruta nuevaRuta = new Ruta();
             nuevaRuta.setOrigen("");
             nuevaRuta.setDestino("");
@@ -316,10 +343,8 @@ public class RutaController {
             nuevaRuta.setNumVehiculos(0);
             nuevaRuta.setFechaCreacion(new Date());
 
-            // Enviar la nueva ruta al servidor
-            rutaManager.edit_XML(nuevaRuta, "0"); // Usar "0" o el ID correspondiente para el servidor
+            rutaManager.edit_XML(nuevaRuta, "0"); 
 
-            // Refrescar la tabla recargando los datos desde el servidor
             loadRutaData();
 
             logger.info("Nueva ruta vacía añadida y tabla actualizada correctamente.");
@@ -338,7 +363,6 @@ public class RutaController {
     private void removeShipment() {
         List<Ruta> selectedRutas = rutaTable.getSelectionModel().getSelectedItems();
 
-        // Mostrar alerta de confirmación antes de eliminar
         if (selectedRutas.isEmpty()) {
             showAlert("Error", "Debe seleccionar al menos una ruta para eliminar.");
             return;
@@ -349,14 +373,13 @@ public class RutaController {
         confirmAlert.setHeaderText("¿Está seguro de que desea eliminar las rutas seleccionadas?");
         confirmAlert.setContentText("Esta acción no se puede deshacer.");
 
-        // Mostrar alerta y esperar la respuesta
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
                     for (Ruta ruta : selectedRutas) {
-                        rutaManager.remove(String.valueOf(ruta.getLocalizador())); // Llama al método REST con el localizador
+                        rutaManager.remove(String.valueOf(ruta.getLocalizador())); 
                     }
-                    rutaData.removeAll(selectedRutas); // Elimina las rutas seleccionadas de la tabla
+                    rutaData.removeAll(selectedRutas); 
                     logger.info("Rutas eliminadas correctamente.");
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al eliminar rutas", e);
@@ -376,7 +399,6 @@ public class RutaController {
     }
 
     private void configureEditableColumns() {
-        // Editable "Origen" column
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(
                 new EventHandler<CellEditEvent<Ruta, String>>() {
@@ -395,7 +417,6 @@ public class RutaController {
             }
         });
 
-        // Editable "Destino" column
         destinoColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         destinoColumn.setOnEditCommit(
                 new EventHandler<CellEditEvent<Ruta, String>>() {
@@ -414,59 +435,94 @@ public class RutaController {
             }
         });
 
-        // Editable "Distancia" column (corrected for Float)
-        distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
-        distanciaColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, Float>>() {
-            @Override
-            public void handle(CellEditEvent<Ruta, Float> t) {
-                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                Float nuevaDistancia = t.getNewValue();
+       distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
+distanciaColumn.setOnEditCommit(
+    new EventHandler<CellEditEvent<Ruta, Float>>() {
+        @Override
+        public void handle(CellEditEvent<Ruta, Float> t) {
+            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            Float nuevaDistancia;
 
-                // Validar si la distancia es un valor positivo
-                if (nuevaDistancia < 0) {
-                    showAlert("Error", "La distancia no puede ser negativa.");
-                    return;
-                }
-
-                ruta.setDistancia(nuevaDistancia);
-
-                try {
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                    showAlert("Error", "No se pudo actualizar la distancia.");
-                }
+            try {
+                nuevaDistancia = t.getNewValue();
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("El valor ingresado no es un número válido.");
+                alert.showAndWait();
+                t.getTableView().refresh(); 
+                return;
             }
-        });
 
-        // Editable "Tiempo" column (corrected for Integer)
-        tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        tiempoColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, Integer>>() {
-            @Override
-            public void handle(CellEditEvent<Ruta, Integer> t) {
-                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                Integer nuevoTiempo = t.getNewValue();
-
-                // Validar si el tiempo es un valor positivo
-                if (nuevoTiempo < 0) {
-                    showAlert("Error", "El tiempo no puede ser negativo.");
-                    return;
-                }
-
-                ruta.setTiempo(nuevoTiempo);
-
-                try {
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                    showAlert("Error", "No se pudo actualizar el tiempo.");
-                }
+            if (nuevaDistancia < 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("La distancia no puede ser negativa.");
+                alert.showAndWait();
+                t.getTableView().refresh(); // Refresca la tabla directamente
+                return;
             }
-        });
+
+            ruta.setDistancia(nuevaDistancia);
+
+            try {
+                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("No se pudo actualizar la distancia.");
+                alert.showAndWait();
+                t.getTableView().refresh(); // Refresca la tabla directamente
+            }
+        }
+    });
+
+tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+tiempoColumn.setOnEditCommit(
+    new EventHandler<CellEditEvent<Ruta, Integer>>() {
+        @Override
+        public void handle(CellEditEvent<Ruta, Integer> t) {
+            Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
+            Integer nuevoTiempo;
+
+            try {
+                nuevoTiempo = t.getNewValue();
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("El valor ingresado no es un número válido.");
+                alert.showAndWait();
+               t.getTableView().refresh(); // Refresca la tabla directamente
+                return;
+            }
+
+            if (nuevoTiempo < 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("El tiempo no puede ser negativo.");
+                alert.showAndWait();
+               t.getTableView().refresh(); // Refresca la tabla directamente
+                return;
+            }
+
+            ruta.setTiempo(nuevoTiempo);
+
+            try {
+                rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+                logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText("No se pudo actualizar el tiempo.");
+                alert.showAndWait();
+                t.getTableView().refresh(); // Refresca la tabla directamente
+            }
+        }
+    });
+
 
         fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
         fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
@@ -481,10 +537,8 @@ public class RutaController {
                 new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
             }
         });
+        
     }
-    
-   
-     
 
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
