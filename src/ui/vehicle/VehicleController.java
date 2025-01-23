@@ -7,6 +7,7 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import exception.CreateException;
 import exception.SelectException;
+import exception.UpdateException;
 import factories.VehicleFactory;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -175,12 +177,15 @@ public class VehicleController {
                     -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
             capacityTextField.setTextFormatter(formatter);
         }
-
+        data = FXCollections.observableArrayList();
         // Add event handlers for other buttons
         searchButton.setOnAction(event -> onSearchButtonClicked());
         removeShipmentBtn.setOnAction(event -> onRemoveShipmentClicked());
         configureRemoveShipmentButton();
         addShipmentBtn.setOnAction(event -> handleAddShipmentAction());
+
+        vehicleTableView.setEditable(true);
+        matriculaColumn.setEditable(true);
 
         LOGGER.info("Vehicle window and capacity controls initialized.");
 
@@ -264,6 +269,20 @@ public class VehicleController {
             }
         });
         vehicleTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+        matriculaColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        matriculaColumn.setOnEditCommit(event -> {
+            Vehiculo vehiculo = event.getRowValue();
+            System.out.println(vehiculo.toString());
+            vehiculo.setMatricula(event.getNewValue());
+            try {
+                // Add any additional handling (like saving to database)
+                VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
+            } catch (UpdateException ex) {
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
     }
 
     /**
@@ -292,6 +311,27 @@ public class VehicleController {
     private void handleAddShipmentAction() {
 
         try {
+            // Create new package with ID from last item in data
+            Vehiculo defaultVehiculo = new Vehiculo();
+            defaultVehiculo.setMatricula("");
+            // Add to database first
+            Vehiculo savedPackage = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
+            if (savedPackage != null) {
+                // If database insert successful, add to table data
+                data.clear();
+                data.addAll(VehicleFactory.getVehicleInstance().findAllVehiculos());
+                vehicleTableView.setItems(data);
+            }
+        } catch (CreateException ex) {
+            Logger.getLogger(VehicleFactory.class.getName()).log(Level.SEVERE, null, ex);
+            //   UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage());
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        /*
+
+        try {
             List<Vehiculo> infovehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
             Vehiculo defaultVehiculo = null;
             defaultVehiculo = new Vehiculo();
@@ -313,7 +353,7 @@ public class VehicleController {
             // show alert
             System.out.println("Somthinr is woripgn");
         }
-
+         */
     }
 
     private void addShipment() {

@@ -48,7 +48,9 @@ public class VehicleManagerImp implements VehicleManager {
 
     @Override
     public void updateVehiculo(Vehiculo vehiculo) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        GenericType<Vehiculo> responseType = new GenericType<Vehiculo>() {
+        };
+        webClient.edit_XML(vehiculo, vehiculo.getId());
     }
 
     @Override
@@ -130,6 +132,7 @@ public class VehicleManagerImp implements VehicleManager {
         GenericType<Vehiculo> responseType = new GenericType<Vehiculo>() {
         };
         return webClient.createVehicle(vehiculo, responseType);
+
     }
 
 }
