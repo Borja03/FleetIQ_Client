@@ -298,6 +298,7 @@ public class LogInController {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
+
         User loggedInUser;
         try {
             userSession = (User) SignableFactory.getSignable().signIn(user, User.class);

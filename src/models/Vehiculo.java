@@ -6,41 +6,57 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
-
 /**
  * Entidad JPA que representa un Vehículo.
  */
-
-
 @XmlRootElement
 public class Vehiculo implements Serializable {
 
-  
     private Integer id;
 
-  
     private String matricula;
 
-    
     private String modelo;
 
     private Integer capacidadCarga;
-    
-    
+
     private Date registrationDate;
-    
 
     private Date itvDate;
 
-  
-    private boolean activo; // Ejemplo: "Disponible", "En uso", "Mantenimiento"
+    private boolean activo; 
 
- 
     private List<EnvioRutaVehiculo> envioRutaVehiculoList;
 
-    // Getters y Setters
+    public Vehiculo(Integer id, String matricula, String modelo, Integer capacidadCarga, Date registrationDate, Date itvDate, boolean activo) {
+        this.id = id;
+        this.matricula = matricula;
+        this.modelo = modelo;
+        this.capacidadCarga = capacidadCarga;
+        this.registrationDate = registrationDate;
+        this.itvDate = itvDate;
+        this.activo = activo;
+    }
 
+    public Vehiculo() {
+    }
+
+    public Vehiculo(Integer id, String matricula, String modelo, Integer capacidadCarga, Date registrationDate, Date itvDate, boolean activo, List<EnvioRutaVehiculo> envioRutaVehiculoList) {
+        this.id = id;
+        this.matricula = matricula;
+        this.modelo = modelo;
+        this.capacidadCarga = capacidadCarga;
+        this.registrationDate = registrationDate;
+        this.itvDate = itvDate;
+        this.activo = activo;
+        this.envioRutaVehiculoList = envioRutaVehiculoList;
+    }
+    
+    
+    
+    
+
+    // Getters y Setters
     public Integer getId() {
         return id;
     }
@@ -96,7 +112,6 @@ public class Vehiculo implements Serializable {
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
-   
 
     @XmlTransient
     public List<EnvioRutaVehiculo> getEnvioRutaVehiculoList() {
