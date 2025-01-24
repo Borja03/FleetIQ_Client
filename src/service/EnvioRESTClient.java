@@ -6,6 +6,7 @@
 package service;
 
 import java.util.ResourceBundle;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -169,7 +170,7 @@ public class EnvioRESTClient implements EnvioManager {
     public void remove(Integer id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Envio.class);
     }
-
+    
     public void close() {
         client.close();
     }

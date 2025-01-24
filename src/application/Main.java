@@ -21,12 +21,13 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+  
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML
-        Parent root = FXMLLoader.load(getClass().getResource("/ui/ruta/ruta.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
 
         // Crear la escena
         Scene scene = new Scene(root);

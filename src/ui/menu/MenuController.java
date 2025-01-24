@@ -17,6 +17,7 @@ import models.User;
 import ui.envio.EnvioController;
 import ui.login.LogInController;
 import ui.paquete.PaqueteController;
+import ui.paquete.PaqueteHelpController;
 import ui.profile.MainController;
 import ui.ruta.RutaController;
 import ui.vehicle.VehicleController;
@@ -178,7 +179,21 @@ public class MenuController {
 
     @FXML
     private void handleAboutPaqueteMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+        System.out.println("Change password menu item clicked -----------------------------------");
+               try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paqueteHelp.fxml"));
+            Parent root = loader.load();
+            PaqueteHelpController controller = loader.getController();
+//            Stage loginStage = new Stage();
+//            controller.setStage(loginStage);
+            controller.initAndShowStage(root);
+            LOGGER.info("Help window opened");
+            // Close the current stage (the one with the menu)
+//            Stage currentStage = (Stage) menuBar.getScene().getWindow();
+//            currentStage.close();
+        } catch (IOException ex) {
+            LOGGER.severe("Error loading paquete window: " + ex);
+        }
     }
 
     @FXML
