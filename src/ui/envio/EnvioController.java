@@ -1,8 +1,13 @@
 package ui.envio;
 
+import cellFactories.EnvioDateEditingCell;
 import com.jfoenix.controls.*;
 import exception.SelectException;
+import exception.UpdateException;
 import factories.EnvioFactory;
+import factories.EnvioRutaVehiculoFactory;
+import factories.SignableFactory;
+import factories.VehicleFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,6 +19,7 @@ import utils.UtilsMethods;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,16 +28,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
+import logicInterface.EnvioRutaVehiculoManager;
+import logicInterface.PaqueteManager;
+import logicInterface.UserManager;
+import logicInterface.VehicleManager;
 import models.EnvioRutaVehiculo;
 import models.Estado;
+import models.Paquete;
 import models.Ruta;
 import models.User;
 import models.Vehiculo;
-import ui.paquete.PaqueteController;
 
 public class EnvioController {
 
@@ -56,13 +67,13 @@ public class EnvioController {
     private TableColumn<Envio, Integer> idColumn;
 
     @FXML
-    private TableColumn<Envio, String> fechaEnvioColumn;
+    private TableColumn<Envio, Date> fechaEnvioColumn;
 
     @FXML
-    private TableColumn<Envio, String> fechaEntregaColumn;
+    private TableColumn<Envio, Date> fechaEntregaColumn;
 
     @FXML
-    private TableColumn<Envio, String> estadoColumn;
+    private TableColumn<Envio, Estado> estadoColumn;
 
     @FXML
     private TableColumn<Envio, Integer> numPaquetesColumn;
@@ -83,7 +94,18 @@ public class EnvioController {
     private JFXButton addShipmentBtn, removeShipmentBtn, printReportBtn;
 
     private EnvioManager envioService;
+    private PaqueteManager paqueteService;
+    private UserManager userService;
+    private VehicleManager vehicleService;
+    private EnvioRutaVehiculoManager envioRutaVehiculoService;
     private ObservableList<Envio> envioList;
+    private ArrayList<Paquete> paqueteList;
+    private ArrayList<User> userList = new ArrayList<>();
+    private List<Vehiculo> vehiculoList = new ArrayList<>();
+    private List<EnvioRutaVehiculo> envioRutaVehiculoList = new ArrayList<>();
+
+    private List<String> userNamesList = new ArrayList<>();
+    private List<String> vehiculoMatriculaList = new ArrayList<>();
 
     private Stage stage;
 
@@ -102,10 +124,12 @@ public class EnvioController {
 
         envioService = EnvioFactory.getEnvioInstance();
         envioList = FXCollections.observableArrayList();
+        userService = SignableFactory.getSignable();
+        vehicleService = VehicleFactory.getVehicleInstance();
+        envioRutaVehiculoService = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
         table.setEditable(true);
         idColumn.setEditable(false);
-        estadoColumn.setEditable(false);
         rutaColumn.setEditable(false);
 
         estadoFilterComboBox.getItems().setAll(Estado.ENTREGADO.toString(),
@@ -122,30 +146,142 @@ public class EnvioController {
     }
 
     private void setUpTableColumns() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        estadoColumn.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
-        creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
-        rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
-        vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
+        try {
+            idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+            estadoColumn.setCellValueFactory(new PropertyValueFactory<>("estado"));
+            estadoColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(Estado.values()));
+            estadoColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Estado nuevoEstado = event.getNewValue();
+                envio.setEstado(nuevoEstado);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
 
-        fechaEnvioColumn.setCellValueFactory(cellData -> {
-            Date fechaEnvio = cellData.getValue().getFechaEnvio();
-            if (fechaEnvio != null) {
-                return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEnvio));
-            } else {
-                return new SimpleStringProperty("");
+            numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
+
+            creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
+            userList = userService.findAll();
+
+            for (User user : userList) {
+                userNamesList.add(user.getName());
             }
-        });
-        
-        fechaEntregaColumn.setCellValueFactory(cellData -> {
-            Date fechaEntrega = cellData.getValue().getFechaEntrega();
-            if (fechaEntrega != null) {
-                return new SimpleStringProperty(new SimpleDateFormat("dd/MM/yyyy").format(fechaEntrega));
-            } else {
-                return new SimpleStringProperty("");
+            ObservableList<String> userNamesObservableList = FXCollections.observableArrayList(userNamesList);
+            creadorEnvioColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(userNamesObservableList));
+            creadorEnvioColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                String nombre = event.getNewValue();
+                envio.setCreadorEnvio(nombre);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el creador del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
+
+            rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
+
+            vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
+            vehiculoList = vehicleService.findAllVehiculos();
+
+            for (Vehiculo vehiculo : vehiculoList) {
+                if(!vehiculo.isActivo()){
+                vehiculoMatriculaList.add(vehiculo.getMatricula());
+                }
             }
-        });
+            ObservableList<String> vehiclesNamesObservableList = FXCollections.observableArrayList(vehiculoMatriculaList);
+            vehiculoColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(vehiclesNamesObservableList));
+            vehiculoColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                String matricula = "";
+                Vehiculo vActualizado = new Vehiculo();
+                if (event.getNewValue() != null) {
+                    matricula = event.getNewValue();
+                } else {
+                    return;
+                }
+                String localizador = "12";
+                EnvioRutaVehiculo erv = new EnvioRutaVehiculo();
+                try {
+                    envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
+                    });
+
+                    int i = 0;
+                    boolean encontrado = false;
+                    while (i < envioRutaVehiculoList.size() || !encontrado) {
+
+                        List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matricula);
+                        if (vComprobar.get(0).getMatricula().equalsIgnoreCase(matricula)) {
+                            vActualizado = vComprobar.get(0);
+                            Integer idVehiculo = vComprobar.get(0).getId();
+                            List<Ruta> rList = envioRutaVehiculoService.getRutaId(new GenericType<List<Ruta>>() {
+                            }, idVehiculo.toString());
+                            localizador = rList.get(0).getLocalizador().toString();
+                            List<EnvioRutaVehiculo> ervList = envioRutaVehiculoService.getId(new GenericType<List<EnvioRutaVehiculo>>() {
+                            }, idVehiculo.toString());
+                            erv = ervList.get(0);
+                            encontrado = true;
+                        }
+                        i++;
+                    }
+
+                } catch (Exception ex) {
+                    Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                envio.setRuta(localizador);
+                envio.setVehiculo(matricula);
+                envio.setEnvioRutaVehiculo(erv);
+                try {
+                    vActualizado.setActivo(true);
+                    vehicleService.updateVehiculo(vActualizado);
+                } catch (UpdateException ex) {
+                    Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                table.refresh();
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el creador del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
+
+            fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
+            fechaEntregaColumn.setCellFactory(column -> new EnvioDateEditingCell());
+            fechaEntregaColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Date newDate = event.getNewValue();
+                envio.setFechaEntrega(newDate);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
+
+            fechaEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEnvio"));
+            fechaEnvioColumn.setCellFactory(column -> new EnvioDateEditingCell());
+            fechaEnvioColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Date newDate = event.getNewValue();
+                envio.setFechaEnvio(newDate);
+                try {
+                    envioService.edit_XML(envio, envio.getId().toString());
+                } catch (Exception e) {
+                    LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
+                    new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                }
+            });
+        } catch (SelectException ex) {
+            Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void loadInitialData() {
@@ -155,10 +291,6 @@ public class EnvioController {
             if (envios != null) {
                 envioList.setAll(envios);
                 table.setItems(envioList);
-                
-                for (Envio e : envioList) {
-                    System.out.println(e);
-                }
                 LOGGER.info("Insertando datos.");
             }
         } catch (Exception ex) {
@@ -232,15 +364,12 @@ public class EnvioController {
     private void addEnvio(ActionEvent event) {
         try {
             Envio nuevoEnvio = new Envio();
-//            EnvioRutaVehiculo fk = new EnvioRutaVehiculo();
-//            Ruta fkRuta = new Ruta();
-//            Vehiculo fkVehiculo = new Vehiculo();
-//            fk.setRuta(fkRuta);
-//            fk.setVehiculo(fkVehiculo);
-//            nuevoEnvio.setEnvioRutaVehiculo(fk);
             envioList.add(nuevoEnvio);
             envioService.create_XML(nuevoEnvio);
+            loadInitialData();
+            table.refresh();
         } catch (Exception e) {
+            LOGGER.severe("Error al añadir un nuevo envío: " + e.getMessage());
             new UtilsMethods().showAlert("Error al añadir envío", e.getMessage());
         }
     }
@@ -249,17 +378,21 @@ public class EnvioController {
     private void removeEnvio(ActionEvent event) {
         try {
             ObservableList<Envio> selectedEnvios = table.getSelectionModel().getSelectedItems();
-            if (selectedEnvios.isEmpty()) {
-                throw new IllegalArgumentException("Debes seleccionar al menos un envío para eliminar.");
-            }
-
+            LOGGER.info("Iniciando la eliminación de los envíos seleccionados.");
             for (Envio envio : selectedEnvios) {
+                if (envio.getEnvioRutaVehiculo() != null) {
+                    envioService.remove(envio.getId());
+                }
                 envioService.remove(envio.getId());
                 envioList.remove(envio);
+                table.refresh();
             }
+
         } catch (IllegalArgumentException e) {
+            LOGGER.warning("Error en la selección de envíos: " + e.getMessage());
             new UtilsMethods().showAlert("Error", e.getMessage());
         } catch (Exception e) {
+            LOGGER.severe("Error al eliminar envío(s): " + e.getMessage());
             new UtilsMethods().showAlert("Error al eliminar envío(s)", e.getMessage());
         }
     }

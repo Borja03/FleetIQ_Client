@@ -37,4 +37,16 @@ public interface VehicleManager {
 
     List<Vehiculo> findVehiculosByRegistrationDateRange_XML(Date firstDate, Date secondDate) throws SelectException;
 
+    public List<Vehiculo> findVehiclesBeforeDateITV(String endDate) throws SelectException;
+
+    public List<Vehiculo> findVehiclesAfterDateITV(String startDate) throws SelectException;
+
+    public List<Vehiculo> findVehiclesBetweenDatesITV(String endDate, String startDate) throws SelectException;
+
+    public List<Vehiculo> findVehiclesBeforeDateRegistration(String endDate) throws SelectException;
+
+    public List<Vehiculo> findVehiclesAfterDateRegistration(String startDate) throws SelectException;
+
+    public List<Vehiculo> findVehiclesBetweenDatesRegistration(String endDate, String startDate) throws SelectException;
+
 }

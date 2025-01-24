@@ -27,7 +27,7 @@
                 <VBox prefHeight="94.0" prefWidth="566.0" styleClass="filter-section">
                     <Label styleClass="filter-title" text="Filter By ITV/registration date " />
                     <HBox alignment="CENTER_LEFT">
-                       <JFXComboBox fx:id="filterTypeComboBox" prefHeight="30.0" prefWidth="117.0" promptText="Filter by ITV" />
+                       <JFXComboBox fx:id="filterTypeComboBox" prefHeight="30.0" prefWidth="117.0" promptText="Select filter" />
                         <Label text="From:">
                      <HBox.margin>
                         <Insets left="3.0" />

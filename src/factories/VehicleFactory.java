@@ -10,7 +10,7 @@ import logicimplementation.VehicleManagerImp;
 
 /**
  *
- * @author 2dam
+ * @author Adrian
  */
 public class VehicleFactory {
 
