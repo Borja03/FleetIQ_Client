@@ -3,6 +3,8 @@ package logicInterface;
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
 import javax.ws.rs.core.GenericType;
+import models.EnvioRutaVehiculo;
+import models.Ruta;
 
 public interface EnvioRutaVehiculoManager {
 
@@ -42,9 +44,9 @@ public interface EnvioRutaVehiculoManager {
     // Método para contar los registros por un rutaId específico
     String countByRutaId(String rutaId) throws WebApplicationException;
     
-    public <T> T getId(Integer vehiculoId) throws WebApplicationException;
+    public <T> T getId(GenericType<T> responseType, String vehiculoId) throws WebApplicationException;
 
-    public <T> T getRutaId(Integer vehiculoId) throws WebApplicationException ;
+    public <T> T getRutaId(GenericType<T> responseType, String vehiculoId) throws WebApplicationException ;
 
     // Método para eliminar un registro específico de EnvioRutaVehiculo por su id
     void remove(String id) throws WebApplicationException;
