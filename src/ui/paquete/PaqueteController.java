@@ -13,6 +13,7 @@ import com.jfoenix.controls.JFXTextField;
 import exception.CreateException;
 import exception.DeleteException;
 import exception.SelectException;
+import exception.InvalidNameFormatException;
 import exception.UpdateException;
 import factories.PaqueteFactory;
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -28,6 +30,7 @@ import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.Date;
+import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -38,6 +41,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.Label;
@@ -112,6 +116,8 @@ public class PaqueteController {
     private Stage stage;
 
     private ObservableList<Paquete> data;
+    // Maximum length for sender and receiver
+    private static final int MAX_LENGTH = 30;
 
     public Stage getStage() {
         return stage;
@@ -212,35 +218,14 @@ public class PaqueteController {
         });
     }
 
-    // Method to handle the filter change
-    private void handleSizeFilterChange(PackageSize selectedSize) {
-        List<Paquete> filteredPaqueteList = null;
-        if (selectedSize == null) {
-            fillTableFromDataBase();
-        } else {
-            try {
-                filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackageBySize(selectedSize);
-                paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
-
-            } catch (SelectException ex) {
-                Logger.getLogger(PaqueteController.class
-                                .getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-//
-
     private void setUpContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-
         // First menu item
         MenuItem addItem = new MenuItem("Add New Package");
         addItem.setOnAction(this::handleAddShipmentAction);
-
         // Second menu item
         MenuItem deleteItem = new MenuItem("Delete Package");
         deleteItem.setOnAction(this::handleRemoveShipmentAction);
-
         MenuItem printItem = new MenuItem("Print Report");
         printItem.setOnAction(this::handlePrintReportAction);
         // Add menu items to the context menu
@@ -259,38 +244,86 @@ public class PaqueteController {
                 removeShipmentBtn.setDisable(false);
             }
         });
+        //
+        validateAndUpdateSenderColumn();
+        //
+        validateAndUpdateReceiverColumn();
+        //
+        validateAndUpdateWeightColumn();
 
-//        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-//        senderColumn.setCellValueFactory(new PropertyValueFactory<>("sender"));
-//        receiverColumn.setCellValueFactory(new PropertyValueFactory<>("receiver"));
-//        weightColumn.setCellValueFactory(new PropertyValueFactory<>("weight"));
-//        sizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-//        dateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-//        fragileColumn.setCellValueFactory(new PropertyValueFactory<>("fragile"));
+        // Set the custom PaqueteCBoxEditingCell
+        validateAndUpdateSizeColumn();
+        // Setup the date column
+        validateAndUpdateDateColumn();
+        // Setup the fragile column
+        validateAndUpdateFragileColumn();
+
+    }
+
+    private void validateAndUpdateSenderColumn() {
         senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         senderColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
-            paquete.setSender(event.getNewValue());
+            String newSenderValue = event.getNewValue();
+
             try {
-                // Add any additional handling (like saving to database)
+                // Validate the new receiver value
+                if (newSenderValue.length() > MAX_LENGTH || !newSenderValue.matches("[a-zA-Z]*")) {
+                    throw new InvalidNameFormatException("Sender name must not exceed " + MAX_LENGTH + " letters and must contain letters only.");
+                }
+                // Update the receiver value in the object
+                paquete.setSender(newSenderValue);
+
+                // Save changes to the database
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
+                LOGGER.info("Sender updated successfully for package with ID: " + paquete.getId());
+
+            } catch (InvalidNameFormatException ex) {
+                // Handle validation failure
+                UtilsMethods.showAlert("Error", ex.getMessage());
+                LOGGER.warning("Invalid Sender input: " + newSenderValue);
+                senderColumn.getTableView().refresh(); // Revert to the previous value in the UI
             } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                // Handle database update failure
+                LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
+                UtilsMethods.showAlert("Error", "Failed to update sender. Please try again.");
+                senderColumn.getTableView().refresh(); // Revert to the previous value in the UI
             }
         });
-        //
+    }
+
+    private void validateAndUpdateReceiverColumn() {
         receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         receiverColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
-            paquete.setReceiver(event.getNewValue());
+            String newReceiverValue = event.getNewValue();
+
             try {
-                // Add any additional handling (like saving to database)
+                // Validate the new receiver value
+                if (newReceiverValue.length() > MAX_LENGTH || !newReceiverValue.matches("[a-zA-Z]*")) {
+                    throw new InvalidNameFormatException("Receiver must not exceed " + MAX_LENGTH + " letters and must contain letters only.");
+                }
+                // Update the receiver value in the object
+                paquete.setReceiver(newReceiverValue);
+                // Save changes to the database
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
+                LOGGER.info("Receiver updated successfully for package with ID: " + paquete.getId());
+
+            } catch (InvalidNameFormatException ex) {
+                // Handle validation failure
+                UtilsMethods.showAlert("Error", ex.getMessage());
+                LOGGER.warning("Invalid receiver input: " + newReceiverValue);
+                receiverColumn.getTableView().refresh(); // Revert to the previous value in the UI
             } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                // Handle database update failure
+                LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
+                UtilsMethods.showAlert("Error", "Failed to update receiver. Please try again.");
+                receiverColumn.getTableView().refresh(); // Revert to the previous value in the UI
             }
         });
-        //
+    }
+
+    private void validateAndUpdateWeightColumn() {
         weightColumn.setCellFactory(TextFieldTableCell.forTableColumn(
                         new StringConverter<Double>() {
             @Override
@@ -312,29 +345,31 @@ public class PaqueteController {
         weightColumn.setOnEditCommit(event -> event.getRowValue().setWeight(event.getNewValue()));
         weightColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
-            paquete.setWeight(event.getNewValue());
+            Double newWeightValue = event.getNewValue();
+
             try {
+                // Validate the new receiver value
+                if (newWeightValue <= 0) {
+                    throw new IllegalArgumentException("Weight must be a positive number.");
+                }
+                paquete.setWeight(event.getNewValue());
                 // Add any additional handling (like saving to database)
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
                 Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                weightColumn.getTableView().refresh(); // Revert to the previous value in the UI
+            } catch (IllegalArgumentException ex) {
+                UtilsMethods.showAlert("Error", "Weight must be a positive number.");
+                LOGGER.warning("Invalid weight input: " + newWeightValue);
+                weightColumn.getTableView().refresh(); // Revert to the previous value in the UI
+
             }
         });
+    }
 
-        // Set the custom PaqueteCBoxEditingCell
-        // Assign the PaqueteCBoxEditingCell without an explicit Callback
+    private void validateAndUpdateSizeColumn() {
+
         sizeColumn.setCellFactory(column -> new PaqueteCBoxEditingCell());
-        sizeColumn.setOnEditCommit(event -> {
-            Paquete paquete = event.getRowValue();
-            paquete.setSize(event.getNewValue());
-            try {
-                // Add any additional handling (like saving to database)
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
-            } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-
         sizeColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
             PackageSize newSize = event.getNewValue();
@@ -345,10 +380,14 @@ public class PaqueteController {
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
                 Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                sizeColumn.getTableView().refresh(); // Revert to the previous value in the UI
+
             }
         });
 
-        // Setup the date column
+    }
+
+    private void validateAndUpdateDateColumn() {
         dateColumn.setCellFactory(column -> new PaqueteDateEditingCell());
         dateColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
@@ -358,9 +397,13 @@ public class PaqueteController {
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
                 Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                dateColumn.getTableView().refresh(); // Revert to the previous value in the UI
+
             }
         });
-        // Setup the fragile column
+    }
+
+    private void validateAndUpdateFragileColumn() {
         fragileColumn.setCellFactory(column -> new PaqueteFragileEditingCell());
         fragileColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
@@ -370,9 +413,10 @@ public class PaqueteController {
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
                 Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                fragileColumn.getTableView().refresh(); // Revert to the previous value in the UI
+
             }
         });
-
     }
 
     // fill test data from server 
@@ -388,23 +432,11 @@ public class PaqueteController {
         }
     }
 
-    private void handleSearchAction(ActionEvent event) {
-        LOGGER.info("searching");
-        String query = searchTextField.getText().trim().toLowerCase();
-        List<Paquete> filteredPaqueteList = null;
-        if (query.isEmpty()) {
-            fillTableFromDataBase();
-            return;
-        }
-        try {
-            filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByName(query);
-        } catch (SelectException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-        paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
-    }
-
     private void handleFilterByDatesAction(ActionEvent event) {
+        // Clear other filters
+        sizeFilterComboBox.setValue(null);
+        searchTextField.clear();
+
         String mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
         SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
 
@@ -448,6 +480,49 @@ public class PaqueteController {
         } catch (Exception e) {
             UtilsMethods.showAlert("Error al filtrar por fechas", e.getMessage());
         }
+    }
+    // Method to handle the filter change
+
+    private void handleSizeFilterChange(PackageSize selectedSize) {
+        // Clear other filters
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
+        searchTextField.clear();
+
+        List<Paquete> filteredPaqueteList = null;
+        if (selectedSize == null) {
+            fillTableFromDataBase();
+        } else {
+            try {
+                filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackageBySize(selectedSize);
+                paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
+
+            } catch (SelectException ex) {
+                Logger.getLogger(PaqueteController.class
+                                .getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+//
+
+    private void handleSearchAction(ActionEvent event) {
+        // Clear other filters
+        sizeFilterComboBox.setValue(null);
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
+        LOGGER.info("searching");
+        String query = searchTextField.getText().trim().toLowerCase();
+        List<Paquete> filteredPaqueteList = null;
+        if (query.isEmpty()) {
+            fillTableFromDataBase();
+            return;
+        }
+        try {
+            filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByName(query);
+        } catch (SelectException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
     }
 
     /**
@@ -495,9 +570,8 @@ public class PaqueteController {
      */
     private void filterPackagesBetweenDates(String fromDate, String toDate) {
         System.out.println("Executing filterPackagesBetweenDates with dates: " + fromDate + " to " + toDate);
-        List<Paquete> paqueteList = null;
         try {
-            paqueteList = PaqueteFactory.getPackageInstance().findPackagesBetweenDates(toDate, fromDate);
+            List<Paquete> paqueteList = PaqueteFactory.getPackageInstance().findPackagesBetweenDates(toDate, fromDate);
             if (paqueteList != null && !paqueteList.isEmpty()) {
                 paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
             } else {
@@ -511,26 +585,25 @@ public class PaqueteController {
     }
 
     private void handleAddShipmentAction(ActionEvent event) {
+        LOGGER.info("Entering handleAddShipmentAction");
         try {
-            // Create new package with ID from last item in data
-            Paquete defaultPaquete = new Paquete("Sender", "Receiver", 1.0, PackageSize.MEDIUM, new Date(), false);
+            // Create new package with validated inputs
+            Paquete defaultPaquete = new Paquete("sender", "receiver", 0.0, PackageSize.MEDIUM, new Date(), false);
             // Add to database first
             Paquete savedPackage = PaqueteFactory.getPackageInstance().addPackage(defaultPaquete);
             if (savedPackage != null) {
-                // If database insert successful, add to table data
-                data.clear();
-                data.addAll(PaqueteFactory.getPackageInstance().findAllPackages());
+                fillTableFromDataBase(); // Refresh the table data after adding
+                LOGGER.info("Package added successfully: " + savedPackage);
             }
         } catch (CreateException ex) {
-            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Failed to create package: " + ex.getMessage(), ex);
             UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage());
-        } catch (SelectException ex) {
-            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        LOGGER.info("Exiting handleAddShipmentAction");
     }
 
     private void handleRemoveShipmentAction(ActionEvent event) {
-        // Get all selected items
+      // Get all selected items
         ObservableList<Paquete> selectedPaquetes = paqueteTableView.getSelectionModel().getSelectedItems();
         if (selectedPaquetes != null && !selectedPaquetes.isEmpty()) {
             try {

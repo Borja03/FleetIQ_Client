@@ -11,7 +11,6 @@ package models;
  */
 import java.io.Serializable;
 import java.util.Date;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -24,6 +23,7 @@ public class Paquete implements Serializable {
     private PackageSize size;
     private Date creationDate;
     private boolean fragile;
+    private Envio envio;
 
     
     
@@ -105,6 +105,16 @@ public class Paquete implements Serializable {
     public void setSize(PackageSize size) {
         this.size = size;
     }
+    
+
+    public Envio getEnvio() {
+        return envio;
+    }
+
+    public void setEnvio(Envio envio) {
+        this.envio = envio;
+    }
+    
 
     @Override
     public String toString() {
