@@ -5,7 +5,6 @@ package logicimplementation;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 import exception.CreateException;
 import exception.DeleteException;
 import exception.SelectException;
@@ -32,17 +31,22 @@ public class PackageManagerImp implements PaqueteManager {
 
     @Override
     public Paquete addPackage(Paquete paquete) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        GenericType<Paquete> responseType = new GenericType<Paquete>() {
+        };
+        return webClient.createPackage(paquete, responseType);
+
     }
 
     @Override
     public Paquete updatePackage(Paquete paquete) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        GenericType<Paquete> responseType = new GenericType<Paquete>() {
+        };
+        return webClient.updatePackage(paquete, responseType, paquete.getId());
     }
 
     @Override
-    public void deletePackages(Integer idPaquete) throws DeleteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void deletePackages(Long idPaquete) throws DeleteException {
+        webClient.deletePackage(idPaquete);
     }
 
     @Override
@@ -61,15 +65,15 @@ public class PackageManagerImp implements PaqueteManager {
         return packagesList;
     }
 
-    @Override
-    public List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException {
-        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
-        };
-        System.out.println(firstDate.toString());
-        System.out.println(secondDate.toString());
-        List<Paquete> packagesList = webClient.findPackagesByDates(responseType, firstDate.toString(), secondDate.toString());
-        return packagesList;
-    }
+//    @Override
+//    public List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException {
+//        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+//        };
+//        System.out.println(firstDate.toString());
+//        System.out.println(secondDate.toString());
+//        List<Paquete> packagesList = webClient.findPackagesByDates(responseType, firstDate.toString(), secondDate.toString());
+//        return packagesList;
+//    }
 
     @Override
     public List<Paquete> findAllPackagesByName(String senderOrReceiverName) throws SelectException {
@@ -78,6 +82,27 @@ public class PackageManagerImp implements PaqueteManager {
         List<Paquete> packagesList = webClient.findPackagesByName(responseType, senderOrReceiverName);
         return packagesList;
 
+    }
+
+    @Override
+    public List<Paquete> findPackagesBeforeDate(String endDate) throws SelectException {
+        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+        };
+        return webClient.findPackagesBeforeDate(responseType, endDate);
+    }
+
+    @Override
+    public List<Paquete> findPackagesAfterDate(String startDate) throws SelectException {
+        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+        };
+        return webClient.findPackagesAfterDate(responseType, startDate);
+    }
+
+    @Override
+    public List<Paquete> findPackagesBetweenDates(String endDate, String startDate) throws SelectException {
+        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
+        };
+        return webClient.findPackagesBetweenDates(responseType, endDate,startDate);
     }
 
 }

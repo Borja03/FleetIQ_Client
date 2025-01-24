@@ -138,3 +138,11 @@
 .table-view .column-header {
     -fx-alignment: CENTER;
 }
+
+
+.table-view .jfx-date-picker {
+    -fx-font-size: 12px;
+    -jfx-focus-color: #4CAF50;
+    -jfx-unfocus-color: #BDBDBD;
+    -jfx-default-color: #0078d7;
+}

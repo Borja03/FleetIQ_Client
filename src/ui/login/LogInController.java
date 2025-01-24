@@ -296,8 +296,9 @@ public class LogInController {
         String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
         User user = new User();
-        user.setEmail("borja@gmail.com");
-        user.setPassword("Borja1234*");
+        user.setEmail(email);
+        user.setPassword(password);
+
         User loggedInUser;
         try {
             userSession = (User) SignableFactory.getSignable().signIn(user, User.class);

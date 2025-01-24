@@ -23,19 +23,15 @@ import models.Vehiculo;
 import service.PackageRESTClient;
 import service.VehicleRESTClient;
 
-/**
- *
- * @author 2dam
- */
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 /**
  *
- * @author Omar
+ * @author Adrian
  */
 public class VehicleManagerImp implements VehicleManager {
 
@@ -132,6 +128,51 @@ public class VehicleManagerImp implements VehicleManager {
         GenericType<Vehiculo> responseType = new GenericType<Vehiculo>() {
         };
         return webClient.createVehicle(vehiculo, responseType);
+
+    }
+
+    @Override
+    public List<Vehiculo> findVehiclesBeforeDateITV(String endDate) throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        return webClient.findVehiclesBeforeDateITV(responseType, endDate);
+    }
+
+    @Override
+    public List<Vehiculo> findVehiclesAfterDateITV(String startDate) throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        return webClient.findVehiclessAfterDateITV(responseType, startDate);
+
+    }
+
+    @Override
+    public List<Vehiculo> findVehiclesBetweenDatesITV(String endDate, String startDate) throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        return webClient.findByDateRangeITV(responseType, endDate, startDate);
+
+    }
+
+    @Override
+    public List<Vehiculo> findVehiclesBeforeDateRegistration(String endDate) throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        return webClient.findVehiclesBeforeDateRegistration(responseType, endDate);
+    }
+
+    @Override
+    public List<Vehiculo> findVehiclesAfterDateRegistration(String startDate) throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        return webClient.findVehiclessAfterDateRegistration(responseType, startDate);
+    }
+
+    @Override
+    public List<Vehiculo> findVehiclesBetweenDatesRegistration(String endDate, String startDate) throws SelectException {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
+        };
+        return webClient.findVehiclesBetweenDatesRegistration(responseType, endDate, startDate);
 
     }
 
