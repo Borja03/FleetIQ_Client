@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,6 +31,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
@@ -45,7 +47,9 @@ import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 import models.EnvioRutaVehiculo;
 import models.Vehiculo;
+import utils.UtilsMethods;
 import static utils.UtilsMethods.logger;
+import javafx.scene.control.TablePosition;
 
 /**
  * Controller for managing the Vehiculo UI. Handles initialization,
@@ -186,6 +190,7 @@ public class VehicleController {
         configureRemoveShipmentButton();
 
         addShipmentBtn.setOnAction(event -> handleAddShipmentAction());
+        applyFilterButton.setOnAction(this::handleFilterByDatesAction);
 
         vehicleTableView.setEditable(true);
         matriculaColumn.setEditable(true);
@@ -312,22 +317,63 @@ public class VehicleController {
             @Override
             public Integer fromString(String string) {
                 try {
-                    return Integer.valueOf(string);
+                    return Integer.parseInt(string);
                 } catch (NumberFormatException e) {
-                    LOGGER.warning("Invalid weight: " + string);
-                    return null;
+                    LOGGER.warning("Invalid capacity: " + string);
+                    throw new IllegalArgumentException("Only numeric values are allowed");
                 }
             }
         }
         ));
 
-        capacityColumn.setOnEditCommit(event -> event.getRowValue().setCapacidadCarga(event.getNewValue()));
+        capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(
+                new StringConverter<Integer>() {
+            @Override
+            public String toString(Integer object) {
+                return object != null ? object.toString() : "";
+            }
+
+            @Override
+            public Integer fromString(String string) {
+                try {
+                    Integer value = Integer.parseInt(string);
+                    // Check if the number is negative
+                    if (value < 0) {
+                        throw new IllegalArgumentException("Value cannot be negative");
+                    }
+                    return value;
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warning("Invalid capacity: " + string);
+                    throw new IllegalArgumentException("Only positive numeric values are allowed");
+                }
+            }
+        }
+        ));
+
         capacityColumn.setOnEditCommit(event -> {
-            Vehiculo vehiculo = event.getRowValue();
-            vehiculo.setCapacidadCarga(event.getNewValue());
+            TableView<Vehiculo> tableView = event.getTableView();
+            TablePosition<Vehiculo, Integer> pos = event.getTablePosition();
+            int row = pos.getRow();
+
             try {
-                // Add any additional handling (like saving to database)
+                Integer newValue = event.getNewValue();
+                if (newValue == null || newValue < 0) {
+                    throw new IllegalArgumentException("Value cannot be negative");
+                }
+
+                Vehiculo vehiculo = event.getRowValue();
+                vehiculo.setCapacidadCarga(newValue);
+
+                // Save to the database
                 VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warning(ex.getMessage());
+                // Show alert to user
+                showAlert("Invalid Input", "Only positive numeric values are allowed.", AlertType.ERROR);
+
+                // Restore the previous value and cancel editing
+                tableView.getItems().get(row).setCapacidadCarga(event.getOldValue());
+                tableView.edit(row, event.getTableColumn()); // Stay in edit mode
             } catch (UpdateException ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -382,12 +428,204 @@ public class VehicleController {
         }
     }
 
+    private void handleFilterByDatesAction(ActionEvent event) {
+        // Clear other filters
+        searchTextField.clear();
+
+        String mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
+
+        try {
+            LocalDate fromDate = fromDatePicker.getValue();
+            LocalDate toDate = toDatePicker.getValue();
+
+            // Convert to Date only if LocalDate is not null
+            Date fromDateAsDate = (fromDate != null)
+                    ? Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    : null;
+            Date toDateAsDate = (toDate != null)
+                    ? Date.from(toDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+                    : null;
+
+            // Format dates only if they are not null
+            String mfromDate = (fromDateAsDate != null) ? dateFormat.format(fromDateAsDate) : null;
+            String mtoDate = (toDateAsDate != null) ? dateFormat.format(toDateAsDate) : null;
+
+            System.out.println("From Date: " + mfromDate);
+            System.out.println("To Date: " + mtoDate);
+
+            if (fromDate == null && toDate == null) {
+                // No dates selected
+                UtilsMethods.showAlert("Error de filtro", "Select a date");
+                return;
+            }
+
+            // Determine which filter to apply based on ComboBox selection
+            String selectedFilter = filterTypeComboBox.getValue();
+
+            if ("ITV Date".equals(selectedFilter)) {
+                if (fromDate == null) {
+                    System.out.println("Filtering vehicles before ITV date: " + mtoDate);
+                    filterVehiclesBeforeDateITV(mtoDate);
+                } else if (toDate == null) {
+                    System.out.println("Filtering vehicles after ITV date: " + mfromDate);
+                    filterVehiclesAfterDateITV(mfromDate);
+                } else {
+                    System.out.println("Filtering vehicles between ITV dates: " + mfromDate + " and " + mtoDate);
+                    filterVehiclesBetweenDatesITV(mfromDate, mtoDate);
+
+                }
+            } else if ("Registration Date".equals(selectedFilter)) {
+                if (fromDate == null) {
+                    System.out.println("Filtering vehicles before registration date: " + mtoDate);
+                    filterVehiclesBeforeDateRegistration(mtoDate);
+                } else if (toDate == null) {
+                    System.out.println("Filtering vehicles after registration date: " + mfromDate);
+                    filterVehiclesAfterDateRegistration(mfromDate);
+                } else {
+                    System.out.println("Filtering vehicles between registration dates: " + mfromDate + " and " + mtoDate);
+                    filterVehiclesBetweenDatesRegistration(mfromDate, mtoDate);
+                }
+            } else {
+                UtilsMethods.showAlert("Error de filtro", "Please select a valid filter type.");
+            }
+
+        } catch (IllegalArgumentException e) {
+            UtilsMethods.showAlert("Error de filtro", e.getMessage());
+        } catch (Exception e) {
+            UtilsMethods.showAlert("Error al filtrar por fechas", e.getMessage());
+        }
+    }
+
+    private void filterVehiclesAfterDateRegistration(String fromDate) {
+        System.out.println("Executing filterVehiclesAfterDateRegistration with date: " + fromDate);
+
+        try {
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findVehiclesAfterDateRegistration(fromDate);
+            if (vehicleList != null && !vehicleList.isEmpty()) {
+                vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+            } else {
+                vehicleTableView.setItems(FXCollections.observableArrayList());
+                UtilsMethods.showAlert("Information", "No vehicles found after " + fromDate);
+            }
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }
+    }
+
+    private void showAlert(String title, String message, AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * Filter packages before the specified date
+     */
+    private void filterVehiclesBeforeDateRegistration(String toDate) {
+        System.out.println("Executing filterVehiclesBeforeDateRegistration with date: " + toDate);
+
+        try {
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findVehiclesBeforeDateRegistration(toDate);
+            if (vehicleList != null && !vehicleList.isEmpty()) {
+                vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+            } else {
+                vehicleTableView.setItems(FXCollections.observableArrayList());
+                UtilsMethods.showAlert("Information", "No vehicles found before " + toDate);
+            }
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Filter packages between two dates
+     */
+    private void filterVehiclesBetweenDatesRegistration(String fromDate, String toDate) {
+        System.out.println("Executing filterVehiclesBetweenDatesRegistration with dates: " + fromDate + " to " + toDate);
+
+        try {
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findVehiclesBetweenDatesRegistration(toDate, fromDate);
+            if (vehicleList != null && !vehicleList.isEmpty()) {
+                vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+            } else {
+                vehicleTableView.setItems(FXCollections.observableArrayList());
+                UtilsMethods.showAlert("Information", "No vehicles found between " + fromDate + " and " + toDate);
+            }
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }
+    }
+
+    private void filterVehiclesAfterDateITV(String fromDate) {
+        System.out.println("Executing filterVehiclesAfterDateITV with date: " + fromDate);
+
+        try {
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findVehiclesAfterDateITV(fromDate);
+            if (vehicleList != null && !vehicleList.isEmpty()) {
+                vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+            } else {
+                vehicleTableView.setItems(FXCollections.observableArrayList());
+                UtilsMethods.showAlert("Information", "No vehicles found after " + fromDate);
+            }
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Filter packages before the specified date
+     */
+    private void filterVehiclesBeforeDateITV(String toDate) {
+        System.out.println("Executing filterVehiclesBeforeDateITV with date: " + toDate);
+
+        try {
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findVehiclesBeforeDateITV(toDate);
+            if (vehicleList != null && !vehicleList.isEmpty()) {
+                vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+            } else {
+                vehicleTableView.setItems(FXCollections.observableArrayList());
+                UtilsMethods.showAlert("Information", "No vehicles found before " + toDate);
+            }
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Filter packages between two dates
+     */
+    private void filterVehiclesBetweenDatesITV(String fromDate, String toDate) {
+        System.out.println("Executing filterVehiclesBetweenDatesITV with dates: " + fromDate + " to " + toDate);
+        try {
+            List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findVehiclesBetweenDatesITV(toDate, fromDate);
+
+            if (vehicleList != null && !vehicleList.isEmpty()) {
+                vehicleTableView.setItems(FXCollections.observableArrayList(vehicleList));
+            } else {
+                vehicleTableView.setItems(FXCollections.observableArrayList());
+                UtilsMethods.showAlert("Information", "No vehicles found between " + fromDate + " and " + toDate);
+            }
+        } catch (SelectException ex) {
+            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }
+    }
+
     private void handleAddShipmentAction() {
 
         try {
             // Create new package with ID from last item in data
             Vehiculo defaultVehiculo = new Vehiculo();
             defaultVehiculo.setMatricula("");
+            defaultVehiculo.setRegistrationDate(new Date());
             // Add to database first
             Vehiculo savedPackage = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
             if (savedPackage != null) {
@@ -403,59 +641,8 @@ public class VehicleController {
             Logger.getLogger(VehicleFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        /*
-
-        try {
-            List<Vehiculo> infovehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
-            Vehiculo defaultVehiculo = null;
-            defaultVehiculo = new Vehiculo();
-            defaultVehiculo.setId(infovehicleList.get(infovehicleList.size() - 1).getId() + 1);
-            defaultVehiculo.setMatricula("");
-            defaultVehiculo.setModelo("Default Model");
-            defaultVehiculo.setCapacidadCarga(1);
-            defaultVehiculo.setRegistrationDate(new Date());
-            defaultVehiculo.setItvDate(new Date());
-            defaultVehiculo.setActivo(true);
-
-            infovehicleList.add(defaultVehiculo);
-            Vehiculo v2 = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
-            System.out.println(v2.toString());
-            vehicleTableView.setItems(FXCollections.observableArrayList(infovehicleList));
-
-        } catch (Exception ex) {
-            Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
-            // show alert
-            System.out.println("Somthinr is woripgn");
-        }
-         */
     }
 
-//    private void addShipment() {
-//        try {
-//            // Crear una nueva ruta vacía
-//            Vehiculo defaultVehiculo = new Vehiculo();
-//            defaultVehiculo.setCapacidadCarga(0);
-//            defaultVehiculo.setMatricula("");
-//            defaultVehiculo.setModelo("");
-//            defaultVehiculo.setItvDate(new Date());
-//            defaultVehiculo.setActivo(false);
-//            defaultVehiculo.setRegistrationDate(new Date());
-//
-//            // Enviar la nueva ruta al servidor
-//            Vehiculo createVehicle = VehicleFactory.getVehicleInstance().createVehicle(defaultVehiculo);
-//            // rutaManager.edit_XML(nuevaRuta, "0"); // Usar "0" o el ID correspondiente para el servidor
-//
-//            // Refrescar la tabla recargando los datos desde el servidor
-//            //loadRutaData();
-//            logger.info("Nueva ruta vacía añadida y tabla actualizada correctamente.");
-//        } catch (WebApplicationException e) {
-//            logger.log(Level.SEVERE, "Error al añadir una nueva ruta", e);
-//            // showAlert("Error", "No se pudo añadir la nueva ruta.");
-//        } catch (Exception e) {
-//            logger.log(Level.SEVERE, "Error inesperado", e);
-//            //  showAlert("Error", "Error inesperado al añadir la nueva ruta.");
-//        }
-//    }
     @FXML
     private void onRemoveShipmentClicked() {
         ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
@@ -579,63 +766,4 @@ public class VehicleController {
         // Implement search logic
     }
 
-    /*
-    @FXML
-    private void onAddVehicle() {
-        try {
-            // Gather input from UI fields
-            String matricula = matriculaTextField.getText();
-            String modelo = modelTextField.getText();
-            double capacidadCarga = Double.parseDouble(capacityTextField.getText());
-            LocalDate registrationDate = fromDatePicker.getValue();
-            LocalDate itvDate = toDatePicker.getValue();
-            boolean activo = activeCheckBox.isSelected();
-
-            // Create a Vehiculo object
-            Vehiculo newVehicle = new Vehiculo(matricula, modelo, capacidadCarga, Date.from(registrationDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), Date.from(itvDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), activo);
-
-            // Save it to the database
-            VehicleFactory.getVehicleInstance().createVehicle(newVehicle);
-
-            // Refresh the table view
-            fillTableFromDataBase();
-
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Vehicle added successfully.");
-        } catch (Exception e) {
-            LOGGER.severe("Error adding vehicle: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to add vehicle. Please check the input values.");
-        }
-    }
-     */
-
- /*
-    @FXML
-private void onUpdateVehicle() {
-    Vehiculo selectedVehicle = vehicleTableView.getSelectionModel().getSelectedItem();
-    if (selectedVehicle == null) {
-        showAlert(Alert.AlertType.WARNING, "Warning", "Please select a vehicle to update.");
-        return;
-    }
-    try {
-        // Update vehicle fields
-        selectedVehicle.setMatricula(matriculaTextField.getText());
-        selectedVehicle.setModelo(modelTextField.getText());
-        selectedVehicle.setCapacidadCarga(Double.parseDouble(capacityTextField.getText()));
-        selectedVehicle.setRegistrationDate(Date.from(fromDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        selectedVehicle.setItvDate(Date.from(toDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        selectedVehicle.setActivo(activeCheckBox.isSelected());
-
-        // Save the updated vehicle to the database
-        VehicleFactory.getVehicleInstance().updateVehicle(selectedVehicle);
-
-        // Refresh the table view
-        fillTableFromDataBase();
-
-        showAlert(Alert.AlertType.INFORMATION, "Success", "Vehicle updated successfully.");
-    } catch (Exception e) {
-        LOGGER.severe("Error updating vehicle: " + e.getMessage());
-        showAlert(Alert.AlertType.ERROR, "Error", "Failed to update vehicle. Please check the input values.");
-    }
-}
-     */
 }
