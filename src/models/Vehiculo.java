@@ -24,7 +24,7 @@ public class Vehiculo implements Serializable {
 
     private Date itvDate;
 
-    private boolean activo; 
+    private boolean activo;
 
     private List<EnvioRutaVehiculo> envioRutaVehiculoList;
 
@@ -51,10 +51,6 @@ public class Vehiculo implements Serializable {
         this.activo = activo;
         this.envioRutaVehiculoList = envioRutaVehiculoList;
     }
-    
-    
-    
-    
 
     // Getters y Setters
     public Integer getId() {
@@ -121,5 +117,12 @@ public class Vehiculo implements Serializable {
     public void setEnvioRutaVehiculoList(List<EnvioRutaVehiculo> envioRutaVehiculoList) {
         this.envioRutaVehiculoList = envioRutaVehiculoList;
     }
+
+    @Override
+    public String toString() {
+        return "Vehiculo{" + "id=" + id + ", matricula=" + matricula + ", modelo=" + modelo + ", capacidadCarga=" + capacidadCarga + ", registrationDate=" + registrationDate + ", itvDate=" + itvDate + ", activo=" + activo + ", envioRutaVehiculoList=" + envioRutaVehiculoList + '}';
+    }
+    
+    
 
 }

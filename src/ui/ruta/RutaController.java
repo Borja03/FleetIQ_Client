@@ -4,7 +4,11 @@ import cellFactories.RutaDateEditingCell;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXListCell;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
+import com.sun.javafx.scene.control.skin.TableViewSkin;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
@@ -23,22 +27,27 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import logicInterface.EnvioRutaVehiculoManager;
 import logicInterface.RutaManager;
 import logicInterface.VehicleManager;
+import models.EnvioRutaVehiculo;
 import models.Ruta;
 import models.Vehiculo;
+import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
 
 public class RutaController {
@@ -68,6 +77,7 @@ public class RutaController {
 
     private RutaManager rutaManager;
     private VehicleManager vehicleManager;
+    private EnvioRutaVehiculoManager ervManager = new EnvioRutaVehiculoRESTClient();
 
     private ObservableList<Ruta> rutaData;
 
@@ -418,7 +428,7 @@ public class RutaController {
             }
         });
 
-       distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
+        distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
         distanciaColumn.setOnEditCommit(
                 new EventHandler<CellEditEvent<Ruta, Float>>() {
             @Override
@@ -477,7 +487,7 @@ public class RutaController {
                     alert.setTitle("Error");
                     alert.setContentText("El valor ingresado no es un número válido.");
                     alert.showAndWait();
-                    t.getTableView().refresh(); 
+                    t.getTableView().refresh();
                     return;
                 }
 
@@ -486,7 +496,7 @@ public class RutaController {
                     alert.setTitle("Error");
                     alert.setContentText("El tiempo no puede ser negativo.");
                     alert.showAndWait();
-                    t.getTableView().refresh(); 
+                    t.getTableView().refresh();
                     return;
                 }
 
@@ -540,9 +550,10 @@ public class RutaController {
 
     private void showVehicleSelectionDialog(Ruta ruta) {
         Stage vehicleStage = new Stage();
-        vehicleStage.setTitle("Seleccionar Vehículo");
+        vehicleStage.setTitle("Seleccionar Vehículos");
 
-        JFXComboBox<String> vehicleComboBox = new JFXComboBox<>();
+        JFXListView<String> vehicleListView = new JFXListView<>();
+        ObservableList<String> selectedMatriculas = FXCollections.observableArrayList(); // Lista de elementos seleccionados manualmente
 
         try {
             List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
@@ -552,16 +563,57 @@ public class RutaController {
                 matriculas.add(vehiculo.getMatricula());
             }
 
-            vehicleComboBox.setItems(matriculas);
+            vehicleListView.setItems(matriculas);
+
+            // Agregar manejador de clics personalizados
+            vehicleListView.setCellFactory(lv -> {
+                JFXListCell<String> cell = new JFXListCell<>();
+                cell.setText(""); // Asigna un texto vacío por defecto (puedes usar un valor distinto si prefieres)
+                cell.setOnMouseClicked(event -> {
+                    if (cell.getItem() != null) {
+                        if (selectedMatriculas.contains(cell.getItem())) {
+                            selectedMatriculas.remove(cell.getItem()); // Deseleccionar si ya está seleccionado
+                            cell.setStyle(""); // Restablecer estilo
+                        } else {
+                            selectedMatriculas.add(cell.getItem()); // Seleccionar si no está seleccionado
+                            cell.setStyle("-fx-background-color: lightblue;"); // Cambiar el estilo del elemento seleccionado
+                        }
+                    }
+                });
+
+                // Asigna el texto de la celda al valor del item
+                cell.textProperty().set(cell.getItem());
+
+                return cell;
+            });
 
             JFXButton confirmButton = new JFXButton("Confirmar");
             confirmButton.setOnAction(e -> {
-                String selectedMatricula = vehicleComboBox.getValue();
-                if (selectedMatricula != null) {
+                if (!selectedMatriculas.isEmpty()) {
                     try {
-                        logger.info("Añadiendo vehículo " + selectedMatricula + " a la ruta " + ruta.getLocalizador());
+                        // Iterar sobre los vehículos seleccionados y crear un EnvioRutaVehiculo para cada uno
+                        for (String matricula : selectedMatriculas) {
 
-                        ruta.setNumVehiculos(ruta.getNumVehiculos() + 1);
+                            List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
+
+                            // Crear un nuevo objeto EnvioRutaVehiculo
+                            EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
+                            envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
+                            envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
+                            envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
+                            System.out.println(ruta);
+                            System.out.println(vehiculo.get(0));
+                            System.out.println(envioRutaVehiculo.toString());
+                            System.out.println(envioRutaVehiculo.getFechaAsignacion());
+                            System.out.println(envioRutaVehiculo.toString());
+
+                            ervManager.create_XML(envioRutaVehiculo);
+
+                            logger.info("Añadiendo vehículo " + matricula + " a la ruta " + ruta.getLocalizador());
+                        }
+
+                        // Actualizar la ruta con los vehículos seleccionados
+                        ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
                         rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
 
                         loadRutaData();
@@ -569,8 +621,8 @@ public class RutaController {
                         vehicleStage.close();
 
                     } catch (Exception ex) {
-                        logger.log(Level.SEVERE, "Error al añadir vehículo a la ruta", ex);
-                        showAlert("Error", "No se pudo añadir el vehículo a la ruta");
+                        logger.log(Level.SEVERE, "Error al añadir vehículos a la ruta", ex);
+                        showAlert("Error", "No se pudieron añadir los vehículos a la ruta");
                     }
                 }
             });
@@ -578,12 +630,12 @@ public class RutaController {
             VBox layout = new VBox(10);
             layout.getStyleClass().add("jfx-popup-container");
             layout.setPadding(new javafx.geometry.Insets(10));
-            layout.getChildren().addAll(vehicleComboBox, confirmButton);
+            layout.getChildren().addAll(vehicleListView, confirmButton);
 
             Scene scene = new Scene(layout);
             vehicleStage.setScene(scene);
-            vehicleStage.setWidth(250);
-            vehicleStage.setHeight(120);
+            vehicleStage.setWidth(300);
+            vehicleStage.setHeight(300);
 
             vehicleStage.show();
 
@@ -592,4 +644,5 @@ public class RutaController {
             showAlert("Error", "No se pudieron cargar los vehículos");
         }
     }
+
 }
