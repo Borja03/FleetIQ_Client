@@ -58,6 +58,12 @@ public class VehicleManagerImp implements VehicleManager {
         if (idVehiculo == null || idVehiculo <= 0) {
             throw new DeleteException("Vehicle ID cannot be null or negative.");
         }
+        try {
+            webClient.remove(String.valueOf(idVehiculo));
+        } catch (ClientErrorException e) {
+            throw new DeleteException("Error deleting vehicle with ID: " + idVehiculo + " - " + e.getMessage(), e);
+        }
+    }
 
         try {
             webClient.remove(String.valueOf(idVehiculo));
@@ -113,19 +119,18 @@ public class VehicleManagerImp implements VehicleManager {
     }
 
     @Override
-    public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
-        if (matricula == null || matricula.isEmpty()) {
-            throw new SelectException("License plate cannot be null or empty.");
-        }
-
-        try {
-            GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {
-            };
-            return webClient.findByPlate_XML(responseType, matricula);
-        } catch (ClientErrorException e) {
-            throw new SelectException("Error retrieving vehicles with plate: " + matricula + " - " + e.getMessage(), e);
-        }
+public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectException {
+    if (matricula == null || matricula.isEmpty()) {
+        throw new SelectException("License plate cannot be null or empty.");
     }
+
+    try {
+        GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {};
+        return webClient.findByPlate_XML(responseType, matricula);
+    } catch (ClientErrorException e) {
+        throw new SelectException("Error retrieving vehicles with plate: " + matricula + " - " + e.getMessage(), e);
+    }
+}
 
     @Override
     public Vehiculo createVehicle(Vehiculo vehiculo) throws CreateException {

@@ -5,10 +5,12 @@
  */
 package service;
 
+import java.util.List;
 import java.util.ResourceBundle;
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import models.User;
 
@@ -36,49 +38,49 @@ public class UserRESTClient {
         webTarget = client.target(BASE_URI).path("user");
     }
 
-    public <T> T checkExist(Object requestEntity, Class<T> responseType) throws ClientErrorException {
+    public <T> T checkExist(Object requestEntity, Class<T> responseType) throws WebApplicationException {
         return webTarget.path("check-exist")
                         .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
-    public <T> T signIn(User requestEntity, Class<T> responseType) throws ClientErrorException {
+    public <T> T signIn(User requestEntity, Class<T> responseType) throws WebApplicationException {
         return webTarget.path("login")
                         .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
-    public <T> T signUp(User requestEntity, Class<T> responseType) throws ClientErrorException {
+    public <T> T signUp(User requestEntity, Class<T> responseType) throws WebApplicationException {
         return webTarget.path("signup").request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
-    public void resetPassword(User requestEntity) throws ClientErrorException {
+    public void resetPassword(User requestEntity) throws WebApplicationException {
         webTarget.path("reset").request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T verifyCode(User requestEntity, Class<T> responseType) throws ClientErrorException {
+    public <T> T verifyCode(User requestEntity, Class<T> responseType) throws WebApplicationException {
         return webTarget.path("verify-code")
                         .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
-    public void updatePassword(User requestEntity) throws ClientErrorException {
+    public void updatePassword(User requestEntity) throws WebApplicationException {
         webTarget.path("update-password")
                         .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void create(User requestEntity) throws ClientErrorException {
+    public void create(User requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                         .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T findAll(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll(GenericType<List<User>> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                        .get(responseType);
+                        .get((GenericType<T>) responseType);
     }
 
     public void close() {

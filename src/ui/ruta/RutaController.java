@@ -113,11 +113,9 @@ public class RutaController {
         rutaTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             removeShipmentBtn.setDisable(rutaTable.getSelectionModel().getSelectedItems().isEmpty());
         });
-
         configureEditableColumns();
 
         setupContextMenu();
-
         try {
             loadRutaData();
         } catch (SelectException ex) {
