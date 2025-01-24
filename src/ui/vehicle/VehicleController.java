@@ -356,7 +356,7 @@ public class VehicleController {
             } catch (UpdateException ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        })
+        });
     }
 
     /**

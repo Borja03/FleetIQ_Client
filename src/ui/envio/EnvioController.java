@@ -188,10 +188,14 @@ public class EnvioController {
 
             vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
             vehiculoList = vehicleService.findAllVehiculos();
-
             for (Vehiculo vehiculo : vehiculoList) {
-                if(!vehiculo.isActivo()){
-                vehiculoMatriculaList.add(vehiculo.getMatricula());
+                if (!vehiculo.isActivo()) {
+                    Integer idVehiculo = vehiculo.getId();
+                    List<Ruta> rList = envioRutaVehiculoService.getRutaId(new GenericType<List<Ruta>>() {
+                    }, idVehiculo.toString());
+                    if (rList.get(0) != null) {
+                        vehiculoMatriculaList.add(vehiculo.getMatricula());
+                    }
                 }
             }
             ObservableList<String> vehiclesNamesObservableList = FXCollections.observableArrayList(vehiculoMatriculaList);
@@ -230,17 +234,25 @@ public class EnvioController {
                         i++;
                     }
 
+                } catch (IndexOutOfBoundsException ex) {
+                    LOGGER.severe("El vehiculo seleccionado no está asignado a ninguna ruta" + ex.getMessage());
+                    new UtilsMethods().showAlert("El vehiculo seleccionado no está asignado a ninguna ruta", ex.getMessage());
                 } catch (Exception ex) {
                     Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                envio.setRuta(localizador);
-                envio.setVehiculo(matricula);
-                envio.setEnvioRutaVehiculo(erv);
                 try {
+                    String matriculaVAntiguo = envio.getVehiculo();
+                    List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
+                    Vehiculo vAntiguo = vComprobar.get(0);
+                    vAntiguo.setActivo(false);
+                    vehicleService.updateVehiculo(vAntiguo);
                     vActualizado.setActivo(true);
                     vehicleService.updateVehiculo(vActualizado);
-                } catch (UpdateException ex) {
+                    envio.setRuta(localizador);
+                    envio.setVehiculo(matricula);
+                    envio.setEnvioRutaVehiculo(erv);
+                } catch (UpdateException | SelectException ex) {
                     Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 table.refresh();
