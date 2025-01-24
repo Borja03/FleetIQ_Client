@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -31,7 +32,8 @@ public class EnvioRutaVehiculoRESTClient implements EnvioRutaVehiculoManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/Server/webresources";
+   private static final String BASE_URI = ResourceBundle.getBundle("config/config")
+                    .getString("RESTful.baseURI");
 
     public EnvioRutaVehiculoRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

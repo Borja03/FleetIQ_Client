@@ -47,6 +47,7 @@ import logicInterface.VehicleManager;
 import models.EnvioRutaVehiculo;
 import models.Ruta;
 import models.Vehiculo;
+import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
 
 public class RutaController {
@@ -76,7 +77,7 @@ public class RutaController {
 
     private RutaManager rutaManager;
     private VehicleManager vehicleManager;
-    private EnvioRutaVehiculoManager ervManager;
+    private EnvioRutaVehiculoManager ervManager = new EnvioRutaVehiculoRESTClient();
 
     private ObservableList<Ruta> rutaData;
 
@@ -549,99 +550,101 @@ public class RutaController {
         rutaTable.setContextMenu(contextMenu);
     }
 
-   private void showVehicleSelectionDialog(Ruta ruta) {
-    Stage vehicleStage = new Stage();
-    vehicleStage.setTitle("Seleccionar Vehículos");
+    private void showVehicleSelectionDialog(Ruta ruta) {
+        Stage vehicleStage = new Stage();
+        vehicleStage.setTitle("Seleccionar Vehículos");
 
-    JFXListView<String> vehicleListView = new JFXListView<>();
-    ObservableList<String> selectedMatriculas = FXCollections.observableArrayList(); // Lista de elementos seleccionados manualmente
+        JFXListView<String> vehicleListView = new JFXListView<>();
+        ObservableList<String> selectedMatriculas = FXCollections.observableArrayList(); // Lista de elementos seleccionados manualmente
 
-    try {
-        List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
-        ObservableList<String> matriculas = FXCollections.observableArrayList();
+        try {
+            List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
+            ObservableList<String> matriculas = FXCollections.observableArrayList();
 
-        for (Vehiculo vehiculo : vehiculos) {
-            matriculas.add(vehiculo.getMatricula());
-        }
+            for (Vehiculo vehiculo : vehiculos) {
+                matriculas.add(vehiculo.getMatricula());
+            }
 
-        vehicleListView.setItems(matriculas);
+            vehicleListView.setItems(matriculas);
 
-        // Agregar manejador de clics personalizados
-        vehicleListView.setCellFactory(lv -> {
-            JFXListCell<String> cell = new JFXListCell<>();
-            cell.setText(""); // Asigna un texto vacío por defecto (puedes usar un valor distinto si prefieres)
-            cell.setOnMouseClicked(event -> {
-                if (cell.getItem() != null) {
-                    if (selectedMatriculas.contains(cell.getItem())) {
-                        selectedMatriculas.remove(cell.getItem()); // Deseleccionar si ya está seleccionado
-                        cell.setStyle(""); // Restablecer estilo
-                    } else {
-                        selectedMatriculas.add(cell.getItem()); // Seleccionar si no está seleccionado
-                        cell.setStyle("-fx-background-color: lightblue;"); // Cambiar el estilo del elemento seleccionado
+            // Agregar manejador de clics personalizados
+            vehicleListView.setCellFactory(lv -> {
+                JFXListCell<String> cell = new JFXListCell<>();
+                cell.setText(""); // Asigna un texto vacío por defecto (puedes usar un valor distinto si prefieres)
+                cell.setOnMouseClicked(event -> {
+                    if (cell.getItem() != null) {
+                        if (selectedMatriculas.contains(cell.getItem())) {
+                            selectedMatriculas.remove(cell.getItem()); // Deseleccionar si ya está seleccionado
+                            cell.setStyle(""); // Restablecer estilo
+                        } else {
+                            selectedMatriculas.add(cell.getItem()); // Seleccionar si no está seleccionado
+                            cell.setStyle("-fx-background-color: lightblue;"); // Cambiar el estilo del elemento seleccionado
+                        }
+                    }
+                });
+
+                // Asigna el texto de la celda al valor del item
+                cell.textProperty().set(cell.getItem());
+
+                return cell;
+            });
+
+            JFXButton confirmButton = new JFXButton("Confirmar");
+            confirmButton.setOnAction(e -> {
+                if (!selectedMatriculas.isEmpty()) {
+                    try {
+                        // Iterar sobre los vehículos seleccionados y crear un EnvioRutaVehiculo para cada uno
+                        for (String matricula : selectedMatriculas) {
+
+                            List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
+
+                            // Crear un nuevo objeto EnvioRutaVehiculo
+                            EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
+                            envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
+                            envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
+                            envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
+                            System.out.println(ruta);
+                            System.out.println(vehiculo.get(0));
+                            System.out.println(envioRutaVehiculo.toString());
+                            System.out.println(envioRutaVehiculo.getFechaAsignacion());
+                            System.out.println(envioRutaVehiculo.toString());
+
+                            ervManager.create_XML(envioRutaVehiculo);
+
+                            logger.info("Añadiendo vehículo " + matricula + " a la ruta " + ruta.getLocalizador());
+                        }
+
+                        // Actualizar la ruta con los vehículos seleccionados
+                        ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
+                        rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+
+                        loadRutaData();
+
+                        vehicleStage.close();
+
+                    } catch (Exception ex) {
+                        logger.log(Level.SEVERE, "Error al añadir vehículos a la ruta", ex);
+                        showAlert("Error", "No se pudieron añadir los vehículos a la ruta");
                     }
                 }
             });
 
-            // Asigna el texto de la celda al valor del item
-            cell.textProperty().set(cell.getItem());
+            VBox layout = new VBox(10);
+            layout.getStyleClass().add("jfx-popup-container");
+            layout.setPadding(new javafx.geometry.Insets(10));
+            layout.getChildren().addAll(vehicleListView, confirmButton);
 
-            return cell;
-        });
+            Scene scene = new Scene(layout);
+            vehicleStage.setScene(scene);
+            vehicleStage.setWidth(300);
+            vehicleStage.setHeight(300);
 
-        JFXButton confirmButton = new JFXButton("Confirmar");
-        confirmButton.setOnAction(e -> {
-            if (!selectedMatriculas.isEmpty()) {
-                try {
-                    // Iterar sobre los vehículos seleccionados y crear un EnvioRutaVehiculo para cada uno
-                    for (String matricula : selectedMatriculas) {
-                  
-                        
-                       List<Vehiculo> vehiculo =  vehicleManager.findAllVehiculosByPlate(matricula);
-                      
-                               
-                        // Crear un nuevo objeto EnvioRutaVehiculo
-                        EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
-                        envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
-                        envioRutaVehiculo.setVehiculo(vehiculo.get(0) ); // Asignar el vehículo
-                        envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
+            vehicleStage.show();
 
-                        // Usar el ervManager para crear el objeto EnvioRutaVehiculo en la base de datos
-                        ervManager.create_XML(envioRutaVehiculo);
-
-                        logger.info("Añadiendo vehículo " + matricula + " a la ruta " + ruta.getLocalizador());
-                    }
-                    
-                    // Actualizar la ruta con los vehículos seleccionados
-                    ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-
-                    loadRutaData();
-
-                    vehicleStage.close();
-
-                } catch (Exception ex) {
-                    logger.log(Level.SEVERE, "Error al añadir vehículos a la ruta", ex);
-                    showAlert("Error", "No se pudieron añadir los vehículos a la ruta");
-                }
-            }
-        });
-
-        VBox layout = new VBox(10);
-        layout.getStyleClass().add("jfx-popup-container");
-        layout.setPadding(new javafx.geometry.Insets(10));
-        layout.getChildren().addAll(vehicleListView, confirmButton);
-
-        Scene scene = new Scene(layout);
-        vehicleStage.setScene(scene);
-        vehicleStage.setWidth(300);
-        vehicleStage.setHeight(300);
-
-        vehicleStage.show();
-
-    } catch (SelectException ex) {
-        logger.log(Level.SEVERE, "Error al cargar los vehículos", ex);
-        showAlert("Error", "No se pudieron cargar los vehículos");
+        } catch (SelectException ex) {
+            logger.log(Level.SEVERE, "Error al cargar los vehículos", ex);
+            showAlert("Error", "No se pudieron cargar los vehículos");
+        }
     }
-}
 
 }
