@@ -42,7 +42,6 @@ import models.Paquete;
 import models.Ruta;
 import models.User;
 import models.Vehiculo;
-import ui.paquete.PaqueteController;
 
 public class EnvioController {
 
@@ -124,6 +123,7 @@ public class EnvioController {
 
         envioService = EnvioFactory.getEnvioInstance();
         envioList = FXCollections.observableArrayList();
+        userService = SignableFactory.getSignable();
         vehicleService = VehicleFactory.getVehicleInstance();
         envioRutaVehiculoService = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
@@ -183,12 +183,8 @@ public class EnvioController {
                 }
             });
 
-            
-            
             rutaColumn.setCellValueFactory(new PropertyValueFactory<>("ruta"));
 
-            
-            
             vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
             vehiculoList = vehicleService.findAllVehiculos();
 
@@ -199,30 +195,36 @@ public class EnvioController {
             vehiculoColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(vehiclesNamesObservableList));
             vehiculoColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
-                String matricula="";
-                if(event.getNewValue()!=null)
-                matricula = event.getNewValue();
-                else return;
-//                String localizador = "";
-              try {
-                    Vehiculo vehiculo = vehicleService.findAllVehiculosByPlate(matricula).get(0);
-//                    envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
-//                    });
-//                    
-//                    int i=0;
-//                    boolean encontrado = false;
-//                    while (i<envioRutaVehiculoList.size()|| !encontrado){
-//                        if(envioRutaVehiculoList.get(i).getVehiculo().getMatricula().equalsIgnoreCase(matricula)){
-//                           localizador =  envioRutaVehiculoList.get(i).getRuta().getLocalizador().toString();
-//                           encontrado=true;
-//                        }
-//                    }
-//
-                } catch (SelectException ex) {
+                String matricula = "";
+                Integer idEnvioRutaVehiculo = 0; 
+               if (event.getNewValue() != null) {
+                    matricula = event.getNewValue();
+                } else {
+                    return;
+                }
+                String localizador = "";
+                try {
+                    envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
+                    });
+
+                    int i = 0;
+                    boolean encontrado = false;
+                    while (i < envioRutaVehiculoList.size() || !encontrado) {
+                        
+                        //Error en los getters de vehiculo y ruta
+                        List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matricula);
+                        if (vComprobar.get(0).getMatricula().equalsIgnoreCase(matricula)) {
+                            localizador = envioRutaVehiculoService.getRutaId(vComprobar.get(0).getId());
+                            idEnvioRutaVehiculo = envioRutaVehiculoService.getId(vComprobar.get(0).getId());
+                            encontrado = true;
+                        }
+                    }
+
+                } catch (Exception ex) {
                     Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-//
-//                envio.setRuta(localizador);
+
+                envio.setRuta(localizador);
                 envio.setVehiculo(matricula);
                 try {
                     envioService.edit_XML(envio, envio.getId().toString());

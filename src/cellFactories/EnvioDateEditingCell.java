@@ -11,7 +11,6 @@ import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.input.KeyCode;
 import models.Envio;
-import models.Paquete;
 
 public class EnvioDateEditingCell extends TableCell<Envio, Date> {
 

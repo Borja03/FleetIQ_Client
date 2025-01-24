@@ -80,11 +80,7 @@
                      <graphic>
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-<<<<<<< HEAD
                               <Image url="@../../image/about%20envio.png" />
-=======
-                              <Image url="@../../image/about%20package.png" />
->>>>>>> f49988ba47563aff250f6cd5b16beb860cb25e9a
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
