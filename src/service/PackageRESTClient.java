@@ -35,7 +35,7 @@ public class PackageRESTClient {
 
     private static final String BASE_URI = ResourceBundle.getBundle("config/config")
                     .getString("RESTful.baseURI");
-    
+
     public PackageRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("paquete");
@@ -80,7 +80,37 @@ public class PackageRESTClient {
                         .delete(Paquete.class);
     }
 
-    public List<Paquete> findPackagesByDates(GenericType<List<Paquete>> responseType, String endDate, String startDate) throws WebApplicationException {
+//    public List<Paquete> findPackagesByDates(GenericType<List<Paquete>> responseType, String endDate, String startDate) throws WebApplicationException {
+//        WebTarget resource = webTarget;
+//        if (endDate != null) {
+//            resource = resource.queryParam("endDate", endDate);
+//        }
+//        if (startDate != null) {
+//            resource = resource.queryParam("startDate", startDate);
+//        }
+//        resource = resource.path("date");
+//        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+//    }
+
+    public List<Paquete> findPackagesBeforeDate(GenericType<List<Paquete>> responseType, String endDate) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (endDate != null) {
+            resource = resource.queryParam("endDate", endDate);
+        }
+        resource = resource.path("date/before");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Paquete> findPackagesAfterDate(GenericType<List<Paquete>> responseType, String startDate) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        if (startDate != null) {
+            resource = resource.queryParam("startDate", startDate);
+        }
+        resource = resource.path("date/after");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Paquete> findPackagesBetweenDates(GenericType<List<Paquete>> responseType, String endDate, String startDate) throws WebApplicationException {
         WebTarget resource = webTarget;
         if (endDate != null) {
             resource = resource.queryParam("endDate", endDate);
@@ -88,7 +118,7 @@ public class PackageRESTClient {
         if (startDate != null) {
             resource = resource.queryParam("startDate", startDate);
         }
-        resource = resource.path("date");
+        resource = resource.path("date/between");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 

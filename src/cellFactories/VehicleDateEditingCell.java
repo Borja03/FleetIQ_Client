@@ -1,14 +1,5 @@
 package cellFactories;
 
-//public class PaqueteDateEditingCell extends TableCell<Paquete,Date> {
-//    private DatePicker datePicker;
-//    private DateTimeFormatter dateFormatter;
-//
-//    public PaqueteDateEditingCell() {
-//        dateFormat = ResourceBundle.getBundle("config/config")
-//                        .getString("date.format");
-//        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-//    }
 import com.jfoenix.controls.JFXDatePicker;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -19,14 +10,14 @@ import java.util.ResourceBundle;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
 import javafx.scene.input.KeyCode;
-import models.Paquete;
+import models.Vehiculo;
 
-public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
+public class VehicleDateEditingCell extends TableCell<Vehiculo, Date> {
 
     private JFXDatePicker datePicker = new JFXDatePicker();
     private String mDateFormat;
 
-    public PaqueteDateEditingCell() {
+    public VehicleDateEditingCell() {
         // Load date format from resource bundle
         mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
 
@@ -50,7 +41,7 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
                 // Check if the day is Saturday or Sunday
                 if (date != null && (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY)) {
                     setDisable(true); // Disable the date
-                    setStyle("-fx-background-color: #f08080;"); 
+                    setStyle("-fx-background-color: #f08080;");
                 }
             }
         });

@@ -292,16 +292,13 @@ public class LogInController {
         // try {
         //utils.validateEmail(emailTextField.getText());
 
-//        String email = emailTextField.getText();
-//        String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
-//
-//        User user = new User();
-//        user.setEmail(email);
-//        user.setPassword(password);
+        String email = emailTextField.getText();
+        String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
-   User user = new User();
-        user.setEmail("multitartanga@gmail.com");
-        user.setPassword("12345");
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+
         User loggedInUser;
         try {
             userSession = (User) SignableFactory.getSignable().signIn(user, User.class);

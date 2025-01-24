@@ -47,13 +47,10 @@ public class VehicleManagerImp implements VehicleManager {
     }
 
     @Override
-    public void addVehiculo(Vehiculo vehiculo) throws CreateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void updateVehiculo(Vehiculo vehiculo) throws UpdateException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        GenericType<Vehiculo> responseType = new GenericType<Vehiculo>() {
+        };
+        webClient.edit_XML(vehiculo, vehiculo.getId());
     }
 
     @Override
@@ -61,6 +58,12 @@ public class VehicleManagerImp implements VehicleManager {
         if (idVehiculo == null || idVehiculo <= 0) {
             throw new DeleteException("Vehicle ID cannot be null or negative.");
         }
+        try {
+            webClient.remove(String.valueOf(idVehiculo));
+        } catch (ClientErrorException e) {
+            throw new DeleteException("Error deleting vehicle with ID: " + idVehiculo + " - " + e.getMessage(), e);
+        }
+    }
 
         try {
             webClient.remove(String.valueOf(idVehiculo));
@@ -73,8 +76,6 @@ public class VehicleManagerImp implements VehicleManager {
     public List<Vehiculo> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-  
 
     @Override
     public List<Vehiculo> findAllVehiculosByCapacity(Integer capacity) throws SelectException {
@@ -131,5 +132,12 @@ public List<Vehiculo> findAllVehiculosByPlate(String matricula) throws SelectExc
     }
 }
 
+    @Override
+    public Vehiculo createVehicle(Vehiculo vehiculo) throws CreateException {
+        GenericType<Vehiculo> responseType = new GenericType<Vehiculo>() {
+        };
+        return webClient.createVehicle(vehiculo, responseType);
+
+    }
 
 }
