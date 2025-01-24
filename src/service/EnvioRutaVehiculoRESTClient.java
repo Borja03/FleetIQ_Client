@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.List;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -100,16 +101,16 @@ public class EnvioRutaVehiculoRESTClient implements EnvioRutaVehiculoManager {
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
 
-    public EnvioRutaVehiculo getId(Integer vehiculoId) throws WebApplicationException {
+    public <T> T getId(GenericType<T> responseType, String vehiculoId) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path("getId");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(EnvioRutaVehiculo.class);
+        resource = resource.path(java.text.MessageFormat.format("getId/{0}", new Object[]{vehiculoId}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public Ruta getRutaId(Integer vehiculoId) throws WebApplicationException {
+    public <T> T getRutaId(GenericType<T> responseType, String vehiculoId) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path("getRutaId");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(Ruta.class);
+        resource = resource.path(java.text.MessageFormat.format("getRutaId/{0}", new Object[]{vehiculoId}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void remove(String id) throws WebApplicationException {

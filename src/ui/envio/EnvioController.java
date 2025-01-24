@@ -3,6 +3,7 @@ package ui.envio;
 import cellFactories.EnvioDateEditingCell;
 import com.jfoenix.controls.*;
 import exception.SelectException;
+import exception.UpdateException;
 import factories.EnvioFactory;
 import factories.EnvioRutaVehiculoFactory;
 import factories.SignableFactory;
@@ -189,20 +190,23 @@ public class EnvioController {
             vehiculoList = vehicleService.findAllVehiculos();
 
             for (Vehiculo vehiculo : vehiculoList) {
+                if(!vehiculo.isActivo()){
                 vehiculoMatriculaList.add(vehiculo.getMatricula());
+                }
             }
             ObservableList<String> vehiclesNamesObservableList = FXCollections.observableArrayList(vehiculoMatriculaList);
             vehiculoColumn.setCellFactory(ChoiceBoxTableCell.forTableColumn(vehiclesNamesObservableList));
             vehiculoColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 String matricula = "";
-                Integer idEnvioRutaVehiculo = 0; 
-               if (event.getNewValue() != null) {
+                Vehiculo vActualizado = new Vehiculo();
+                if (event.getNewValue() != null) {
                     matricula = event.getNewValue();
                 } else {
                     return;
                 }
-                String localizador = "";
+                String localizador = "12";
+                EnvioRutaVehiculo erv = new EnvioRutaVehiculo();
                 try {
                     envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
                     });
@@ -210,14 +214,20 @@ public class EnvioController {
                     int i = 0;
                     boolean encontrado = false;
                     while (i < envioRutaVehiculoList.size() || !encontrado) {
-                        
-                        //Error en los getters de vehiculo y ruta
+
                         List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matricula);
                         if (vComprobar.get(0).getMatricula().equalsIgnoreCase(matricula)) {
-                            localizador = envioRutaVehiculoService.getRutaId(vComprobar.get(0).getId());
-                            idEnvioRutaVehiculo = envioRutaVehiculoService.getId(vComprobar.get(0).getId());
+                            vActualizado = vComprobar.get(0);
+                            Integer idVehiculo = vComprobar.get(0).getId();
+                            List<Ruta> rList = envioRutaVehiculoService.getRutaId(new GenericType<List<Ruta>>() {
+                            }, idVehiculo.toString());
+                            localizador = rList.get(0).getLocalizador().toString();
+                            List<EnvioRutaVehiculo> ervList = envioRutaVehiculoService.getId(new GenericType<List<EnvioRutaVehiculo>>() {
+                            }, idVehiculo.toString());
+                            erv = ervList.get(0);
                             encontrado = true;
                         }
+                        i++;
                     }
 
                 } catch (Exception ex) {
@@ -226,6 +236,14 @@ public class EnvioController {
 
                 envio.setRuta(localizador);
                 envio.setVehiculo(matricula);
+                envio.setEnvioRutaVehiculo(erv);
+                try {
+                    vActualizado.setActivo(true);
+                    vehicleService.updateVehiculo(vActualizado);
+                } catch (UpdateException ex) {
+                    Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                table.refresh();
                 try {
                     envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
