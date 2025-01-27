@@ -27,7 +27,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML
-        Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/vehicle/vehicle.fxml"));
 
         // Crear la escena
         Scene scene = new Scene(root);
