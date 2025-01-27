@@ -598,6 +598,8 @@ public class RutaController {
                             envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
                             envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
                             envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
+                            envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
+                            envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
                             System.out.println(ruta);
                             System.out.println(vehiculo.get(0));
                             System.out.println(envioRutaVehiculo.toString());
