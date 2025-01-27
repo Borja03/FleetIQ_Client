@@ -8,8 +8,6 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
-import com.sun.javafx.scene.control.skin.TableHeaderRow;
-import com.sun.javafx.scene.control.skin.TableViewSkin;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
@@ -27,15 +25,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.MenuItem;;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.FloatStringConverter;
@@ -602,6 +598,8 @@ public class RutaController {
                             envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
                             envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
                             envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
+                            envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
+                            envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
                             System.out.println(ruta);
                             System.out.println(vehiculo.get(0));
                             System.out.println(envioRutaVehiculo.toString());
