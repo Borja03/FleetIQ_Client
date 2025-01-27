@@ -50,3 +50,4 @@ public interface VehicleManager {
     public List<Vehiculo> findVehiclesBetweenDatesRegistration(String endDate, String startDate) throws SelectException;
 
 }
+    
