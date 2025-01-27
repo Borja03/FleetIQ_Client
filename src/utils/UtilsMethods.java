@@ -2,10 +2,17 @@ package utils;
 
 import exception.InvalidEmailFormatException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import models.User;
 import ui.paquete.PaqueteController;
@@ -52,9 +59,6 @@ public class UtilsMethods {
      * @param title el título de la alerta
      * @param message el mensaje a mostrar en la alerta
      */
-    
-    
-    
     public static void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
@@ -63,8 +67,24 @@ public class UtilsMethods {
         alert.showAndWait();
     }
 
+    public static Optional<ButtonType> showConfirmationDialog(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        return alert.showAndWait();
+    }
 
-    
-
+//    private String dateToString(LocalDate fromDate) {
+//        String mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
+//        SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
+//
+//        Date fromDateAsDate = (fromDate != null)
+//                        ? Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+//                        : null;
+//
+//        String mfromDate = (fromDateAsDate != null) ? dateFormat.format(fromDateAsDate) : null;
+//        return mfromDate;
+//    }
 
 }
