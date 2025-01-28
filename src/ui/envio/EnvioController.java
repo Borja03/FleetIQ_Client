@@ -16,33 +16,22 @@ import javafx.scene.control.*;
 import models.Envio;
 import logicInterface.EnvioManager;
 import utils.UtilsMethods;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javax.ws.rs.core.GenericType;
-import logicInterface.EnvioRutaVehiculoManager;
-import logicInterface.PaqueteManager;
-import logicInterface.UserManager;
-import logicInterface.VehicleManager;
-import models.EnvioRutaVehiculo;
-import models.Estado;
-import models.Paquete;
-import models.Ruta;
-import models.User;
-import models.Vehiculo;
+import logicInterface.*;
+import models.*;
 
 public class EnvioController {
 
@@ -140,9 +129,25 @@ public class EnvioController {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         configureRemoveButton();
+        setUpContextMenu();
 
         loadInitialData();
         stage.show();
+    }
+
+    private void setUpContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        // First menu item
+        MenuItem addItem = new MenuItem("Add New Envio");
+        addItem.setOnAction(this::addEnvio);
+        // Second menu item
+        MenuItem deleteItem = new MenuItem("Delete Envio");
+        deleteItem.setOnAction(this::removeEnvio);
+        MenuItem printItem = new MenuItem("Print Report");
+        printItem.setOnAction(this::printReport);
+        // Add menu items to the context menu
+        contextMenu.getItems().addAll(addItem, deleteItem, printItem);
+        table.setContextMenu(contextMenu);
     }
 
     private void setUpTableColumns() {
@@ -163,6 +168,45 @@ public class EnvioController {
             });
 
             numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
+            numPaquetesColumn.setCellFactory(TextFieldTableCell.forTableColumn(
+                    new StringConverter<Integer>() {
+                @Override
+                public String toString(Integer object) {
+                    return object != null ? object.toString() : "";
+                }
+
+                @Override
+                public Integer fromString(String string) {
+                    try {
+                        return Integer.valueOf(string);
+                    } catch (NumberFormatException e) {
+                        LOGGER.warning("Numero de paquetes invalido: " + string);
+                        return null;
+                    }
+                }
+            }));
+
+            numPaquetesColumn.setOnEditCommit(event -> event.getRowValue().setNumPaquetes(event.getNewValue()));
+            numPaquetesColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Integer newWeightValue = event.getNewValue();
+
+                try {
+                    // Validate the new receiver value
+                    if (newWeightValue <= 0) {
+                        throw new IllegalArgumentException("En numero de paquetes debe ser mayor o igual a cero");
+                    }
+                    envio.setNumPaquetes(event.getNewValue());
+                    EnvioFactory.getEnvioInstance().edit_XML(envio, envio.getId().toString());
+
+                } catch (IllegalArgumentException ex) {
+                    UtilsMethods.showAlert("Error", "En numero de paquetes debe ser mayor o igual a cero");
+                    LOGGER.warning("Invalid weight input: " + newWeightValue);
+                    numPaquetesColumn.getTableView().refresh();
+
+                }
+
+            });
 
             creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
             userList = userService.findAll();
@@ -209,7 +253,7 @@ public class EnvioController {
                 } else {
                     return;
                 }
-                String localizador = "12";
+                String localizador = "";
                 EnvioRutaVehiculo erv = new EnvioRutaVehiculo();
                 try {
                     envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
@@ -354,17 +398,18 @@ public class EnvioController {
         try {
             String numPaquetes = numeroPaquetesTextField.getText();
             if (numPaquetes == null || numPaquetes.isEmpty()) {
-                throw new IllegalArgumentException("El campo está vacío, inserta un número de paquetes.");
-            }
+                loadInitialData();
+            } else {
 
-            int num = Integer.parseInt(numPaquetes);
-            if (num <= 0) {
-                throw new IllegalArgumentException("El número de paquetes debe ser mayor a 0.");
-            }
+                int num = Integer.parseInt(numPaquetes);
+                if (num <= 0) {
+                    throw new IllegalArgumentException("El número de paquetes debe ser mayor a 0.");
+                }
 
-            List<Envio> filteredData = envioService.filterNumPaquetes_XML(new GenericType<List<Envio>>() {
-            }, num);
-            envioList.setAll(filteredData);
+                List<Envio> filteredData = envioService.filterNumPaquetes_XML(new GenericType<List<Envio>>() {
+                }, num);
+                envioList.setAll(filteredData);
+            }
         } catch (IllegalArgumentException e) {
             new UtilsMethods().showAlert("Error de filtro", e.getMessage());
         } catch (Exception e) {
@@ -392,14 +437,23 @@ public class EnvioController {
             ObservableList<Envio> selectedEnvios = table.getSelectionModel().getSelectedItems();
             LOGGER.info("Iniciando la eliminación de los envíos seleccionados.");
             for (Envio envio : selectedEnvios) {
+                LOGGER.info(selectedEnvios.toString());
                 if (envio.getEnvioRutaVehiculo() != null) {
                     envioService.remove(envio.getId());
                 }
                 envioService.remove(envio.getId());
                 envioList.remove(envio);
-                table.refresh();
-            }
+                if (envio.getVehiculo().isEmpty()) {
 
+                } else {
+                    String matriculaVAntiguo = envio.getVehiculo();
+                    List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
+                    Vehiculo vAntiguo = vComprobar.get(0);
+                    vAntiguo.setActivo(false);
+                    vehicleService.updateVehiculo(vAntiguo);
+                }
+            }
+            table.refresh();
         } catch (IllegalArgumentException e) {
             LOGGER.warning("Error en la selección de envíos: " + e.getMessage());
             new UtilsMethods().showAlert("Error", e.getMessage());
