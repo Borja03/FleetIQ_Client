@@ -36,7 +36,6 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Splash");
         primaryStage.getIcons().add(new Image("/image/fleet_icon.png"));
-
         primaryStage.setResizable(false);  // Aquí se desactiva la opción de redimensionar
 
         // Mostrar la ventana

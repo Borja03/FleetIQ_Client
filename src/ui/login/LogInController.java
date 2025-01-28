@@ -297,7 +297,7 @@ public class LogInController {
 
         User user = new User();
         user.setEmail("multitartanga@gmail.com");
-        user.setPassword("12345@Aa");
+        user.setPassword("12345@aA");
 
         User loggedInUser;
         try {

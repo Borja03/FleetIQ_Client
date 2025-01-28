@@ -65,16 +65,6 @@ public class PackageManagerImp implements PaqueteManager {
         return packagesList;
     }
 
-//    @Override
-//    public List<Paquete> findAllPackagesByDates(Date firstDate, Date secondDate) throws SelectException {
-//        GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {
-//        };
-//        System.out.println(firstDate.toString());
-//        System.out.println(secondDate.toString());
-//        List<Paquete> packagesList = webClient.findPackagesByDates(responseType, firstDate.toString(), secondDate.toString());
-//        return packagesList;
-//    }
-
     @Override
     public List<Paquete> findAllPackagesByName(String senderOrReceiverName) throws SelectException {
         GenericType<List<Paquete>> responseType = new GenericType<List<Paquete>>() {

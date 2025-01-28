@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -30,7 +31,12 @@ import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import javafx.animation.PauseTransition;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -53,14 +59,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import models.Paquete;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import utils.UtilsMethods;
 
 public class PaqueteController {
@@ -159,6 +174,15 @@ public class PaqueteController {
         // Setup button actions
 
         initHandlerActions();
+
+        searchTextField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                performSearch(newValue.trim().toLowerCase());
+            }
+        });
+        //ThemeManager.getInstance().applyTheme(stage.getScene());
+
 
         stage.show();
     }
@@ -265,10 +289,9 @@ public class PaqueteController {
         senderColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
             String newSenderValue = event.getNewValue();
-
             try {
                 // Validate the new receiver value
-                if (newSenderValue.length() > MAX_LENGTH || !newSenderValue.matches("[a-zA-Z]*")) {
+                if (newSenderValue.length() > MAX_LENGTH || !newSenderValue.matches("[a-zA-Z\\s]*")) {
                     throw new InvalidNameFormatException("Sender name must not exceed " + MAX_LENGTH + " letters and must contain letters only.");
                 }
                 // Update the receiver value in the object
@@ -300,7 +323,7 @@ public class PaqueteController {
 
             try {
                 // Validate the new receiver value
-                if (newReceiverValue.length() > MAX_LENGTH || !newReceiverValue.matches("[a-zA-Z]*")) {
+                if (newReceiverValue.length() > MAX_LENGTH || !newReceiverValue.matches("[a-zA-Z\\s]*")) {
                     throw new InvalidNameFormatException("Receiver must not exceed " + MAX_LENGTH + " letters and must contain letters only.");
                 }
                 // Update the receiver value in the object
@@ -503,8 +526,38 @@ public class PaqueteController {
             }
         }
     }
-//
 
+    private void performSearch(String query) {
+        // Reset filters
+        sizeFilterComboBox.setValue(null);
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
+
+        LOGGER.info("Performing live search...");
+
+        if (query.isEmpty()) {
+            LOGGER.info("Query is empty, filling table from database...");
+            fillTableFromDataBase();
+        } else {
+            List<Paquete> filteredPaqueteList = null;
+            try {
+                filteredPaqueteList = PaqueteFactory.getPackageInstance().findAllPackagesByName(query);
+            } catch (SelectException ex) {
+                LOGGER.log(Level.SEVERE, "Error during search", ex);
+            }
+
+            // Update table view
+            if (filteredPaqueteList != null && !filteredPaqueteList.isEmpty()) {
+                paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
+            } else {
+                // Handle empty search results
+                LOGGER.info("No results found for query: " + query);
+                paqueteTableView.setItems(FXCollections.observableArrayList());
+            }
+        }
+    }
+
+    //
     private void handleSearchAction(ActionEvent event) {
         // Clear other filters
         sizeFilterComboBox.setValue(null);
@@ -603,7 +656,7 @@ public class PaqueteController {
     }
 
     private void handleRemoveShipmentAction(ActionEvent event) {
-      // Get all selected items
+        // Get all selected items
         ObservableList<Paquete> selectedPaquetes = paqueteTableView.getSelectionModel().getSelectedItems();
         if (selectedPaquetes != null && !selectedPaquetes.isEmpty()) {
             try {
@@ -625,5 +678,26 @@ public class PaqueteController {
     private void handlePrintReportAction(ActionEvent event) {
         // TODO: Implement print report logic
         System.out.println("Print Report clicked");
+        try {
+            LOGGER.info("Beginning printing action...");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/newReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Paquete>) this.paqueteTableView.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
+            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}",ex.getMessage());
+        }
     }
 }
