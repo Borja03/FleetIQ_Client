@@ -680,7 +680,7 @@ public class PaqueteController {
         System.out.println("Print Report clicked");
         try {
             LOGGER.info("Beginning printing action...");
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/newReport.jrxml"));
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/PackageReport.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource 
             //implementation 
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Paquete>) this.paqueteTableView.getItems());
