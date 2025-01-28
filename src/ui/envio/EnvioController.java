@@ -199,8 +199,8 @@ public class EnvioController {
                     envio.setNumPaquetes(event.getNewValue());
                     EnvioFactory.getEnvioInstance().edit_XML(envio, envio.getId().toString());
 
-                } catch (IllegalArgumentException ex) {
-                    UtilsMethods.showAlert("Error", "En numero de paquetes debe ser mayor o igual a cero");
+                } catch (Exception ex) {
+                    UtilsMethods.showAlert("Error", ex.getMessage());
                     LOGGER.warning("Invalid weight input: " + newWeightValue);
                     numPaquetesColumn.getTableView().refresh();
 
