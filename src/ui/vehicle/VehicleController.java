@@ -47,7 +47,6 @@ import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 import models.EnvioRutaVehiculo;
-import models.Vehiculo;
 import utils.UtilsMethods;
 import static utils.UtilsMethods.logger;
 import javafx.scene.control.TablePosition;
@@ -309,25 +308,6 @@ public class VehicleController {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-
-        capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(
-                new StringConverter<Integer>() {
-            @Override
-            public String toString(Integer object) {
-                return object != null ? object.toString() : "";
-            }
-
-            @Override
-            public Integer fromString(String string) {
-                try {
-                    return Integer.parseInt(string);
-                } catch (NumberFormatException e) {
-                    LOGGER.warning("Invalid capacity: " + string);
-                    throw new IllegalArgumentException("Only numeric values are allowed");
-                }
-            }
-        }
-        ));
 
         capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(
                 new StringConverter<Integer>() {
@@ -647,93 +627,94 @@ public class VehicleController {
     }
 
     @FXML
-private void onRemoveShipmentClicked() {
-    ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
+    private void onRemoveShipmentClicked() {
+        ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
 
-    if (selectedVehicles.isEmpty()) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("No Selection");
-        alert.setHeaderText("No Vehicles Selected");
-        alert.setContentText("Please select at least one vehicle to remove.");
-        alert.showAndWait();
-        return;
-    }
+        if (selectedVehicles.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Selection");
+            alert.setHeaderText("No Vehicles Selected");
+            alert.setContentText("Please select at least one vehicle to remove.");
+            alert.showAndWait();
+            return;
+        }
 
-    // Confirm deletion for multiple vehicles
-    Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-    confirmAlert.setTitle("Confirm Deletion");
-    confirmAlert.setHeaderText("Delete Vehicles");
-    confirmAlert.setContentText("Are you sure you want to delete the selected vehicles? This will also remove any associated shipments and route assignments.");
+        // Confirm deletion for multiple vehicles
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirm Deletion");
+        confirmAlert.setHeaderText("Delete Vehicles");
+        confirmAlert.setContentText("Are you sure you want to delete the selected vehicles? This will also remove any associated shipments and route assignments.");
 
-    confirmAlert.showAndWait().ifPresent(response -> {
-        if (response == javafx.scene.control.ButtonType.OK) {
-            try {
-                EnvioRutaVehiculoManager ervManager = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
-                
-                for (Vehiculo vehicle : selectedVehicles) {
-                    // 1. Check for route assignments using the vehicle ID
-                    try {
-                        // Obtener los IDs de EnvioRutaVehiculo asociados con este vehículo
-                        List<EnvioRutaVehiculo> assignments = ervManager.getId(
-                            new GenericType<List<EnvioRutaVehiculo>>() {}, 
-                            String.valueOf(vehicle.getId())
-                        );
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                try {
+                    EnvioRutaVehiculoManager ervManager = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
-                        if (assignments != null && !assignments.isEmpty()) {
-                            // 2. Process each assignment
-                            for (EnvioRutaVehiculo assignment : assignments) {
-                                try {
-                                    // 3. Remove the route-vehicle assignment
-                                    ervManager.remove(String.valueOf(assignment.getId()));
-                                    LOGGER.info("Successfully removed route assignment: " + assignment.getId());
-                                } catch (WebApplicationException ex) {
-                                    LOGGER.severe("Error removing route assignment: " + assignment.getId() + 
-                                               " Error: " + ex.getMessage());
-                                    throw ex;
+                    for (Vehiculo vehicle : selectedVehicles) {
+                        // 1. Check for route assignments using the vehicle ID
+                        try {
+                            // Obtener los IDs de EnvioRutaVehiculo asociados con este vehículo
+                            List<EnvioRutaVehiculo> assignments = ervManager.getId(
+                                    new GenericType<List<EnvioRutaVehiculo>>() {
+                            },
+                                    String.valueOf(vehicle.getId())
+                            );
+
+                            if (assignments != null && !assignments.isEmpty()) {
+                                // 2. Process each assignment
+                                for (EnvioRutaVehiculo assignment : assignments) {
+                                    try {
+                                        // 3. Remove the route-vehicle assignment
+                                        ervManager.remove(String.valueOf(assignment.getId()));
+                                        LOGGER.info("Successfully removed route assignment: " + assignment.getId());
+                                    } catch (WebApplicationException ex) {
+                                        LOGGER.severe("Error removing route assignment: " + assignment.getId()
+                                                + " Error: " + ex.getMessage());
+                                        throw ex;
+                                    }
                                 }
                             }
+
+                            // 4. Finally delete the vehicle
+                            VehicleFactory.getVehicleInstance().deleteVehiculo(vehicle.getId());
+                            LOGGER.info("Successfully removed vehicle: " + vehicle.getId());
+
+                        } catch (WebApplicationException ex) {
+                            LOGGER.severe("Error processing vehicle: " + vehicle.getId()
+                                    + " Error: " + ex.getMessage());
+                            throw ex;
                         }
-
-                        // 4. Finally delete the vehicle
-                        VehicleFactory.getVehicleInstance().deleteVehiculo(vehicle.getId());
-                        LOGGER.info("Successfully removed vehicle: " + vehicle.getId());
-
-                    } catch (WebApplicationException ex) {
-                        LOGGER.severe("Error processing vehicle: " + vehicle.getId() + 
-                                    " Error: " + ex.getMessage());
-                        throw ex;
                     }
+
+                    // Remove vehicles from TableView
+                    vehicleTableView.getItems().removeAll(selectedVehicles);
+
+                    // Inform the user of the successful removal
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Success");
+                    successAlert.setHeaderText("Vehicles Removed");
+                    successAlert.setContentText("The selected vehicles and their associated data have been removed successfully.");
+                    successAlert.showAndWait();
+
+                } catch (WebApplicationException ex) {
+                    LOGGER.severe("Error in deletion process: " + ex.getMessage());
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText("Deletion Failed");
+                    errorAlert.setContentText("An error occurred while deleting vehicles and their associated data: "
+                            + ex.getResponse().getStatusInfo().getReasonPhrase());
+                    errorAlert.showAndWait();
+                } catch (Exception e) {
+                    LOGGER.severe("Unexpected error during deletion: " + e.getMessage());
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText("Deletion Failed");
+                    errorAlert.setContentText("An unexpected error occurred while deleting vehicles and their associated data.");
+                    errorAlert.showAndWait();
                 }
-
-                // Remove vehicles from TableView
-                vehicleTableView.getItems().removeAll(selectedVehicles);
-
-                // Inform the user of the successful removal
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                successAlert.setTitle("Success");
-                successAlert.setHeaderText("Vehicles Removed");
-                successAlert.setContentText("The selected vehicles and their associated data have been removed successfully.");
-                successAlert.showAndWait();
-
-            } catch (WebApplicationException ex) {
-                LOGGER.severe("Error in deletion process: " + ex.getMessage());
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setTitle("Error");
-                errorAlert.setHeaderText("Deletion Failed");
-                errorAlert.setContentText("An error occurred while deleting vehicles and their associated data: " + 
-                                        ex.getResponse().getStatusInfo().getReasonPhrase());
-                errorAlert.showAndWait();
-            } catch (Exception e) {
-                LOGGER.severe("Unexpected error during deletion: " + e.getMessage());
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setTitle("Error");
-                errorAlert.setHeaderText("Deletion Failed");
-                errorAlert.setContentText("An unexpected error occurred while deleting vehicles and their associated data.");
-                errorAlert.showAndWait();
             }
-        }
-    });
-}
+        });
+    }
 
     /**
      * Filters the vehicle list by license plate (matricula) when the search

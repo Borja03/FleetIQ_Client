@@ -55,6 +55,12 @@ public class VehicleManagerImp implements VehicleManager {
             throw new DeleteException("Vehicle ID cannot be null or negative.");
         }
 
+        try {
+            webClient.remove(String.valueOf(idVehiculo));
+        } catch (ClientErrorException e) {
+            throw new DeleteException("Error deleting vehicle with ID: " + idVehiculo + " - " + e.getMessage(), e);
+        }
+    }
 
     @Override
     public List<Vehiculo> findAllVehiculosEntreDates(Date firstDate, Date secondDate) throws SelectException {
