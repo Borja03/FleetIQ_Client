@@ -1,125 +1,206 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-              name="report name" pageWidth="595" pageHeight="842" columnWidth="535"
-              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
-              uuid="bc6ae34e-0382-43ce-89dc-53c0e5617db5">
-
-    <!-- Properties -->
-    <property name="ireport.zoom" value="2.0"/>
-    <property name="ireport.x" value="0"/>
-    <property name="ireport.y" value="48"/>
-
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+    name="PackageTrackingReport" 
+    pageWidth="842" 
+    pageHeight="595" 
+    orientation="Landscape"
+    columnWidth="802" 
+    leftMargin="20" 
+    rightMargin="20" 
+    topMargin="20" 
+    bottomMargin="20" 
+    uuid="67cf281b-90c2-47c1-ac0f-4faa18017d64">
+    
     <!-- Styles -->
-    <style name="table">
+    <style name="Table_Header" mode="Opaque" forecolor="#000000" backcolor="#F0F0F0">
         <box>
-            <pen lineWidth="1.0" lineColor="#000000"/>
+            <pen lineWidth="0.5" lineColor="#CCCCCC"/>
         </box>
     </style>
-    <style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
-        <box>
-            <pen lineWidth="0.5" lineColor="#000000"/>
-        </box>
+    <style name="Table_Row" mode="Opaque" forecolor="#000000">
+        <conditionalStyle>
+            <conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+            <style mode="Opaque" backcolor="#FFFFFF"/>
+        </conditionalStyle>
+        <conditionalStyle>
+            <conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 1]]></conditionExpression>
+            <style mode="Opaque" backcolor="#F8F8F8"/>
+        </conditionalStyle>
     </style>
-    <style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
-        <box>
-            <pen lineWidth="0.5" lineColor="#000000"/>
-        </box>
-    </style>
-    <style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
-        <box>
-            <pen lineWidth="0.5" lineColor="#000000"/>
-        </box>
-    </style>
-
+    <style name="HeaderStyle" mode="Opaque" forecolor="#FFFFFF" backcolor="#4A90E2" fontSize="22"/>
+    <style name="FragileTrue" forecolor="#008000" fontSize="14"/>
+    <style name="FragileFalse" forecolor="#FF0000" fontSize="14"/>
+    
     <!-- Fields -->
     <field name="id" class="java.lang.Long"/>
     <field name="sender" class="java.lang.String"/>
     <field name="receiver" class="java.lang.String"/>
     <field name="weight" class="java.lang.Double"/>
-    <field name="size" class="java.lang.String"/>
+    <field name="size" class="models.PackageSize"/>
     <field name="creationDate" class="java.util.Date"/>
     <field name="fragile" class="java.lang.Boolean"/>
-
-    <!-- SubDataset -->
-    <subDataset name="Table Dataset 1" uuid="2135adab-9bea-446a-8722-a39b34260bf4"/>
-
-    <!-- Layout Elements -->
-    <background>
-        <band splitType="Stretch"/>
-    </background>
+    
+    <!-- Title/Header -->
     <title>
-        <band height="79" splitType="Stretch">
-            <textField pattern="dd/MM/yyyy">
-                <reportElement x="455" y="0" width="100" height="20" uuid="956a406c-375c-4cee-8af9-47b8107a2d49"/>
+        <band height="80" splitType="Stretch">
+            <rectangle>
+                <reportElement mode="Opaque" x="0" y="0" width="802" height="80" backcolor="#4A90E2" uuid="c9f7f76d-6680-4b78-9e45-a3566931d623"/>
+            </rectangle>
+            <staticText>
+                <reportElement style="HeaderStyle" x="20" y="10" width="400" height="40" uuid="e022cf48-c98d-4018-a0ab-815f80d97f32"/>
+                <textElement>
+                    <font size="24" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Package Tracking Report]]></text>
+            </staticText>
+            <textField pattern="MMMM d, yyyy">
+                <reportElement style="HeaderStyle" x="20" y="50" width="200" height="20" uuid="2208bff0-c209-4e15-afaf-5c2fa7b970b9"/>
+                <textElement>
+                    <font size="12"/>
+                </textElement>
                 <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-            </textField>
-            <image>
-                <reportElement x="0" y="0" width="82" height="79" uuid="4183966d-f913-434f-aa99-b6c90ca62d89"/>
-                <imageExpression><![CDATA["C:\\Users\\Omar\\Desktop\\08\\FleetIQ_Client\\src\\image\\logo3.png"]]></imageExpression>
-            </image>
-            <textField>
-                <reportElement x="455" y="33" width="100" height="19" uuid="c3e69062-de03-4139-9d92-6cd37e345bfc"/>
-                <textFieldExpression><![CDATA[Company Information]]></textFieldExpression>
             </textField>
         </band>
     </title>
-    <pageHeader>
-        <band height="35" splitType="Stretch">
-            <textField>
-                <reportElement x="224" y="11" width="100" height="19" uuid="58c11a1e-5cf7-432d-8e1a-77273f857af5"/>
-                <textFieldExpression><![CDATA[Package Report]]></textFieldExpression>
-            </textField>
-        </band>
-    </pageHeader>
+    
+    <!-- Column Header -->
     <columnHeader>
-        <band height="61" splitType="Stretch">
-            <textField>
-                <reportElement x="0" y="41" width="45" height="20" uuid="682f7b36-1fca-442c-95ed-f8e1c7a5768c"/>
-                <textFieldExpression><![CDATA[ID]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="45" y="41" width="100" height="20" uuid="ef06e4f7-d411-4dc0-b129-73339aea74d6"/>
-                <textFieldExpression><![CDATA[Sender]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="145" y="41" width="100" height="20" uuid="0a4db3ba-8f69-48d5-9303-ddafe2517422"/>
-                <textFieldExpression><![CDATA[Receiver]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="245" y="41" width="52" height="20" uuid="c7d6a19b-39d4-43dc-90a0-0dcea42ec53b"/>
-                <textFieldExpression><![CDATA[Weight]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="297" y="41" width="58" height="20" uuid="13c67c5f-d9fc-40fd-8f70-fae022b11de2"/>
-                <textFieldExpression><![CDATA[Size]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="355" y="41" width="100" height="20" uuid="46bb8e8f-8e40-4b15-9558-2d5e4c731b15"/>
-                <textFieldExpression><![CDATA[Date]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="455" y="41" width="100" height="20" uuid="dfbda2cc-cfa1-4dc0-b82c-b6b37d94a62b"/>
-                <textFieldExpression><![CDATA[Fragile]]></textFieldExpression>
-            </textField>
+        <band height="30" splitType="Stretch">
+            <staticText>
+                <reportElement style="Table_Header" x="0" y="0" width="60" height="30" uuid="dab83e04-b2a0-491e-bdd2-0ae8c8499594"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Table_Header" x="60" y="0" width="150" height="30" uuid="78e76674-7d8f-4dc7-bb0d-5d7ba7227cf9"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Sender]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Table_Header" x="210" y="0" width="150" height="30" uuid="e8831b5d-a488-4445-ae6c-942ffe0d12c1"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Receiver]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Table_Header" x="360" y="0" width="100" height="30" uuid="a5613093-3627-45fb-b5bc-12b1450f3359"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Weight]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Table_Header" x="460" y="0" width="100" height="30" uuid="ef50d148-7d24-464f-8c80-f39e35bcfc23"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Size]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Table_Header" x="560" y="0" width="140" height="30" uuid="7d72ac0f-b6d8-4eb7-b4e4-e601f209786b"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Creation Date]]></text>
+            </staticText>
+            <staticText>
+                <reportElement style="Table_Header" x="700" y="0" width="102" height="30" uuid="53d1a380-d16d-4fcc-9f31-f4bf01a21775"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Fragile]]></text>
+            </staticText>
         </band>
     </columnHeader>
+    
+    <!-- Detail -->
     <detail>
-        <band height="125" splitType="Stretch">
-            <!-- Detail expressions for fields -->
-            <!-- Same as provided -->
+        <band height="20" splitType="Stretch">
+            <textField>
+                <reportElement style="Table_Row" x="0" y="0" width="60" height="20" uuid="aebb1284-8703-4809-9d89-e38670035656"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement style="Table_Row" x="60" y="0" width="150" height="20" uuid="9a0bc8d5-ea12-4f6f-81fb-2b2f36680ffc"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{sender}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement style="Table_Row" x="210" y="0" width="150" height="20" uuid="f5dd71df-3edd-42c8-b5e8-c90979fa2581"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{receiver}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#,##0.0">
+                <reportElement style="Table_Row" x="360" y="0" width="100" height="20" uuid="dc4a626c-d880-463b-9a69-669da882e044"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{weight}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="Table_Row" x="460" y="0" width="100" height="20" uuid="08abcfa6-131a-4116-b809-4156d0b02ae7"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{size}]]></textFieldExpression>
+            </textField>
+            <textField pattern="dd-MM-yyyy">
+                <reportElement style="Table_Row" x="560" y="0" width="140" height="20" uuid="9031221b-867f-49d2-9bc0-799c0edfda60"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{creationDate}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="Table_Row" x="700" y="0" width="102" height="20" uuid="339e67f4-a2cf-4b81-8df7-091ea4887bca">
+                    <printWhenExpression><![CDATA[$F{fragile}]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA["\u2714"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="Table_Row" x="700" y="0" width="102" height="20" uuid="449e67f4-a2cf-4b81-8df7-091ea4887bca">
+                    <printWhenExpression><![CDATA[!$F{fragile}]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA["\u2718"]]></textFieldExpression>
+            </textField>
         </band>
     </detail>
-    <columnFooter>
-        <band height="45" splitType="Stretch"/>
-    </columnFooter>
+    
+    <!-- Footer -->
     <pageFooter>
-        <band height="78" splitType="Stretch">
-            <!-- Footer elements -->
+        <band height="40" splitType="Stretch">
+            <rectangle>
+                <reportElement mode="Opaque" x="0" y="0" width="802" height="40" backcolor="#F5F5F5" uuid="f1794122-9453-47d0-9c40-5794f0e05067"/>
+            </rectangle>
+            <textField>
+                <reportElement x="330" y="10" width="100" height="20" uuid="bc57ac34-c70b-413d-a7a5-e815894a2d27"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+            </textField>
+            <textField evaluationTime="Report">
+                <reportElement x="430" y="10" width="40" height="20" uuid="c9b884aa-a238-41fd-9fed-d092ca0aad99"/>
+                <textElement verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="10" y="10" width="200" height="20" uuid="f3a26c76-2b8d-4af4-9c42-66f0278f73b8"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[FleetIQ Package Tracking System]]></text>
+            </staticText>
         </band>
     </pageFooter>
-    <summary>
-        <band height="42" splitType="Stretch"/>
-    </summary>
 </jasperReport>
