@@ -287,12 +287,14 @@ public class EnvioController {
 
                 try {
                     String matriculaVAntiguo = envio.getVehiculo();
-                    List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
-                    Vehiculo vAntiguo = vComprobar.get(0);
-                    vAntiguo.setActivo(false);
-                    vehicleService.updateVehiculo(vAntiguo);
-                    vActualizado.setActivo(true);
-                    vehicleService.updateVehiculo(vActualizado);
+                    if (matriculaVAntiguo != null) {
+                        List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
+                        Vehiculo vAntiguo = vComprobar.get(0);
+                        vAntiguo.setActivo(false);
+                        vehicleService.updateVehiculo(vAntiguo);
+                        vActualizado.setActivo(true);
+                        vehicleService.updateVehiculo(vActualizado);
+                    }
                     envio.setRuta(localizador);
                     envio.setVehiculo(matricula);
                     envio.setEnvioRutaVehiculo(erv);
@@ -311,10 +313,17 @@ public class EnvioController {
             fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
             fechaEntregaColumn.setCellFactory(column -> new EnvioDateEditingCell());
             fechaEntregaColumn.setOnEditCommit(event -> {
-                Envio envio = event.getRowValue();
-                Date newDate = event.getNewValue();
-                envio.setFechaEntrega(newDate);
                 try {
+                    Envio envio = event.getRowValue();
+                    Date newDate = event.getNewValue();
+                    if (envio.getFechaEnvio() == null) {
+                        throw new IllegalArgumentException("Debes insertar la fecha de envio antes de insertar la fecha de entrega");
+                    } else {
+                        if (newDate.before(envio.getFechaEnvio())) {
+                            throw new IllegalArgumentException("La fecha entrega debe ser posterior a la fecha envio");
+                        }
+                    }
+                    envio.setFechaEntrega(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
@@ -441,9 +450,7 @@ public class EnvioController {
                 if (envio.getEnvioRutaVehiculo() != null) {
                     envioService.remove(envio.getId());
                 }
-                envioService.remove(envio.getId());
-                envioList.remove(envio);
-                if (envio.getVehiculo().isEmpty()) {
+                if (envio.getVehiculo() == null) {
 
                 } else {
                     String matriculaVAntiguo = envio.getVehiculo();
@@ -452,14 +459,15 @@ public class EnvioController {
                     vAntiguo.setActivo(false);
                     vehicleService.updateVehiculo(vAntiguo);
                 }
+                envioService.remove(envio.getId());
+                envioList.remove(envio);
+
             }
             table.refresh();
-        } catch (IllegalArgumentException e) {
-            LOGGER.warning("Error en la selección de envíos: " + e.getMessage());
-            new UtilsMethods().showAlert("Error", e.getMessage());
-        } catch (Exception e) {
-            LOGGER.severe("Error al eliminar envío(s): " + e.getMessage());
-            new UtilsMethods().showAlert("Error al eliminar envío(s)", e.getMessage());
+        } catch (UpdateException ex) {
+            Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SelectException ex) {
+            Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
