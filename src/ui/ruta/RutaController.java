@@ -7,7 +7,6 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
-import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
@@ -26,7 +25,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -603,11 +601,12 @@ public class RutaController {
                             envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
                             envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
 
-                            LOGGER.info(ruta.toString());
-                            LOGGER.info(vehiculo.get(0).toString());
-                            LOGGER.info(envioRutaVehiculo.toString());
-                            LOGGER.info(envioRutaVehiculo.getFechaAsignacion().toString());
-                            LOGGER.info(envioRutaVehiculo.toString());
+                            logger.info(ruta.toString());
+                            logger.info(vehiculo.get(0).toString());
+                            logger.info(envioRutaVehiculo.toString());
+                            logger.info(envioRutaVehiculo.getFechaAsignacion().toString());
+                           logger.info(envioRutaVehiculo.toString());
+                      
 
                             ervManager.create_XML(envioRutaVehiculo);
 
