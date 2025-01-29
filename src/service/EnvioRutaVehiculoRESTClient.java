@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.util.ResourceBundle;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -32,7 +33,8 @@ public class EnvioRutaVehiculoRESTClient implements EnvioRutaVehiculoManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/Server/webresources";
+   private static final String BASE_URI = ResourceBundle.getBundle("config/config")
+                    .getString("RESTful.baseURI");
 
     public EnvioRutaVehiculoRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -100,7 +102,7 @@ public class EnvioRutaVehiculoRESTClient implements EnvioRutaVehiculoManager {
         resource = resource.path(java.text.MessageFormat.format("countByRutaId/{0}", new Object[]{rutaId}));
         return resource.request(javax.ws.rs.core.MediaType.TEXT_PLAIN).get(String.class);
     }
-
+  
     public <T> T getId(GenericType<T> responseType, String vehiculoId) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("getId/{0}", new Object[]{vehiculoId}));
@@ -112,7 +114,7 @@ public class EnvioRutaVehiculoRESTClient implements EnvioRutaVehiculoManager {
         resource = resource.path(java.text.MessageFormat.format("getRutaId/{0}", new Object[]{vehiculoId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
+  
     public void remove(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }

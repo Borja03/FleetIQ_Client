@@ -181,5 +181,64 @@ public class VehicleRESTClient {
                 .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
     }
 
-    
+    public List<Vehiculo> findVehiclesBetweenDatesRegistration(GenericType<List<Vehiculo>> responseType, String endDate, String startDate) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        if (endDate != null) {
+            resource = resource.queryParam("endDate", endDate);
+        }
+        if (startDate != null) {
+            resource = resource.queryParam("startDate", startDate);
+        }
+        resource = resource.path("date/betweenRegistration");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Vehiculo> findVehiclessAfterDateRegistration(GenericType<List<Vehiculo>> responseType, String startDate) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        if (startDate != null) {
+            resource = resource.queryParam("startDate", startDate);
+        }
+        resource = resource.path("date/afterRegistration");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Vehiculo> findVehiclesBeforeDateITV(GenericType<List<Vehiculo>> responseType, String endDate) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        if (endDate != null) {
+            resource = resource.queryParam("endDate", endDate);
+        }
+        resource = resource.path("date/beforeITV");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Vehiculo> findVehiclesBeforeDateRegistration(GenericType<List<Vehiculo>> responseType, String endDate) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        if (endDate != null) {
+            resource = resource.queryParam("endDate", endDate);
+        }
+        resource = resource.path("date/beforerRegistration");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Vehiculo> findByDateRangeITV(GenericType<List<Vehiculo>> responseType, String endDate, String startDate) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        if (endDate != null) {
+            resource = resource.queryParam("endDate", endDate);
+        }
+        if (startDate != null) {
+            resource = resource.queryParam("startDate", startDate);
+        }
+        resource = resource.path("date/betweenITV");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    public List<Vehiculo> findVehiclessAfterDateITV(GenericType<List<Vehiculo>> responseType, String startDate) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        if (startDate != null) {
+            resource = resource.queryParam("startDate", startDate);
+        }
+        resource = resource.path("date/afterITV");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
 }
