@@ -1,5 +1,6 @@
 package ui.login;
 
+import encryption.ClientSideEncryption;
 import exception.InvalidEmailFormatException;
 import exception.SelectException;
 import factories.SignableFactory;
@@ -23,6 +24,7 @@ import javafx.stage.Stage;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -33,6 +35,7 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 import models.Admin;
+import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.encryptedData;
 import ui.paquete.PaqueteController;
 import ui.profile.MainController;
 import ui.resetpassword.ResetPasswordController;
@@ -298,6 +301,19 @@ public class LogInController {
         User user = new User();
         user.setEmail("multitartanga@gmail.com");
         user.setPassword("12345@aA");
+        ///
+
+        // Call ClientSideEncryption to encrypt the message
+        byte[] encryptedData = null;
+        try {
+            encryptedData = ClientSideEncryption.encrypt("12345@aA");
+        } catch (Exception ex) {
+            Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        // Convert to Base64 for easy printing (optional)
+        String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
+        System.out.println("Encrypted Message (Base64): " + encryptedBase64);
+        user.setPassword(encryptedBase64);
 
         User loggedInUser;
         try {
