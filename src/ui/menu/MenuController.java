@@ -169,30 +169,24 @@ public class MenuController {
 
     @FXML
     private void handleDarkModeMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+        System.out.println("Dark clicked");
     }
 
     @FXML
     private void handleLightModeMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+
     }
 
     @FXML
     private void handleAboutPaqueteMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked -----------------------------------");
-               try {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paqueteHelp.fxml"));
             Parent root = loader.load();
             PaqueteHelpController controller = loader.getController();
-//            Stage loginStage = new Stage();
-//            controller.setStage(loginStage);
             controller.initAndShowStage(root);
             LOGGER.info("Help window opened");
-            // Close the current stage (the one with the menu)
-//            Stage currentStage = (Stage) menuBar.getScene().getWindow();
-//            currentStage.close();
         } catch (IOException ex) {
-            LOGGER.severe("Error loading paquete window: " + ex);
+            LOGGER.severe("Error loading HelpPaquete window: " + ex);
         }
     }
 
@@ -222,7 +216,6 @@ public class MenuController {
             controller.setStage(loginStage);
             controller.initStage(root);
             LOGGER.info("Finish session and open login window");
-            // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
             currentStage.close();
 
@@ -233,7 +226,6 @@ public class MenuController {
 
     @FXML
     private void handleLogoutMenuItemAction(Event event) {
-
         // logic to finish session here 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/login/LogIn.fxml"));
