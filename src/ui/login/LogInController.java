@@ -296,8 +296,9 @@ public class LogInController {
         String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
         User user = new User();
-        user.setEmail("multitartanga@gmail.com");
-        user.setPassword("12345@aA");
+
+        user.setEmail(email);
+        user.setPassword(password);
 
         User loggedInUser;
         try {

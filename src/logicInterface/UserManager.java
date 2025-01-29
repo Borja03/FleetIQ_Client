@@ -31,6 +31,6 @@ public interface UserManager {
 
     public void create(User requestEntity) throws CreateException;
 
-    public <T> T findAll(Class<T> responseType) throws SelectException;
+    public <T> T findAll() throws SelectException;
 
 }
