@@ -1,6 +1,5 @@
 package ui.ruta;
 
-
 import cellFactories.RutaDateEditingCell;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -25,7 +24,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -46,6 +45,8 @@ import models.Ruta;
 import models.Vehiculo;
 import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
+
+
 
 public class RutaController {
 
@@ -592,19 +593,20 @@ public class RutaController {
                         for (String matricula : selectedMatriculas) {
 
                             List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
-
                             // Crear un nuevo objeto EnvioRutaVehiculo
                             EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
-                            envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
-                            envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
+                            //envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
+                            //envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
                             envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
                             envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
                             envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
-                            System.out.println(ruta);
-                            System.out.println(vehiculo.get(0));
-                            System.out.println(envioRutaVehiculo.toString());
-                            System.out.println(envioRutaVehiculo.getFechaAsignacion());
-                            System.out.println(envioRutaVehiculo.toString());
+
+                            logger.info(ruta.toString());
+                            logger.info(vehiculo.get(0).toString());
+                            logger.info(envioRutaVehiculo.toString());
+                            logger.info(envioRutaVehiculo.getFechaAsignacion().toString());
+                           logger.info(envioRutaVehiculo.toString());
+                      
 
                             ervManager.create_XML(envioRutaVehiculo);
 

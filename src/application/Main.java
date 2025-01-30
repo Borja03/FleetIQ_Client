@@ -28,7 +28,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML
 
-        Parent root = FXMLLoader.load(getClass().getResource("/ui/vehicle/vehicle.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/ruta/ruta.fxml"));
 
 
         // Crear la escena
@@ -38,7 +38,6 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("Splash");
         primaryStage.getIcons().add(new Image("/image/fleet_icon.png"));
-
         primaryStage.setResizable(false);  // Aquí se desactiva la opción de redimensionar
 
         // Mostrar la ventana
