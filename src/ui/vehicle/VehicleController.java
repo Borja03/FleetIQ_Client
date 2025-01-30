@@ -50,6 +50,9 @@ import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 import models.EnvioRutaVehiculo;
+import models.Vehiculo;
+import utils.ThemeManager;
+
 import utils.UtilsMethods;
 import static utils.UtilsMethods.logger;
 import javafx.scene.control.TablePosition;
@@ -192,7 +195,7 @@ public class VehicleController {
             capacityTextField.setText("0");
 
             TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change
-                    -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
+                            -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
             capacityTextField.setTextFormatter(formatter);
         }
         data = FXCollections.observableArrayList();
@@ -212,7 +215,7 @@ public class VehicleController {
         activeColumn.setEditable(true);
 
         LOGGER.info("Vehicle window and capacity controls initialized.");
-
+        ThemeManager.getInstance().applyTheme(stage.getScene());
         stage.show();
     }
 
@@ -321,7 +324,7 @@ public class VehicleController {
         });
 
         capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(
-                new StringConverter<Integer>() {
+                        new StringConverter<Integer>() {
             @Override
             public String toString(Integer object) {
                 return object != null ? object.toString() : "";

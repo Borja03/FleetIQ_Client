@@ -21,6 +21,7 @@ import ui.paquete.PaqueteHelpController;
 import ui.profile.MainController;
 import ui.ruta.RutaController;
 import ui.vehicle.VehicleController;
+import utils.ThemeManager;
 
 public class MenuController {
 
@@ -164,17 +165,17 @@ public class MenuController {
 
     @FXML
     private void handleChangePasswordMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+
     }
 
     @FXML
     private void handleDarkModeMenuItemAction(Event event) {
-        System.out.println("Dark clicked");
+        ThemeManager.getInstance().setTheme(ThemeManager.Theme.DARK);
     }
 
     @FXML
     private void handleLightModeMenuItemAction(Event event) {
-
+        ThemeManager.getInstance().setTheme(ThemeManager.Theme.LIGHT);
     }
 
     @FXML
