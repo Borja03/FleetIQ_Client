@@ -66,25 +66,29 @@ public class UtilsMethods {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-    public static Optional<ButtonType> showConfirmationDialog(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    
+    public static Alert showAlert(String title, String message, String type) {
+        Alert alert;
+        switch (type.toUpperCase()) {
+            case "ERROR":
+                alert = new Alert(Alert.AlertType.ERROR);
+                break;
+            case "CONFIRMATION":
+                alert = new Alert(Alert.AlertType.CONFIRMATION);
+                break;
+            case "INFORMATION":
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                break;
+            case "WARNING":
+            default:
+                alert = new Alert(Alert.AlertType.WARNING);
+                break;
+        }
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(content);
-        return alert.showAndWait();
+        alert.setContentText(message);
+        alert.showAndWait();
+        return alert;
     }
-
-//    private String dateToString(LocalDate fromDate) {
-//        String mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
-//        SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
-//
-//        Date fromDateAsDate = (fromDate != null)
-//                        ? Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-//                        : null;
-//
-//        String mfromDate = (fromDateAsDate != null) ? dateFormat.format(fromDateAsDate) : null;
-//        return mfromDate;
-//    }
 
 }

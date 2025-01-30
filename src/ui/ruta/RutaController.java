@@ -43,6 +43,7 @@ import logicInterface.VehicleManager;
 import models.EnvioRutaVehiculo;
 import models.Ruta;
 import models.Vehiculo;
+import utils.ThemeManager;
 import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
 
@@ -127,7 +128,7 @@ public class RutaController {
         } catch (SelectException ex) {
             Logger.getLogger(RutaController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        ThemeManager.getInstance().applyTheme(stage.getScene());
         stage.show();
     }
 
@@ -390,7 +391,7 @@ public class RutaController {
     private void configureEditableColumns() {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, String>>() {
+                        new EventHandler<CellEditEvent<Ruta, String>>() {
             @Override
             public void handle(CellEditEvent<Ruta, String> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -408,7 +409,7 @@ public class RutaController {
 
         destinoColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         destinoColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, String>>() {
+                        new EventHandler<CellEditEvent<Ruta, String>>() {
             @Override
             public void handle(CellEditEvent<Ruta, String> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -426,7 +427,7 @@ public class RutaController {
 
         distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
         distanciaColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, Float>>() {
+                        new EventHandler<CellEditEvent<Ruta, Float>>() {
             @Override
             public void handle(CellEditEvent<Ruta, Float> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -470,7 +471,7 @@ public class RutaController {
 
         tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         tiempoColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, Integer>>() {
+                        new EventHandler<CellEditEvent<Ruta, Integer>>() {
             @Override
             public void handle(CellEditEvent<Ruta, Integer> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
