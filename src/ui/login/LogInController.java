@@ -315,6 +315,8 @@ public class LogInController {
         System.out.println("Encrypted Message (Base64): " + encryptedBase64);
         user.setPassword(encryptedBase64);
 
+
+
         User loggedInUser;
         try {
             userSession = (User) SignableFactory.getSignable().signIn(user, User.class);
