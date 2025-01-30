@@ -47,8 +47,6 @@ import utils.ThemeManager;
 import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
 
-
-
 public class RutaController {
 
     private static final Logger logger = Logger.getLogger(RutaController.class.getName());
@@ -557,10 +555,22 @@ public class RutaController {
         try {
             List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
             ObservableList<String> matriculas = FXCollections.observableArrayList();
+            
+            List<Integer> vehiculosAsignadosRuta = null;
+            
+            
+//            for (int i = 0; i<= ruta.getEnvioRutaVehiculos().size();i++){
+//                vehiculosAsignadosRuta.add(ruta.getEnvioRutaVehiculos().get(i).getVehiculoID());
+//            }
 
             for (Vehiculo vehiculo : vehiculos) {
-                matriculas.add(vehiculo.getMatricula());
-            }
+              //  for (int i = 0; i <= vehiculosAsignadosRuta.size(); i++){
+                //    if (vehiculosAsignadosRuta.get(i) != vehiculo.getId()){
+                         matriculas.add(vehiculo.getMatricula());
+                  //  }
+                }
+               
+            
 
             vehicleListView.setItems(matriculas);
 
@@ -606,8 +616,7 @@ public class RutaController {
                             logger.info(vehiculo.get(0).toString());
                             logger.info(envioRutaVehiculo.toString());
                             logger.info(envioRutaVehiculo.getFechaAsignacion().toString());
-                           logger.info(envioRutaVehiculo.toString());
-                      
+                            logger.info(envioRutaVehiculo.toString());
 
                             ervManager.create_XML(envioRutaVehiculo);
 
