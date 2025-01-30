@@ -28,7 +28,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Cargar el archivo FXML
 
-        Parent root = FXMLLoader.load(getClass().getResource("/ui/ruta/ruta.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
 
 
         // Crear la escena

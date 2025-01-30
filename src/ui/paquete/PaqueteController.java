@@ -267,28 +267,39 @@ public class PaqueteController {
         senderColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
             String newSenderValue = event.getNewValue();
+            String originalValue = paquete.getSender(); // Store original value
+            System.out.println("-----> " + originalValue);
+
             try {
-                // Validate the new receiver value
-                if (newSenderValue.length() > MAX_LENGTH || !newSenderValue.matches("[a-zA-Z\\s]*")) {
+                // Validate the new sender value
+                if (newSenderValue.length() > MAX_LENGTH || !newSenderValue.matches("^[a-zA-Z\\s]+$")) {
                     throw new InvalidNameFormatException("Sender name must not exceed " + MAX_LENGTH + " letters and must contain letters only.");
                 }
-                // Update the receiver value in the object
+
+                // First try to update in database
+                Paquete updatedPaquete = paquete.clone(); // Create a temporary copy
+                updatedPaquete.setSender(newSenderValue);
+                System.out.println("-----> " + updatedPaquete.getSender());
+
+                PaqueteFactory.getPackageInstance().updatePackage(updatedPaquete);
+                // If database update successful, then update the object
                 paquete.setSender(newSenderValue);
-
-                // Save changes to the database
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
                 LOGGER.info("Sender updated successfully for package with ID: " + paquete.getId());
-
             } catch (InvalidNameFormatException ex) {
                 // Handle validation failure
                 UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
                 LOGGER.warning("Invalid Sender input: " + newSenderValue);
-                senderColumn.getTableView().refresh(); // Revert to the previous value in the UI
+                paquete.setSender(originalValue);
+                senderColumn.getTableView().refresh();
+
             } catch (UpdateException ex) {
                 // Handle database update failure
                 LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
                 UtilsMethods.showAlert("Error", "Failed to update sender. Please try again.", "ERROR");
-                senderColumn.getTableView().refresh(); // Revert to the previous value in the UI
+                paquete.setSender(originalValue);
+                senderColumn.getTableView().refresh();
+            } catch (CloneNotSupportedException ex) {
+                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
     }
@@ -298,28 +309,36 @@ public class PaqueteController {
         receiverColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
             String newReceiverValue = event.getNewValue();
+            String originalValue = paquete.getReceiver();
 
             try {
                 // Validate the new receiver value
-                if (newReceiverValue.length() > MAX_LENGTH || !newReceiverValue.matches("[a-zA-Z\\s]*")) {
+                if (newReceiverValue.length() > MAX_LENGTH || !newReceiverValue.matches("^[a-zA-Z\\s]+$")) {
                     throw new InvalidNameFormatException("Receiver must not exceed " + MAX_LENGTH + " letters and must contain letters only.");
                 }
-                // Update the receiver value in the object
+
+                // Create a clone for testing
+                Paquete tempPaquete = (Paquete) paquete.clone();
+                tempPaquete.setReceiver(newReceiverValue);
+
+                // Try database update with the clone
+                PaqueteFactory.getPackageInstance().updatePackage(tempPaquete);
+
+                // If successful, update the original
                 paquete.setReceiver(newReceiverValue);
-                // Save changes to the database
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
                 LOGGER.info("Receiver updated successfully for package with ID: " + paquete.getId());
 
-            } catch (InvalidNameFormatException ex) {
-                // Handle validation failure
-                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
-                LOGGER.warning("Invalid receiver input: " + newReceiverValue);
-                receiverColumn.getTableView().refresh(); // Revert to the previous value in the UI
-            } catch (UpdateException ex) {
-                // Handle database update failure
-                LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Error", "Failed to update receiver. Please try again.", "ERROR");
-                receiverColumn.getTableView().refresh(); // Revert to the previous value in the UI
+            } catch (CloneNotSupportedException | InvalidNameFormatException | UpdateException ex) {
+                // Handle all exceptions
+                String errorMessage = ex instanceof InvalidNameFormatException
+                                ? ex.getMessage() : "Failed to update receiver. Please try again.";
+
+                UtilsMethods.showAlert("Error", errorMessage, "ERROR");
+                LOGGER.warning("Update failed: " + ex.getMessage());
+
+                // Restore original value
+                paquete.setReceiver(originalValue);
+                receiverColumn.getTableView().refresh();
             }
         });
     }
@@ -334,38 +353,62 @@ public class PaqueteController {
 
             @Override
             public Double fromString(String string) {
+                if (!string.matches("^\\d*\\.?\\d+$")) {
+                    UtilsMethods.showAlert("Error", "Weight must be a valid number", "ERROR");
+                    LOGGER.warning("Invalid weight format: " + string);
+                    return null;
+                }
                 try {
                     return Double.valueOf(string);
                 } catch (NumberFormatException e) {
+                    UtilsMethods.showAlert("Error", "Weight must be a valid number", "ERROR");
                     LOGGER.warning("Invalid weight: " + string);
                     return null;
                 }
             }
         }));
 
-        weightColumn.setOnEditCommit(event -> event.getRowValue().setWeight(event.getNewValue()));
         weightColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
             Double newWeightValue = event.getNewValue();
+            Double originalValue = paquete.getWeight();
+
+            // If newWeightValue is null (from invalid input), just refresh the view with original value
+            if (newWeightValue == null) {
+                paquete.setWeight(originalValue);
+                weightColumn.getTableView().refresh();
+                return;
+            }
 
             try {
-                // Validate the new receiver value
+                // Validate the new weight value
                 if (newWeightValue < 0) {
-                    throw new IllegalArgumentException("Weight must be a positive number.and less 100 kg");
+                    throw new IllegalArgumentException("Weight must be a positive number and less than 100 kg");
                 } else if (newWeightValue > 100) {
                     throw new IllegalArgumentException("Weight must not be more than 100 kg");
                 }
-                paquete.setWeight(event.getNewValue());
-                // Add any additional handling (like saving to database)
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
-            } catch (UpdateException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                weightColumn.getTableView().refresh(); // Revert to the previous value in the UI
-            } catch (IllegalArgumentException ex) {
-                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
-                LOGGER.warning("Invalid weight input: " + newWeightValue);
-                weightColumn.getTableView().refresh(); // Revert to the previous value in the UI
 
+                // Create a clone for testing
+                Paquete tempPaquete = (Paquete) paquete.clone();
+                tempPaquete.setWeight(newWeightValue);
+
+                // Try database update with the clone
+                PaqueteFactory.getPackageInstance().updatePackage(tempPaquete);
+
+                // If successful, update the original
+                paquete.setWeight(newWeightValue);
+                LOGGER.info("Weight updated successfully for package with ID: " + paquete.getId());
+
+            } catch (CloneNotSupportedException | IllegalArgumentException | UpdateException ex) {
+                String errorMessage = ex instanceof IllegalArgumentException
+                                ? ex.getMessage() : "Failed to update weight. Please try again.";
+
+                UtilsMethods.showAlert("Error", errorMessage, "ERROR");
+                LOGGER.warning("Update failed: " + ex.getMessage());
+
+                // Restore original value
+                paquete.setWeight(originalValue);
+                weightColumn.getTableView().refresh();
             }
         });
     }
@@ -374,33 +417,60 @@ public class PaqueteController {
         sizeColumn.setCellFactory(column -> new PaqueteCBoxEditingCell());
         sizeColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
+            PackageSize originalSize = paquete.getSize();  // Store old size before the update
             PackageSize newSize = event.getNewValue();
-            paquete.setSize(newSize);
 
             try {
-                // Save changes to the database or perform other updates
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
-            } catch (UpdateException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                sizeColumn.getTableView().refresh(); // Revert to the previous value in the UI
+                // Create a clone for testing
+                Paquete tempPaquete = (Paquete) paquete.clone();
+                tempPaquete.setSize(newSize);
 
+                // Try database update with the clone
+                PaqueteFactory.getPackageInstance().updatePackage(tempPaquete);
+
+                // If successful, update the original
+                paquete.setSize(newSize);
+                LOGGER.info("Size updated successfully for package with ID: " + paquete.getId());
+
+            } catch (CloneNotSupportedException | UpdateException ex) {
+                String errorMessage = "Failed to update package size. Please try again.";
+                UtilsMethods.showAlert("Error", errorMessage, "ERROR");
+                LOGGER.warning("Update failed: " + ex.getMessage());
+
+                // Restore original value
+                paquete.setSize(originalSize);
+                sizeColumn.getTableView().refresh();
             }
         });
-
     }
 
     private void validateAndUpdateDateColumn() {
         dateColumn.setCellFactory(column -> new PaqueteDateEditingCell());
         dateColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
-            paquete.setCreationDate(event.getNewValue());
-            try {
-           
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
-            } catch (UpdateException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                dateColumn.getTableView().refresh(); // Revert to the previous value in the UI
+            Date originalDate = paquete.getCreationDate();  // Store old date before the update
+            Date newDate = event.getNewValue();
 
+            try {
+                // Create a clone for testing
+                Paquete tempPaquete = (Paquete) paquete.clone();
+                tempPaquete.setCreationDate(newDate);
+
+                // Try database update with the clone
+                PaqueteFactory.getPackageInstance().updatePackage(tempPaquete);
+
+                // If successful, update the original
+                paquete.setCreationDate(newDate);
+                LOGGER.info("Date updated successfully for package with ID: " + paquete.getId());
+
+            } catch (CloneNotSupportedException | UpdateException ex) {
+                String errorMessage = "Failed to update creation date. Please try again.";
+                UtilsMethods.showAlert("Error", errorMessage, "ERROR");
+                LOGGER.warning("Update failed: " + ex.getMessage());
+
+                // Restore original value
+                paquete.setCreationDate(originalDate);
+                dateColumn.getTableView().refresh();
             }
         });
     }
@@ -409,14 +479,29 @@ public class PaqueteController {
         fragileColumn.setCellFactory(column -> new PaqueteFragileEditingCell());
         fragileColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
+            boolean originalFragile = paquete.isFragile();  // Store old value of fragile before update
+            boolean newFragile = event.getNewValue();
 
-            paquete.setFragile(event.getNewValue());
             try {
-                PaqueteFactory.getPackageInstance().updatePackage(paquete);
-            } catch (UpdateException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                fragileColumn.getTableView().refresh(); // Revert to the previous value in the UI
+                // Create a clone for testing
+                Paquete tempPaquete = (Paquete) paquete.clone();
+                tempPaquete.setFragile(newFragile);
 
+                // Try database update with the clone
+                PaqueteFactory.getPackageInstance().updatePackage(tempPaquete);
+
+                // If successful, update the original
+                paquete.setFragile(newFragile);
+                LOGGER.info("Fragile status updated successfully for package with ID: " + paquete.getId());
+
+            } catch (CloneNotSupportedException | UpdateException ex) {
+                String errorMessage = "Failed to update fragile status. Please try again.";
+                UtilsMethods.showAlert("Error", errorMessage, "ERROR");
+                LOGGER.warning("Update failed: " + ex.getMessage());
+
+                // Restore original value
+                paquete.setFragile(originalFragile);
+                fragileColumn.getTableView().refresh();
             }
         });
     }
@@ -435,9 +520,6 @@ public class PaqueteController {
     }
 
     private void handleFilterByDatesAction(ActionEvent event) {
-        // Clear other filters
-        sizeFilterComboBox.setValue(null);
-        searchTextField.clear();
 
         String mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
         SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
@@ -477,6 +559,10 @@ public class PaqueteController {
                 System.out.println("Filtering packages between: " + mfromDate + " and " + mtoDate);
                 filterPackagesBetweenDates(mfromDate, mtoDate);
             }
+
+            // Clear other filters
+            sizeFilterComboBox.setValue(null);
+            searchTextField.clear();
         } catch (IllegalArgumentException e) {
             UtilsMethods.showAlert("Error de filtro", e.getMessage(), "ERROR");
         } catch (Exception e) {
@@ -486,10 +572,6 @@ public class PaqueteController {
     // Method to handle the filter change
 
     private void handleSizeFilterChange(PackageSize selectedSize) {
-        // Clear other filters
-        fromDatePicker.setValue(null);
-        toDatePicker.setValue(null);
-        searchTextField.clear();
 
         List<Paquete> filteredPaqueteList = null;
         if (selectedSize == null) {
@@ -500,16 +582,17 @@ public class PaqueteController {
                 paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
 
             } catch (SelectException ex) {
-               LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
         }
+
+        // Clear other filters
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
+        searchTextField.clear();
     }
 
     private void performSearch(String query) {
-        // Reset filters
-        sizeFilterComboBox.setValue(null);
-        fromDatePicker.setValue(null);
-        toDatePicker.setValue(null);
 
         LOGGER.info("Performing live search...");
 
@@ -533,6 +616,11 @@ public class PaqueteController {
                 paqueteTableView.setItems(FXCollections.observableArrayList());
             }
         }
+        // Reset filters
+
+        sizeFilterComboBox.setValue(null);
+        fromDatePicker.setValue(null);
+        toDatePicker.setValue(null);
     }
 
     //
@@ -591,7 +679,7 @@ public class PaqueteController {
                 UtilsMethods.showAlert("Information", "No packages found before " + toDate, "INFORMATION");
             }
         } catch (SelectException ex) {
-           LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage(), "ERROR");
         }
     }
@@ -624,38 +712,25 @@ public class PaqueteController {
      * @param event The ActionEvent triggered by the add shipment button
      */
     private void handleAddShipmentAction(ActionEvent event) {
-        LOGGER.info("Entering handleAddShipmentAction");
         try {
-            // Create new package with default values
+            // Initialize with empty values instead of placeholders
             Paquete defaultPaquete = new Paquete(
-                            "sender", // default sender
-                            "receiver", // default receiver
-                            0.0, // default weight
-                            PackageSize.MEDIUM, // default size
-                            new Date(), // current date
-                            false // not delivered
+                            "", // Empty sender
+                            "", // Empty receiver
+                            0.0,
+                            PackageSize.MEDIUM,
+                            new Date(),
+                            false
             );
 
-            // Attempt to add to database
             Paquete savedPackage = PaqueteFactory.getPackageInstance().addPackage(defaultPaquete);
-
             if (savedPackage != null) {
-                fillTableFromDataBase(); // Refresh table data
-                LOGGER.info("Package added successfully with ID: " + savedPackage.getId());
-                UtilsMethods.showAlert("Success", "New package created successfully.", "INFORMATION");
-            } else {
-                LOGGER.warning("Package was not saved properly - returned null");
-                UtilsMethods.showAlert("Warning", "Package creation may not have completed properly.", "WARNING");
+                fillTableFromDataBase();
+                UtilsMethods.showAlert("Success", "Package created successfully.", "INFORMATION");
             }
-
-        } catch (CreateException ex) {
-            LOGGER.log(Level.SEVERE, "Failed to create package", ex);
-            UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage(), "ERROR");
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Unexpected error while creating package", ex);
-            UtilsMethods.showAlert("Error", "An unexpected error occurred while creating the package.", "ERROR");
+            UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage(), "ERROR");
         }
-        LOGGER.info("Exiting handleAddShipmentAction");
     }
 
     private void handleRemoveShipmentAction(ActionEvent event) {
@@ -685,9 +760,6 @@ public class PaqueteController {
                     UtilsMethods.showAlert("Error", "Failed to delete packages: " + ex.getMessage(), "ERROR");
                 }
             }
-        } else {
-            // Show alert if no packages are selected
-            UtilsMethods.showAlert("No Selection", "Please select at least one package to delete.", "WARNING");
         }
     }
 

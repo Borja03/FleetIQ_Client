@@ -300,13 +300,13 @@ public class LogInController {
 
         User user = new User();
         user.setEmail("multitartanga@gmail.com");
-        user.setPassword("12345@aA");
+        //user.setPassword("12345");
         ///
 
         // Call ClientSideEncryption to encrypt the message
         byte[] encryptedData = null;
         try {
-            encryptedData = ClientSideEncryption.encrypt("12345@aA");
+            encryptedData = ClientSideEncryption.encrypt(password);
         } catch (Exception ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -314,8 +314,6 @@ public class LogInController {
         String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
         System.out.println("Encrypted Message (Base64): " + encryptedBase64);
         user.setPassword(encryptedBase64);
-
-
 
         User loggedInUser;
         try {
