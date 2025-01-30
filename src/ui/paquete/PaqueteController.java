@@ -8,7 +8,6 @@ import models.PackageSize;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXTextField;
 import exception.CreateException;
 import exception.DeleteException;
@@ -21,52 +20,34 @@ import java.time.DayOfWeek;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import javafx.animation.PauseTransition;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import models.Paquete;
 import net.sf.jasperreports.engine.JRException;
@@ -76,6 +57,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
+import utils.ThemeManager;
 import utils.UtilsMethods;
 
 public class PaqueteController {
@@ -175,14 +157,10 @@ public class PaqueteController {
 
         initHandlerActions();
 
-        searchTextField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                performSearch(newValue.trim().toLowerCase());
-            }
-        });
-        //ThemeManager.getInstance().applyTheme(stage.getScene());
-
+        searchTextField.textProperty().addListener((observable, oldValue, newValue)
+                        -> performSearch(newValue.trim().toLowerCase())
+        );
+        ThemeManager.getInstance().applyTheme(stage.getScene());
 
         stage.show();
     }
@@ -303,13 +281,13 @@ public class PaqueteController {
 
             } catch (InvalidNameFormatException ex) {
                 // Handle validation failure
-                UtilsMethods.showAlert("Error", ex.getMessage());
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
                 LOGGER.warning("Invalid Sender input: " + newSenderValue);
                 senderColumn.getTableView().refresh(); // Revert to the previous value in the UI
             } catch (UpdateException ex) {
                 // Handle database update failure
                 LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Error", "Failed to update sender. Please try again.");
+                UtilsMethods.showAlert("Error", "Failed to update sender. Please try again.", "ERROR");
                 senderColumn.getTableView().refresh(); // Revert to the previous value in the UI
             }
         });
@@ -334,13 +312,13 @@ public class PaqueteController {
 
             } catch (InvalidNameFormatException ex) {
                 // Handle validation failure
-                UtilsMethods.showAlert("Error", ex.getMessage());
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
                 LOGGER.warning("Invalid receiver input: " + newReceiverValue);
                 receiverColumn.getTableView().refresh(); // Revert to the previous value in the UI
             } catch (UpdateException ex) {
                 // Handle database update failure
                 LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Error", "Failed to update receiver. Please try again.");
+                UtilsMethods.showAlert("Error", "Failed to update receiver. Please try again.", "ERROR");
                 receiverColumn.getTableView().refresh(); // Revert to the previous value in the UI
             }
         });
@@ -372,17 +350,19 @@ public class PaqueteController {
 
             try {
                 // Validate the new receiver value
-                if (newWeightValue <= 0) {
-                    throw new IllegalArgumentException("Weight must be a positive number.");
+                if (newWeightValue < 0) {
+                    throw new IllegalArgumentException("Weight must be a positive number.and less 100 kg");
+                } else if (newWeightValue > 100) {
+                    throw new IllegalArgumentException("Weight must not be more than 100 kg");
                 }
                 paquete.setWeight(event.getNewValue());
                 // Add any additional handling (like saving to database)
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 weightColumn.getTableView().refresh(); // Revert to the previous value in the UI
             } catch (IllegalArgumentException ex) {
-                UtilsMethods.showAlert("Error", "Weight must be a positive number.");
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
                 LOGGER.warning("Invalid weight input: " + newWeightValue);
                 weightColumn.getTableView().refresh(); // Revert to the previous value in the UI
 
@@ -391,7 +371,6 @@ public class PaqueteController {
     }
 
     private void validateAndUpdateSizeColumn() {
-
         sizeColumn.setCellFactory(column -> new PaqueteCBoxEditingCell());
         sizeColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
@@ -402,7 +381,7 @@ public class PaqueteController {
                 // Save changes to the database or perform other updates
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 sizeColumn.getTableView().refresh(); // Revert to the previous value in the UI
 
             }
@@ -416,10 +395,10 @@ public class PaqueteController {
             Paquete paquete = event.getRowValue();
             paquete.setCreationDate(event.getNewValue());
             try {
-                // Add any additional handling (like saving to database)
+           
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 dateColumn.getTableView().refresh(); // Revert to the previous value in the UI
 
             }
@@ -435,7 +414,7 @@ public class PaqueteController {
             try {
                 PaqueteFactory.getPackageInstance().updatePackage(paquete);
             } catch (UpdateException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 fragileColumn.getTableView().refresh(); // Revert to the previous value in the UI
 
             }
@@ -451,7 +430,7 @@ public class PaqueteController {
             paqueteTableView.setItems(data);
         } catch (Exception e) {
             // Handle exceptions gracefully
-            UtilsMethods.showAlert("Error Fetching Failed", "Could not fetch data from the server. Please try again later.");
+            UtilsMethods.showAlert("Error Fetching Failed", "Could not fetch data from the server. Please try again later.", "ERROR");
         }
     }
 
@@ -484,7 +463,7 @@ public class PaqueteController {
 
             if (fromDate == null && toDate == null) {
                 // No dates selected
-                UtilsMethods.showAlert("Error de filtro", "Select a date");
+                UtilsMethods.showAlert("Error de filtro", "Select a date", "ERROR");
             } else if (fromDate == null) {
                 // Only toDate is selected
                 System.out.println("Filtering packages before: " + mtoDate);
@@ -499,9 +478,9 @@ public class PaqueteController {
                 filterPackagesBetweenDates(mfromDate, mtoDate);
             }
         } catch (IllegalArgumentException e) {
-            UtilsMethods.showAlert("Error de filtro", e.getMessage());
+            UtilsMethods.showAlert("Error de filtro", e.getMessage(), "ERROR");
         } catch (Exception e) {
-            UtilsMethods.showAlert("Error al filtrar por fechas", e.getMessage());
+            UtilsMethods.showAlert("Error al filtrar por fechas", e.getMessage(), "ERROR");
         }
     }
     // Method to handle the filter change
@@ -521,8 +500,7 @@ public class PaqueteController {
                 paqueteTableView.setItems(FXCollections.observableArrayList(filteredPaqueteList));
 
             } catch (SelectException ex) {
-                Logger.getLogger(PaqueteController.class
-                                .getName()).log(Level.SEVERE, null, ex);
+               LOGGER.log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -590,11 +568,11 @@ public class PaqueteController {
                 paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
             } else {
                 paqueteTableView.setItems(FXCollections.observableArrayList());
-                UtilsMethods.showAlert("Information", "No packages found after " + fromDate);
+                UtilsMethods.showAlert("Information", "No packages found after " + fromDate, "INFORMATION");
             }
         } catch (SelectException ex) {
-            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
-            UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage(), "ERROR");
         }
     }
 
@@ -610,11 +588,11 @@ public class PaqueteController {
                 paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
             } else {
                 paqueteTableView.setItems(FXCollections.observableArrayList());
-                UtilsMethods.showAlert("Information", "No packages found before " + toDate);
+                UtilsMethods.showAlert("Information", "No packages found before " + toDate, "INFORMATION");
             }
         } catch (SelectException ex) {
-            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
-            UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage());
+           LOGGER.log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage(), "ERROR");
         }
     }
 
@@ -629,28 +607,53 @@ public class PaqueteController {
                 paqueteTableView.setItems(FXCollections.observableArrayList(paqueteList));
             } else {
                 paqueteTableView.setItems(FXCollections.observableArrayList());
-                UtilsMethods.showAlert("Information", "No packages found between " + fromDate + " and " + toDate);
+                UtilsMethods.showAlert("Information", "No packages found between " + fromDate + " and " + toDate, "INFORMATION");
             }
         } catch (SelectException ex) {
-            Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
-            UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, null, ex);
+            UtilsMethods.showAlert("Error", "Failed to filter packages: " + ex.getMessage(), "ERROR");
         }
     }
 
+    /**
+     * Handles the action of adding a new shipment/package to the system.
+     * Creates a default package with predefined values and adds it to the
+     * database. After successful addition, refreshes the table view to display
+     * the new entry.
+     *
+     * @param event The ActionEvent triggered by the add shipment button
+     */
     private void handleAddShipmentAction(ActionEvent event) {
         LOGGER.info("Entering handleAddShipmentAction");
         try {
-            // Create new package with validated inputs
-            Paquete defaultPaquete = new Paquete("sender", "receiver", 0.0, PackageSize.MEDIUM, new Date(), false);
-            // Add to database first
+            // Create new package with default values
+            Paquete defaultPaquete = new Paquete(
+                            "sender", // default sender
+                            "receiver", // default receiver
+                            0.0, // default weight
+                            PackageSize.MEDIUM, // default size
+                            new Date(), // current date
+                            false // not delivered
+            );
+
+            // Attempt to add to database
             Paquete savedPackage = PaqueteFactory.getPackageInstance().addPackage(defaultPaquete);
+
             if (savedPackage != null) {
-                fillTableFromDataBase(); // Refresh the table data after adding
-                LOGGER.info("Package added successfully: " + savedPackage);
+                fillTableFromDataBase(); // Refresh table data
+                LOGGER.info("Package added successfully with ID: " + savedPackage.getId());
+                UtilsMethods.showAlert("Success", "New package created successfully.", "INFORMATION");
+            } else {
+                LOGGER.warning("Package was not saved properly - returned null");
+                UtilsMethods.showAlert("Warning", "Package creation may not have completed properly.", "WARNING");
             }
+
         } catch (CreateException ex) {
-            LOGGER.log(Level.SEVERE, "Failed to create package: " + ex.getMessage(), ex);
-            UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Failed to create package", ex);
+            UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage(), "ERROR");
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Unexpected error while creating package", ex);
+            UtilsMethods.showAlert("Error", "An unexpected error occurred while creating the package.", "ERROR");
         }
         LOGGER.info("Exiting handleAddShipmentAction");
     }
@@ -659,18 +662,32 @@ public class PaqueteController {
         // Get all selected items
         ObservableList<Paquete> selectedPaquetes = paqueteTableView.getSelectionModel().getSelectedItems();
         if (selectedPaquetes != null && !selectedPaquetes.isEmpty()) {
-            try {
-                // Delete each selected package from database
-                for (Paquete paquete : selectedPaquetes) {
-                    PaqueteFactory.getPackageInstance().deletePackages(paquete.getId());
-                    LOGGER.info("Paquete with id " + paquete.getId() + " deleted");
+            // Show confirmation alert
+            String confirmMessage = "Are you sure you want to delete " + selectedPaquetes.size()
+                            + " selected package(s)? This action cannot be undone.";
+            Alert alert = UtilsMethods.showAlert("Confirm Deletion", confirmMessage, "CONFIRMATION");
+
+            if (alert.getResult() == ButtonType.OK) {
+                try {
+                    // Delete each selected package from database
+                    for (Paquete paquete : selectedPaquetes) {
+                        PaqueteFactory.getPackageInstance().deletePackages(paquete.getId());
+                        LOGGER.info("Paquete with id " + paquete.getId() + " deleted");
+                    }
+                    // Remove all selected items from the table
+                    paqueteTableView.getItems().removeAll(selectedPaquetes);
+
+                    // Show success alert
+                    UtilsMethods.showAlert("Success", selectedPaquetes.size() + " package(s) successfully deleted.", "INFORMATION");
+
+                } catch (DeleteException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                    UtilsMethods.showAlert("Error", "Failed to delete packages: " + ex.getMessage(), "ERROR");
                 }
-                // Remove all selected items from the table
-                paqueteTableView.getItems().removeAll(selectedPaquetes);
-            } catch (DeleteException ex) {
-                Logger.getLogger(PaqueteController.class.getName()).log(Level.SEVERE, null, ex);
-                UtilsMethods.showAlert("Error", "Failed to delete packages: " + ex.getMessage());
             }
+        } else {
+            // Show alert if no packages are selected
+            UtilsMethods.showAlert("No Selection", "Please select at least one package to delete.", "WARNING");
         }
     }
 
@@ -680,7 +697,7 @@ public class PaqueteController {
         System.out.println("Print Report clicked");
         try {
             LOGGER.info("Beginning printing action...");
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/newReport.jrxml"));
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/PackageReport.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource 
             //implementation 
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Paquete>) this.paqueteTableView.getItems());
@@ -696,8 +713,8 @@ public class PaqueteController {
         } catch (JRException ex) {
             //If there is an error show message and
             //log it.
-            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
-            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}",ex.getMessage());
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage(), "ERROR");
+            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
         }
     }
 }

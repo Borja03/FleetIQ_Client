@@ -53,9 +53,23 @@
                 </Menu>
                 <Menu fx:id="menuView" mnemonicParsing="false" text="View">
                     <items>
-                        <MenuItem fx:id="menuItemDarkMode" mnemonicParsing="false" onAction="#handleDarkModeMenuItemAction" text="Dark mode" />
+                        <MenuItem fx:id="menuItemDarkMode" mnemonicParsing="false" onAction="#handleDarkModeMenuItemAction" text="Dark mode">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/dark.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="menuItemLightMode" mnemonicParsing="false" onAction="#handleLightModeMenuItemAction" text="Light mode" />
+                        <MenuItem fx:id="menuItemLightMode" mnemonicParsing="false" onAction="#handleLightModeMenuItemAction" text="Light mode">
+                     <graphic>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../image/light.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
                     </items>
                 </Menu>
                 <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help">
