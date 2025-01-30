@@ -1,6 +1,6 @@
 package ui.login;
 
-import encryption.ClientSideEncryption;
+//import encryption.ClientSideEncryption;
 import exception.InvalidEmailFormatException;
 import exception.SelectException;
 import factories.SignableFactory;
@@ -35,7 +35,6 @@ import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
 import models.Admin;
-import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.encryptedData;
 import ui.paquete.PaqueteController;
 import ui.profile.MainController;
 import ui.resetpassword.ResetPasswordController;
@@ -306,7 +305,7 @@ public class LogInController {
         // Call ClientSideEncryption to encrypt the message
         byte[] encryptedData = null;
         try {
-            encryptedData = ClientSideEncryption.encrypt("12345@aA");
+            //encryptedData = ClientSideEncryption.encrypt("12345@aA");
         } catch (Exception ex) {
             Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
         }
