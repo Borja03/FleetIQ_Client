@@ -1,6 +1,7 @@
 package ui.login;
 
 //import encryption.ClientSideEncryption;
+import encryption.ClientSideEncryption;
 import exception.InvalidEmailFormatException;
 import exception.SelectException;
 import factories.SignableFactory;
@@ -298,7 +299,7 @@ public class LogInController {
         String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
         User user = new User();
-        user.setEmail("multitartanga@gmail.com");
+        user.setEmail(email);
         //user.setPassword("12345");
 
         // Call ClientSideEncryption to encrypt the message
