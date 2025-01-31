@@ -43,6 +43,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
+import utils.ThemeManager;
 
 public class EnvioController {
 
@@ -143,6 +144,7 @@ public class EnvioController {
         configureRemoveButton();
         setUpContextMenu();
 
+        ThemeManager.getInstance().applyTheme(stage.getScene());
         loadInitialData();
         stage.show();
     }
