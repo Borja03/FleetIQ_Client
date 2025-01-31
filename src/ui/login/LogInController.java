@@ -1,6 +1,7 @@
 package ui.login;
 
 //import encryption.ClientSideEncryption;
+import encryption.ClientSideEncryption;
 import exception.InvalidEmailFormatException;
 import exception.SelectException;
 import factories.SignableFactory;
@@ -34,7 +35,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
-import models.Admin;
 import ui.paquete.PaqueteController;
 import ui.profile.MainController;
 import ui.resetpassword.ResetPasswordController;
@@ -298,7 +298,8 @@ public class LogInController {
         String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
         User user = new User();
-        user.setEmail("multitartanga@gmail.com");
+        user.setEmail(email);
+        // user.setEmail("multitartanga@gmail.com");
         //user.setPassword("12345");
 
         // Call ClientSideEncryption to encrypt the message
