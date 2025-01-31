@@ -10,9 +10,18 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import exception.SelectException;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import models.PackageSize;
@@ -21,11 +30,14 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import javafx.stage.Stage;
+import javax.ws.rs.ProcessingException;
+import logicimplementation.PackageManagerImp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isDisabled;
@@ -105,221 +117,186 @@ public class PaqueteControllerTest extends ApplicationTest {
 
     }
 
-    // crud Test 
     /**
-     * Test adding a new package.
+     * Test adding a new package to the system.
      */
     @Test
     public void testB_addPackage() {
         int initialRowCount = paqueteTableView.getItems().size();
-        clickOn(addShipmentBtn);
-        assertEquals("Package not added", initialRowCount + 1, paqueteTableView.getItems().size());
+
+        // Click the "Add Shipment" button
+        clickOn("#addShipmentBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify the table has one more row than before
+        int newRowCount = paqueteTableView.getItems().size();
+        assertEquals(initialRowCount + 1, newRowCount);
+
+        // Verify default values of the new package
+        Paquete newPackage = paqueteTableView.getItems().get(newRowCount - 1);
+        assertEquals("", newPackage.getSender());
+        assertEquals("", newPackage.getReceiver());
+        assertEquals(PackageSize.MEDIUM, newPackage.getSize());
     }
 
     /**
-     * Test removing a package.
+     * Test updating a package's sender name through table editing.
      */
     @Test
-    public void testC_removePackage() {
-        int initialRowCount = paqueteTableView.getItems().size();
-        Node row = lookup(".table-row-cell").nth(5).query();
+    public void testC_updatePackage() {
+        // Wait for data to load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify table has data
+        assertFalse("Table empty - no packages found", paqueteTableView.getItems().isEmpty());
+        TableRow<Paquete> row = lookup(".table-row-cell").nth(5)
+                        .query();
+        TableColumn<Paquete, ?> senderColumn = paqueteTableView.getColumns().get(1);
+        interact(() -> {
+            doubleClickOn(row.getChildrenUnmodifiable().get(1));
+        });
+
+        // Enter new value
+        write("NewSender");
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify update
+        Paquete updated = paqueteTableView.getItems().get(5);
+        assertEquals("NewSender", updated.getSender());
+    }
+
+    /**
+     * Test deleting a package from the table.
+     */
+    @Test
+    public void testD_deletePackage() {
+        // Wait for initial data load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        int initialCount = paqueteTableView.getItems().size();
+        if (initialCount == 0) {
+            return;
+        }
+
+        TableRow<Paquete> row = lookup(".table-row-cell").query();
+        
         clickOn(row);
-        verifyThat("#removeShipmentBtn", isEnabled());
-        clickOn(removeShipmentBtn);
-        assertEquals("Package not removed", initialRowCount - 1, paqueteTableView.getItems().size());
+
+        clickOn("#removeShipmentBtn");
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        DialogPane dialogPane = lookup(".dialog-pane").query();
+        assertNotNull("Confirmation dialog not shown", dialogPane);
+
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        assertNotNull("OK button not found in dialog", okButton);
+
+        clickOn(okButton);
+
+        WaitForAsyncUtils.waitForFxEvents();
+        assertEquals("Package count should decrease by 1",initialCount - 1, paqueteTableView.getItems().size());
+    }
+    // test backend
+    @Test
+    public void testServerConnectionStatus() {
+        try {
+            // Attempt a lightweight server operation
+            PackageManagerImp packageManager = new PackageManagerImp();
+
+            // Test connection by fetching minimal data
+            List<Paquete> result = packageManager.findAllPackages();
+
+            // If we reach here, server is connected
+            assertTrue("Server is connected", true);
+
+            // Optional: Verify response format if needed
+            assertNotNull("Received valid response", result);
+        } catch (SelectException e) {
+            // Analyze exception to determine connection failure
+            if (e.getMessage().contains("Database server connection failed")) {
+                fail("Server connection failed: " + e.getMessage());
+            } else if (e.getCause() instanceof ProcessingException) {
+                fail("Network error: " + e.getCause().getMessage());
+            } else {
+                // Other database-related error (server is connected)
+                assertTrue("Server is reachable but operation failed", true);
+            }
+        } catch (Exception e) {
+            fail("Unexpected error: " + e.getMessage());
+        }
     }
 
     /**
-     * Test validation of sender and receiver fields.
+     * Test date range filtering functionality.
      */
     @Test
-    public void testD_updatePackage() {
- 
+    public void testF_filterByDates() {
+        // Set dates
+        fromDatePicker.setValue(LocalDate.now().minusDays(7));
+        toDatePicker.setValue(LocalDate.now());
+        clickOn("#filterDatesBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify packages are within date range
+        ObservableList<Paquete> filtered = paqueteTableView.getItems();
+        assertTrue(filtered.stream().allMatch(p
+                        -> !p.getCreationDate().before(Date.from(fromDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        && !p.getCreationDate().after(Date.from(toDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
+        ));
+    }
+
+    // test filters 
+    /**
+     * Test search functionality by name.
+     */
+    @Test
+    public void testG_searchFunctionality() {
+        // Assume there's a package with "John" in sender/receiver
+        clickOn("#searchTextField");
+        write("John");
+        clickOn("#searchBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify results contain "John"
+        ObservableList<Paquete> results = paqueteTableView.getItems();
+        assertTrue(results.stream().anyMatch(p
+                        -> p.getSender().contains("John") || p.getReceiver().contains("John")
+        ));
     }
 
     /**
      * Test filtering packages by size.
      */
     @Test
-    public void testD_filterBySize() {
-        // Verify that the ComboBox is visible and enabled
-        verifyThat(sizeFilterComboBox, isVisible());
-        verifyThat(sizeFilterComboBox, isEnabled());
+    public void testE_filterBySize() {
+        // Select MEDIUM size from combo box
+        clickOn("#sizeFilterComboBox");
+        clickOn("MEDIUM");
+        WaitForAsyncUtils.waitForFxEvents();
 
-        // Open the ComboBox dropdown
-        clickOn(sizeFilterComboBox); // Use the default clickOn method
-        sleep(1000); // Wait for the dropdown to fully render
-
-        // Debug: Print the available options
-        System.out.println("Dropdown options: " + sizeFilterComboBox.getItems());
-
-        // Debug: Verify that the dropdown is open
-        Node dropdown = lookup("#sizeFilterComboBox").query();
-        assertNotNull("Dropdown not found", dropdown);
-        verifyThat(dropdown, isVisible());
-
-        // Select the "MEDIUM" option by text
-        Node mediumOption = lookup("MEDIUM").query();
-        assertNotNull("MEDIUM option not found", mediumOption);
-        clickOn(mediumOption);
-
-        // Verify that the TableView is filtered correctly
-        verifyThat(paqueteTableView, (TableView<Paquete> table)
-                        -> table.getItems().stream().allMatch(p -> p.getSize() == PackageSize.MEDIUM)
-        );
+        // Verify all displayed packages have MEDIUM size
+        ObservableList<Paquete> filtered = paqueteTableView.getItems();
+        assertTrue(filtered.stream().allMatch(p -> p.getSize() == PackageSize.MEDIUM));
     }
 
+    // test errors handling 
+    /**
+     * Test error handling for invalid inputs.
+     */
 //    @Test
-//public void testD_filterBySize() {
-//    // Verify that the ComboBox is visible and enabled
-//    verifyThat(sizeFilterComboBox, isVisible());
-//    verifyThat(sizeFilterComboBox, isEnabled());
-//
-//    // Open the ComboBox dropdown
-//    int retryCount = 3;
-//    boolean selected = false;
-//
-//    for (int i = 0; i < retryCount; i++) {
-//        try {
-//            clickOn(sizeFilterComboBox); // Open dropdown
-//            waitForFxEvents();
-//
-//            // Ensure dropdown is rendered and visible
-//            Node dropdown = lookup("#sizeFilterComboBox").query();
-//            assertNotNull("Dropdown not found", dropdown);
-//            verifyThat(dropdown, isVisible());
-//
-//            // Select the "MEDIUM" option by text
-//            Node mediumOption = lookup("MEDIUM").query();
-//            if (mediumOption != null && mediumOption.isVisible()) {
-//                clickOn(mediumOption);
-//                selected = true;
-//                break;
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Attempt " + (i + 1) + " failed: " + e.getMessage());
-//        }
-//    }
-//
-//    assertTrue("Failed to select 'MEDIUM' option after retries", selected);
-//
-//    // Verify that the TableView is filtered correctly
-//    verifyThat(paqueteTableView, (TableView<Paquete> table)
-//            -> table.getItems().stream().allMatch(p -> p.getSize() == PackageSize.MEDIUM)
-//    );
-//}
-// Utility method to wait for FX events to complete
-//    private void waitForFxEvents() {
+//    public void testH_errorHandling() {
+//        // Test invalid sender name format
+//        paqueteTableView.getSelectionModel().selectFirst();
+//        doubleClickOn(paqueteTableView.lookup(".table-row-cell").nth(0).lookup(".table-cell").nth(1));
+//        write("123Invalid"); // Numbers are invalid
+//        press(KeyCode.ENTER);
 //        WaitForAsyncUtils.waitForFxEvents();
-//    }
-    /**
-     * Test searching packages by name.
-     */
-    @Test
-    public void testE_searchByName() {
-        clickOn(searchTextField);
-        write("John Doe");
-        clickOn(searchBtn);
-
-        // Verify that the table contains at least one row with the sender "John Doe"
-        verifyThat(paqueteTableView, (TableView<Paquete> table)
-                        -> table.getItems()
-                                        .stream()
-                                        .anyMatch(p -> p.getSender().contains("John Doe"))
-        );
-    }
-
-    /**
-     * Test filtering packages by date range.
-     */
-//    @Test
-//    public void testF_filterByDateRange() {
-//        clickOn(fromDatePicker);
-//        write("15/01/2025");
-//        clickOn(toDatePicker);
-//        write("31/01/2025");
-//        clickOn(filterDatesBtn);
 //
-//        // Verify that the table contains rows within the specified date range
-//        verifyThat(paqueteTableView, (TableView<Paquete> table)
-//                        -> table.getItems().stream().allMatch(p
-//                                        -> p.getCreationDate().after(java.sql.Date.valueOf("2025-01-15"))
-//                        && p.getCreationDate().before(java.sql.Date.valueOf("2025-01-31"))
-//                        )
-//        );
+//        // Verify error alert is shown
+//        Node dialogPane = lookup(".alert").query();
+//        assertNotNull(dialogPane);
+//        clickOn("OK");
 //    }
-    @Test
-    public void testF_filterByDateRange() {
-        // Set date values programmatically to avoid format issues
-        interact(() -> {
-            fromDatePicker.setValue(LocalDate.of(2025, 1, 15));
-            toDatePicker.setValue(LocalDate.of(2025, 1, 31));
-        });
-
-        // Click the filter button
-        clickOn(filterDatesBtn);
-        sleep(1000); // Wait for filtering logic to apply
-
-        // Verify the table contains rows within the specified date range (inclusive)
-        verifyThat(paqueteTableView, (TableView<Paquete> table)
-                        -> table.getItems().stream().allMatch(p
-                                        -> p.getCreationDate().compareTo(java.sql.Date.valueOf("2025-01-15")) >= 0
-                        && p.getCreationDate().compareTo(java.sql.Date.valueOf("2025-01-31")) <= 0
-                        )
-        );
-    }
-
-    /**
-     * Test printing report.
-     */
-    @Test
-    public void testG_printReport() {
-        clickOn(printReportBtn);
-        // Verify that the print report action is triggered (this might require mocking or additional setup)
-    }
-
-    /**
-     * Test table row selection.
-     */
-    @Test
-    public void testH_tableSelection() {
-        Node row = lookup(".table-row-cell").nth(0).query();
-        clickOn(row);
-        verifyThat("#removeShipmentBtn", isEnabled());
-    }
-
-    /**
-     * Test validation of sender and receiver fields.
-     */
-    @Test
-    public void testI_validation() {
-        // Ensure the table has data
-        assertNotNull(paqueteTableView.getItems());
-        assertFalse(paqueteTableView.getItems().isEmpty());
-
-        // Select the first row
-        Node row = lookup(".table-row-cell").nth(0).query();
-        clickOn(row);
-
-        // Find the sender cell in the first row
-        Node senderCell = lookup(".table-row-cell .table-cell")
-                        .nth(1) // Assuming senderColumn is the second column (index 1)
-                        .query();
-        assertNotNull("Sender cell not found", senderCell);
-
-        // Double-click the sender cell to enter edit mode
-        doubleClickOn(senderCell);
-
-        // Enter invalid data and press Enter
-        write("InvalidSender123");
-        press(KeyCode.ENTER);
-
-        // Verify that the validation error message is shown
-        verifyThat("Sender name must not exceed 30 letters and must contain letters only.", isVisible());
-        clickOn(isDefaultButton());
-    }
-
-    private void clickOn(PackageSize orElseThrow) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

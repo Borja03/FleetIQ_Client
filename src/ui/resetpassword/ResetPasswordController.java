@@ -3,9 +3,11 @@ package ui.resetpassword;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import encryption.ClientSideEncryption;
 import exception.SelectException;
 import exception.UpdateException;
 import factories.SignableFactory;
+import java.util.Base64;
 import java.util.logging.Level;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -20,6 +22,7 @@ import javafx.scene.Scene;
 import java.util.logging.Logger;
 import javafx.stage.Modality;
 import models.User;
+import ui.login.LogInController;
 
 public class ResetPasswordController {
 
@@ -78,25 +81,6 @@ public class ResetPasswordController {
         stage.show();
     }
 
-//    private void handleSendCode() {
-//        String email = emailField.getText().trim();
-//        if (email.isEmpty() || !email.contains("@")) {
-//            showAlert(Alert.AlertType.ERROR, "Invalid Email", "Please enter a valid email address.");
-//        } else {
-//            resetUserPass.setEmail(email);
-//            User isUserExist = SignableFactory.getSignable().checkExist(resetUserPass,User.class);
-//            if (isUserExist.isActivo()) {
-//                System.out.println(isUserExist.toString());
-//                LOGGER.info("Verification code sent to email: " + email);
-//                SignableFactory.getSignable().resetPassword(resetUserPass);
-//                showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
-//            } else {
-//                LOGGER.info("This email: " + email + " does not exsit in our database");
-//                showAlert(Alert.AlertType.INFORMATION, "Code Sent", "A verification code has been sent to " + email);
-//            }
-//
-//        }
-//    }
     private void handleSendCode() {
         String email = emailField.getText().trim();
         if (email.isEmpty() || !email.contains("@")) {
@@ -157,11 +141,21 @@ public class ResetPasswordController {
             LOGGER.info("Password updated successfully.");
             showAlert(Alert.AlertType.INFORMATION, "Success", "Your password has been updated successfully!");
             // to add  crypto her
-            resetUserPass.setPassword(newPassword);
+            // Call ClientSideEncryption to encrypt the message
+            byte[] encryptedData = null;
+            try {
+                encryptedData = ClientSideEncryption.encrypt(newPassword);
+            } catch (Exception ex) {
+                Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            // Convert to Base64 for easy printing (optional)
+            String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
+            resetUserPass.setPassword(encryptedBase64);
+            //resetUserPass.setPassword(newPassword);
             try {
                 SignableFactory.getSignable().updatePassword(resetUserPass);
             } catch (UpdateException ex) {
-                Logger.getLogger(ResetPasswordController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
 
             stage.close();

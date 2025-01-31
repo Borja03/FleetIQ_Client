@@ -23,7 +23,7 @@
          <children>
       <VBox prefHeight="720.0" prefWidth="300.0">
          <children>
-            <ImageView fitHeight="719.0" fitWidth="367.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="736.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../image/fleetside.png" />
                </image>
