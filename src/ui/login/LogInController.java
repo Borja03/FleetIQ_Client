@@ -300,6 +300,7 @@ public class LogInController {
         User user = new User();
         user.setEmail(email);
         // user.setEmail("multitartanga@gmail.com");
+
         //user.setPassword("12345");
 
         // Call ClientSideEncryption to encrypt the message
