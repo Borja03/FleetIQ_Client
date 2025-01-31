@@ -1,11 +1,9 @@
 package ui.signup;
 
-
-
-
 import com.jfoenix.controls.JFXAlert;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialogLayout;
+import encryption.ClientSideEncryption;
 import exception.ConnectionException;
 import exception.EmptyFieldException;
 import exception.InvalidCityFormatException;
@@ -20,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -58,11 +57,8 @@ import ui.login.LogInController;
 
 /**
  * SignUpController handles the user interactions for the sign-up window. It
- * manages the UI components and their associated actions.
- * Author: Adrian y Omar
+ * manages the UI components and their associated actions. Author: Adrian y Omar
  */
-        
-
 public class SignUpController {
 
     // Logger for logging events
@@ -151,7 +147,6 @@ public class SignUpController {
         return stage;
     }
 
-   
     /**
      * Sets the current stage of the SignUpController.
      *
@@ -162,14 +157,13 @@ public class SignUpController {
     }
 
     private ContextMenu contextMenu; // Context menu for additional actions
-   // private String currentTheme = "light"; // Current theme of the application
+    // private String currentTheme = "light"; // Current theme of the application
 
     /**
      * Initializes the sign-up stage with the given root layout.
      *
      * @param root the parent layout for the sign-up window
      */
-    
     public void initStage(Parent root) {
         LOGGER.info("Initialising Sign Up window.");
 
@@ -182,8 +176,7 @@ public class SignUpController {
         stage.centerOnScreen();
 
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
-   
-        
+
         tf_password.setVisible(false);
         tf_password_confirm.setVisible(false);
 
@@ -193,7 +186,6 @@ public class SignUpController {
         stage.setOnCloseRequest(this::handleOnActionExit);
 
         // changes for exam
-             
         // active chackbox
         chb_active.setSelected(true);
         // listener for focus
@@ -207,7 +199,7 @@ public class SignUpController {
         tf_city.focusedProperty().addListener(this::focusChanged);
         tf_zip.focusedProperty().addListener(this::focusChanged);
 
-      // Initialize context menu
+        // Initialize context menu
         initializeContextMenu();
 
         // Add context menu to the scene
@@ -219,6 +211,8 @@ public class SignUpController {
         LOGGER.info("Window opened.");
 
         // Show the stage
+        
+        
         stage.show();
     }
 
@@ -253,39 +247,39 @@ public class SignUpController {
      *
      * @param theme the theme to be saved
      */
-   private void saveThemePreference(String theme) {
-    try {
-        Properties props = new Properties();
-        props.setProperty("theme", theme);
-        props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
-    } catch (IOException e) {
-      LOGGER.severe("Error saving theme preference: " + e.getMessage());
+    private void saveThemePreference(String theme) {
+        try {
+            Properties props = new Properties();
+            props.setProperty("theme", theme);
+            props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
+        } catch (IOException e) {
+            LOGGER.severe("Error saving theme preference: " + e.getMessage());
+        }
     }
-}
 
     /**
      * Loads the user's theme preference from a properties file.
      *
      * @return the loaded theme preference, defaults to "light" if not found
      */
+    /**
+     * Loads the saved theme preference from a configuration file using
+     * ResourceBundle. If no preference is found, returns the default theme
+     * "light".
+     *
+     * @return the saved theme preference, or "light" if no preference is found
+     */
+    private String loadThemePreference() {
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
+            return bundle.getString("theme");
+        } catch (Exception e) {
+            // Log an error message if loading the theme preference fails
+        }
 
-
-/**
- * Loads the saved theme preference from a configuration file using ResourceBundle.
- * If no preference is found, returns the default theme "light".
- *
- * @return the saved theme preference, or "light" if no preference is found
- */
-private String loadThemePreference() {
-    try {
-        ResourceBundle bundle = ResourceBundle.getBundle("config/config_theme");
-        return bundle.getString("theme");
-    } catch (Exception e) {
-        // Log an error message if loading the theme preference fails
+        return "light";
     }
 
-    return "light";
-}
     /**
      * Switches the application theme and saves the preference.
      *
@@ -380,12 +374,12 @@ private String loadThemePreference() {
             pf_password_confirm.setText(tf_password_confirm.getText());
         }
     }
-    
+
     //
-    private void focusChanged(ObservableValue observable ,Boolean oldValue ,Boolean newValue){
-      if(newValue){
-       lbl_error.setText("");
-      }  
+    private void focusChanged(ObservableValue observable, Boolean oldValue, Boolean newValue) {
+        if (newValue) {
+            lbl_error.setText("");
+        }
     }
 
     /**
@@ -594,12 +588,23 @@ private String loadThemePreference() {
      * @param isActive the active status of the user.
      */
     private void performSignUp(String email, String password, String name, String street, String city, int zip) {
-      //  User user = new User(email, password, name, isActive, street, city, zip);
-     User user = new User(email,name, password,city,  street,  zip);
+        //  User user = new User(email, password, name, isActive, street, city, zip);
+        // Call ClientSideEncryption to encrypt the message
+        byte[] encryptedData = null;
+        try {
+            encryptedData = ClientSideEncryption.encrypt(password);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+        // Convert to Base64 for easy printing (optional)
+        String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
+        System.out.println("Encrypted Message (Base64): " + encryptedBase64);
+
+        User user = new User(email, name, encryptedBase64, city, street, zip);
         user.setUser_type("admin");
         try {
             // Attempting to sign up the user
-            User nuevoUser = SignableFactory.getSignable().signUp(user,User.class);
+            User nuevoUser = SignableFactory.getSignable().signUp(user, User.class);
             // If the sign-up is successful
             if (nuevoUser != null) {
                 showAlert();
@@ -633,7 +638,7 @@ private String loadThemePreference() {
         navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
     }
 
-        private void showAlert() {
+    private void showAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Sign-up Successful");
         alert.setHeaderText(null);
@@ -647,6 +652,7 @@ private String loadThemePreference() {
             }
         });
     }
+
     /**
      * Navigates to a specified screen.
      *
@@ -659,12 +665,10 @@ private String loadThemePreference() {
             Parent root = loader.load();
             // Get the current stage
 
-
-                LogInController controller = loader.getController();
-                Stage newStage = new Stage();
-                controller.setStage(newStage);
-                controller.initialize(root);
-
+            LogInController controller = loader.getController();
+            Stage newStage = new Stage();
+            controller.setStage(newStage);
+            controller.initialize(root);
 
             stage = (Stage) btn_signup.getScene().getWindow();
             stage.close();
@@ -711,53 +715,43 @@ private String loadThemePreference() {
 //            alert.showAndWait();
 //            LOGGER.log(Level.SEVERE, errorMsg);
 //        }
-
     private void handleOnActionExit(Event event) {
 
-    // Create JFoenix alert
-    JFXAlert<Void> alert = new JFXAlert<>((Stage) event.getSource());
-    alert.initModality(Modality.APPLICATION_MODAL);
-    
-    // Create dialog layout
-    JFXDialogLayout layout = new JFXDialogLayout();
-    layout.setHeading(new Text("Exit Confirmation"));
-    layout.setBody(new Text("Are you sure you want to exit the application?"));
-    
-    // Create buttons
-    JFXButton okButton = new JFXButton("OK");
-    JFXButton cancelButton = new JFXButton("Cancel");
-    
-    // OK button action
-    okButton.setOnAction(e -> {
-        saveThemePreference(LogInController.currentTheme);
-        Platform.exit();
-        LOGGER.info("Application exited by user.");
-        alert.close();
-    });
-    
-    // Cancel button action
-    cancelButton.setOnAction(e -> {
-        event.consume();
-        alert.close();
-    });
-    
-    // Set buttons to dialog
-    layout.setActions(cancelButton, okButton);
-    
-    // Set layout to alert
-    alert.setContent(layout);
-    
-    // Show the alert
-    alert.show();
-} 
+        // Create JFoenix alert
+        JFXAlert<Void> alert = new JFXAlert<>((Stage) event.getSource());
+        alert.initModality(Modality.APPLICATION_MODAL);
 
+        // Create dialog layout
+        JFXDialogLayout layout = new JFXDialogLayout();
+        layout.setHeading(new Text("Exit Confirmation"));
+        layout.setBody(new Text("Are you sure you want to exit the application?"));
 
- 
+        // Create buttons
+        JFXButton okButton = new JFXButton("OK");
+        JFXButton cancelButton = new JFXButton("Cancel");
 
-   
+        // OK button action
+        okButton.setOnAction(e -> {
+            saveThemePreference(LogInController.currentTheme);
+            Platform.exit();
+            LOGGER.info("Application exited by user.");
+            alert.close();
+        });
 
+        // Cancel button action
+        cancelButton.setOnAction(e -> {
+            event.consume();
+            alert.close();
+        });
 
-    
-        
+        // Set buttons to dialog
+        layout.setActions(cancelButton, okButton);
+
+        // Set layout to alert
+        alert.setContent(layout);
+
+        // Show the alert
+        alert.show();
+    }
 
 }

@@ -14,7 +14,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class Paquete implements Serializable {
+public class Paquete implements Serializable ,Cloneable  {
 
     private Long id;
     private String sender;
@@ -25,12 +25,11 @@ public class Paquete implements Serializable {
     private boolean fragile;
     private Envio envio;
 
-    
-    
     public Paquete() {
     }
 
-    public Paquete(Long id, String sender, String receiver, double weight, PackageSize size, Date creationDate, boolean fragile) {
+    public Paquete(Long id, String sender, String receiver, double weight,
+                    PackageSize size, Date creationDate, boolean fragile) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
@@ -104,7 +103,6 @@ public class Paquete implements Serializable {
     public void setSize(PackageSize size) {
         this.size = size;
     }
-    
 
     public Envio getEnvio() {
         return envio;
@@ -113,7 +111,12 @@ public class Paquete implements Serializable {
     public void setEnvio(Envio envio) {
         this.envio = envio;
     }
-    
+
+    @Override
+    public Paquete clone() throws CloneNotSupportedException {
+        // Returning a clone of the current object
+        return (Paquete) super.clone();
+    }
 
     @Override
     public String toString() {
