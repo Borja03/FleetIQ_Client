@@ -7,7 +7,12 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch"/>
+		<band height="79" splitType="Stretch">
+			<image>
+				<reportElement x="176" y="29" width="476" height="444" uuid="3333668e-916f-4b9d-be5f-6e24fee49a1b"/>
+				<imageExpression><![CDATA["C:\\Users\\Omar\\Desktop\\08\\FleetIQ_Client\\src\\image\\logo3.png"]]></imageExpression>
+			</image>
+		</band>
 	</title>
 	<pageHeader>
 		<band height="38" splitType="Stretch"/>

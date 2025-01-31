@@ -246,13 +246,13 @@ public class PaqueteController {
                 removeShipmentBtn.setDisable(false);
             }
         });
+
         //
         validateAndUpdateSenderColumn();
         //
         validateAndUpdateReceiverColumn();
         //
         validateAndUpdateWeightColumn();
-
         // Set the custom PaqueteCBoxEditingCell
         validateAndUpdateSizeColumn();
         // Setup the date column
@@ -268,8 +268,7 @@ public class PaqueteController {
             Paquete paquete = event.getRowValue();
             String newSenderValue = event.getNewValue();
             String originalValue = paquete.getSender(); // Store original value
-            System.out.println("-----> " + originalValue);
-
+            LOGGER.info("Sender original value" + originalValue);
             try {
                 // Validate the new sender value
                 if (newSenderValue.length() > MAX_LENGTH || !newSenderValue.matches("^[a-zA-Z\\s]+$")) {
@@ -279,7 +278,7 @@ public class PaqueteController {
                 // First try to update in database
                 Paquete updatedPaquete = paquete.clone(); // Create a temporary copy
                 updatedPaquete.setSender(newSenderValue);
-                System.out.println("-----> " + updatedPaquete.getSender());
+                LOGGER.info("Sender new value" + newSenderValue);
 
                 PaqueteFactory.getPackageInstance().updatePackage(updatedPaquete);
                 // If database update successful, then update the object
@@ -295,7 +294,7 @@ public class PaqueteController {
             } catch (UpdateException ex) {
                 // Handle database update failure
                 LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Error", "Failed to update sender. Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", "Failed to update sender."+ex.getMessage() + " Please try again.", "ERROR");
                 paquete.setSender(originalValue);
                 senderColumn.getTableView().refresh();
             } catch (CloneNotSupportedException ex) {

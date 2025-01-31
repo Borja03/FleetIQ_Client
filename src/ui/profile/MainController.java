@@ -40,6 +40,7 @@ import ui.login.LogInController;
 import static ui.login.LogInController.userSession;
 import ui.paquete.PaqueteController;
 import ui.resetpassword.ResetPasswordController;
+import utils.ThemeManager;
 import utils.UtilsMethods;
 
 /**
@@ -294,13 +295,13 @@ public class MainController {
         } else if (!newPassword.equals(repeatPassword)) {
             showAlert(Alert.AlertType.ERROR, "Password Mismatch", "Passwords do not match. Please try again.");
         } else {
-            
+
             // Call ClientSideEncryption to encrypt the message
             byte[] encryptedData = null;
             try {
                 encryptedData = ClientSideEncryption.encrypt(newPassword);
             } catch (Exception ex) {
-                Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
             }
             String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
             System.out.println("Encrypted Message (Base64): " + encryptedBase64);
@@ -309,20 +310,17 @@ public class MainController {
             user.setEmail(userSession.getEmail());
             user.setPassword(encryptedBase64);
             try {
-                System.out.println("--------------------------------" + user.getEmail());
-                System.out.println("--------------------------------" + user.getPassword());
+
                 SignableFactory.getSignable().updatePassword(user);
-                System.out.println("-------------------Done------------------------------");
-                System.out.println("--------------------------------" + user.getEmail());
-                System.out.println("--------------------------------" + user.getPassword());
+
                 LOGGER.info("Password updated successfully.");
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Your password has been updated successfully!");
                 // to add  crypto her
             } catch (UpdateException ex) {
                 Logger.getLogger(ResetPasswordController.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
-           navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
+
+            navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
         }
     }
 
@@ -539,8 +537,6 @@ public class MainController {
 
         });
     }
-
-
 
     /**
      * Handles the exit action with confirmation dialog.
