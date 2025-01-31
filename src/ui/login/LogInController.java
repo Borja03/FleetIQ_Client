@@ -35,7 +35,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.WindowEvent;
-import models.Admin;
 import ui.paquete.PaqueteController;
 import ui.profile.MainController;
 import ui.resetpassword.ResetPasswordController;
@@ -300,6 +299,8 @@ public class LogInController {
 
         User user = new User();
         user.setEmail(email);
+        // user.setEmail("multitartanga@gmail.com");
+
         //user.setPassword("12345");
 
         // Call ClientSideEncryption to encrypt the message
