@@ -2,8 +2,12 @@ package ui.profile;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
+import encryption.ClientSideEncryption;
+import exception.UpdateException;
+import factories.SignableFactory;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -33,7 +37,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import models.User;
 import ui.login.LogInController;
+import static ui.login.LogInController.userSession;
 import ui.paquete.PaqueteController;
+import ui.resetpassword.ResetPasswordController;
+import utils.ThemeManager;
 import utils.UtilsMethods;
 
 /**
@@ -129,7 +136,7 @@ public class MainController {
         this.stage = stage;
     }
 
-    public static final Logger logger = Logger.getLogger(MainController.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
 
     /**
      * Initializes the controller with the provided root element and the user
@@ -139,7 +146,7 @@ public class MainController {
      * @param user The user object containing the user's details.
      */
     public void initStage(Parent root) {
-        logger.info("Initializing MainController stage.");
+        LOGGER.info("Initializing MainController stage.");
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Main");
@@ -169,6 +176,8 @@ public class MainController {
         passwordField.setText(LogInController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
         System.out.println(LogInController.userSession.toString());
         // menu
+        btn_update_password.setOnAction(event -> handleUpdatePassword());
+
         // Initialize context menu
         initializeContextMenu();
 
@@ -184,7 +193,7 @@ public class MainController {
         vb_password.setVisible(false);
         swichBetweenProfilePassword();
 
-        logger.info("MainController initialized.");
+        LOGGER.info("MainController initialized.");
         stage.show();
     }
 
@@ -233,7 +242,7 @@ public class MainController {
             props.setProperty("theme", theme);
             props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
         } catch (IOException e) {
-            logger.severe("Error saving theme preference: " + e.getMessage());
+            LOGGER.severe("Error saving theme preference: " + e.getMessage());
         }
     }
 
@@ -275,6 +284,52 @@ public class MainController {
 
         // Save the specified theme preference to the configuration file
         saveThemePreference(LogInController.currentTheme);
+    }
+
+    private void handleUpdatePassword() {
+        String newPassword = newPasswordField.getText();
+        String repeatPassword = repeatPasswordField.getText();
+
+        if (newPassword.isEmpty() || repeatPassword.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Empty Fields", "Both password fields must be filled.");
+        } else if (!newPassword.equals(repeatPassword)) {
+            showAlert(Alert.AlertType.ERROR, "Password Mismatch", "Passwords do not match. Please try again.");
+        } else {
+
+            // Call ClientSideEncryption to encrypt the message
+            byte[] encryptedData = null;
+            try {
+                encryptedData = ClientSideEncryption.encrypt(newPassword);
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+            String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
+            System.out.println("Encrypted Message (Base64): " + encryptedBase64);
+
+            User user = new User();
+            user.setEmail(userSession.getEmail());
+            user.setPassword(encryptedBase64);
+            try {
+
+                SignableFactory.getSignable().updatePassword(user);
+
+                LOGGER.info("Password updated successfully.");
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Your password has been updated successfully!");
+                // to add  crypto her
+            } catch (UpdateException ex) {
+                Logger.getLogger(ResetPasswordController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     /**
@@ -465,7 +520,7 @@ public class MainController {
             controller.initialize(root);
         } catch (Exception e) {
             // Log an error if the screen fails to load
-            logger.log(Level.SEVERE, "Failed to load {0} screen: " + e.getMessage(), windowTitle);
+            LOGGER.log(Level.SEVERE, "Failed to load {0} screen: " + e.getMessage(), windowTitle);
         }
     }
 
@@ -481,13 +536,6 @@ public class MainController {
             vb_password.setVisible(true);
 
         });
-    }
-
-    private void updatePassword() {
-        // Implement your password update logic here
-
-        // TODO: Add your password validation and update logic
-        System.out.println("Update password called with: ");
     }
 
     /**
