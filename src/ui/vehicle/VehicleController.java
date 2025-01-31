@@ -219,6 +219,9 @@ public class VehicleController {
         stage.show();
     }
 
+    /**
+     * Fills the table with data from the database.
+     */
     private void fillTableFromDataBase() {
         try {
             List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
@@ -235,7 +238,9 @@ public class VehicleController {
         }
     }
 
-    // Método para inicializar la lógica de deshabilitación del botón
+    /**
+     * Configures the remove shipment button to be disabled when no row is selected.
+     */
     private void configureRemoveShipmentButton() {
         // Listener para deshabilitar el botón si no hay ninguna fila seleccionada
         vehicleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
