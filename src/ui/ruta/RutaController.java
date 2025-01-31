@@ -10,8 +10,11 @@ import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -43,6 +46,13 @@ import logicInterface.VehicleManager;
 import models.EnvioRutaVehiculo;
 import models.Ruta;
 import models.Vehiculo;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import utils.ThemeManager;
 import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
@@ -385,7 +395,28 @@ public class RutaController {
     }
 
     private void printReport() {
-        // Lógica para imprimir un informe
+        System.out.println("Print Report clicked");
+        try {
+            logger.info("Beginning printing action...");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/RutaReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Ruta>) this.rutaTable.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
+            logger.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        }
     }
 
     private void configureEditableColumns() {
