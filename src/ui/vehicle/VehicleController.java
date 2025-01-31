@@ -195,7 +195,7 @@ public class VehicleController {
             capacityTextField.setText("0");
 
             TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change
-                            -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
+                    -> change.getControlNewText().matches("\\d*") ? change : null); // Allow only digits
             capacityTextField.setTextFormatter(formatter);
         }
         data = FXCollections.observableArrayList();
@@ -219,6 +219,9 @@ public class VehicleController {
         stage.show();
     }
 
+    /**
+     * Fills the table with data from the database.
+     */
     private void fillTableFromDataBase() {
         try {
             List<Vehiculo> vehicleList = VehicleFactory.getVehicleInstance().findAllVehiculos();
@@ -235,7 +238,9 @@ public class VehicleController {
         }
     }
 
-    // Método para inicializar la lógica de deshabilitación del botón
+    /**
+     * Configures the remove shipment button to be disabled when no row is selected.
+     */
     private void configureRemoveShipmentButton() {
         // Listener para deshabilitar el botón si no hay ninguna fila seleccionada
         vehicleTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -295,36 +300,101 @@ public class VehicleController {
                 vehicleTableView.getSelectionModel().clearSelection(); // Deselecciona la fila seleccionada
             }
         });
+        // Permitir selección múltiple en la tabla
         vehicleTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+// Habilitar edición en la tabla
+        vehicleTableView.setEditable(true);
+
+// Configurar la celda para que use un TextField al editar
         matriculaColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+// Manejar la edición de la celda
         matriculaColumn.setOnEditCommit(event -> {
             Vehiculo vehiculo = event.getRowValue();
-            System.out.println(vehiculo.toString());
-            vehiculo.setMatricula(event.getNewValue());
+            String nuevaMatricula = event.getNewValue();
+
+            // Validar que la matrícula no esté vacía o solo tenga espacios en blanco
+            if (nuevaMatricula == null || nuevaMatricula.trim().isEmpty()) {
+                // Mostrar alerta
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Entrada no válida");
+                alert.setHeaderText("La matrícula no puede estar vacía");
+                alert.setContentText("Introduce una matrícula válida.");
+                alert.showAndWait();
+
+                // Restaurar el valor anterior
+                vehicleTableView.refresh();
+                return;
+            }
+
+            vehiculo.setMatricula(nuevaMatricula);
+
             try {
-                // Add any additional handling (like saving to database)
+                // Guardar cambios en la base de datos
                 VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
             } catch (UpdateException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar vehículo", ex);
+
+                // Mostrar alerta de error
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error de actualización");
+                alert.setHeaderText("No se pudo actualizar la matrícula");
+                alert.setContentText("Inténtalo de nuevo más tarde.");
+                alert.showAndWait();
+
+                // Restaurar el valor anterior en caso de error
+                vehicleTableView.refresh();
             }
         });
 
+        // Permitir edición en la columna
         modelColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+// Manejar la edición de la celda
         modelColumn.setOnEditCommit(event -> {
             Vehiculo vehiculo = event.getRowValue();
-            System.out.println(vehiculo.toString());
-            vehiculo.setModelo(event.getNewValue());
+            String nuevoModelo = event.getNewValue();
+
+            // Validar que el nuevo valor no sea vacío o solo espacios en blanco
+            if (nuevoModelo == null || nuevoModelo.trim().isEmpty()) {
+                // Mostrar alerta al usuario
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Entrada no válida");
+                alert.setHeaderText("El modelo no puede estar vacío");
+                alert.setContentText("Por favor, introduce un valor válido.");
+                alert.showAndWait();
+
+                // Restaurar el valor anterior
+                vehicleTableView.refresh();
+                return;
+            }
+
+            // Actualizar el modelo con el nuevo valor válido
+            vehiculo.setModelo(nuevoModelo);
+
             try {
-                // Add any additional handling (like saving to database)
                 VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
-            } catch (UpdateException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UpdateException e) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error al actualizar vehículo", e);
+
+                // Mostrar error al usuario
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error de actualización");
+                alert.setHeaderText("No se pudo actualizar el modelo del vehículo");
+                alert.setContentText("Inténtalo de nuevo más tarde.");
+                alert.showAndWait();
+
+                // Restaurar el valor anterior en caso de error
+                vehicleTableView.refresh();
             }
         });
 
+// Habilitar la edición en la tabla
+        vehicleTableView.setEditable(true);
+
         capacityColumn.setCellFactory(TextFieldTableCell.forTableColumn(
-                        new StringConverter<Integer>() {
+                new StringConverter<Integer>() {
             @Override
             public String toString(Integer object) {
                 return object != null ? object.toString() : "";
@@ -640,93 +710,94 @@ public class VehicleController {
 
     }
 
-@FXML
-private void onRemoveShipmentClicked() {
-    ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
+    @FXML
+    private void onRemoveShipmentClicked() {
+        ObservableList<Vehiculo> selectedVehicles = vehicleTableView.getSelectionModel().getSelectedItems();
 
-    if (selectedVehicles.isEmpty()) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("No Selection");
-        alert.setHeaderText("No Vehicles Selected");
-        alert.setContentText("Please select at least one vehicle to remove.");
-        alert.showAndWait();
-        return;
-    }
+        if (selectedVehicles.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Selection");
+            alert.setHeaderText("No Vehicles Selected");
+            alert.setContentText("Please select at least one vehicle to remove.");
+            alert.showAndWait();
+            return;
+        }
 
-    Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-    confirmAlert.setTitle("Confirm Deletion");
-    confirmAlert.setHeaderText("Delete Vehicles");
-    confirmAlert.setContentText("Are you sure you want to delete the selected vehicles? This will also remove any associated shipments and route assignments.");
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirm Deletion");
+        confirmAlert.setHeaderText("Delete Vehicles");
+        confirmAlert.setContentText("Are you sure you want to delete the selected vehicles? This will also remove any associated shipments and route assignments.");
 
-    confirmAlert.showAndWait().ifPresent(response -> {
-        if (response == javafx.scene.control.ButtonType.OK) {
-            try {
-                EnvioRutaVehiculoManager ervManager = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == javafx.scene.control.ButtonType.OK) {
+                try {
+                    EnvioRutaVehiculoManager ervManager = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
-                for (Vehiculo vehicle : selectedVehicles) {
-                    try {
-                        // 1. Obtener los registros de EnvioRutaVehiculo asociados con este vehículo
-                        List<EnvioRutaVehiculo> assignments = ervManager.getId(
-                                new GenericType<List<EnvioRutaVehiculo>>() {},
-                                String.valueOf(vehicle.getId())
-                        );
+                    for (Vehiculo vehicle : selectedVehicles) {
+                        try {
+                            // 1. Obtener los registros de EnvioRutaVehiculo asociados con este vehículo
+                            List<EnvioRutaVehiculo> assignments = ervManager.getId(
+                                    new GenericType<List<EnvioRutaVehiculo>>() {
+                            },
+                                    String.valueOf(vehicle.getId())
+                            );
 
-                        if (assignments != null && !assignments.isEmpty()) {
-                            // 2. Actualizar cada registro poniendo vehiculo_id a null
-                            for (EnvioRutaVehiculo assignment : assignments) {
-                                try {
-                                    // Establecer el vehiculo_id a null
-                                    assignment.setVehiculo(null);
-                                    // Usar el método edit_XML para actualizar el registro
-                                    ervManager.edit_XML(assignment, String.valueOf(assignment.getId()));
-                                    LOGGER.info("Successfully updated route assignment: " + assignment.getId());
-                                } catch (WebApplicationException ex) {
-                                    LOGGER.severe("Error updating route assignment: " + assignment.getId()
-                                            + " Error: " + ex.getMessage());
-                                    throw ex;
+                            if (assignments != null && !assignments.isEmpty()) {
+                                // 2. Actualizar cada registro poniendo vehiculo_id a null
+                                for (EnvioRutaVehiculo assignment : assignments) {
+                                    try {
+                                        // Establecer el vehiculo_id a null
+                                        assignment.setVehiculo(null);
+                                        // Usar el método edit_XML para actualizar el registro
+                                        ervManager.edit_XML(assignment, String.valueOf(assignment.getId()));
+                                        LOGGER.info("Successfully updated route assignment: " + assignment.getId());
+                                    } catch (WebApplicationException ex) {
+                                        LOGGER.severe("Error updating route assignment: " + assignment.getId()
+                                                + " Error: " + ex.getMessage());
+                                        throw ex;
+                                    }
                                 }
                             }
+
+                            // 3. Una vez que todos los registros relacionados están actualizados, eliminar el vehículo
+                            VehicleFactory.getVehicleInstance().deleteVehiculo(vehicle.getId());
+                            LOGGER.info("Successfully removed vehicle: " + vehicle.getId());
+
+                        } catch (WebApplicationException ex) {
+                            LOGGER.severe("Error processing vehicle: " + vehicle.getId()
+                                    + " Error: " + ex.getMessage());
+                            throw ex;
                         }
-
-                        // 3. Una vez que todos los registros relacionados están actualizados, eliminar el vehículo
-                        VehicleFactory.getVehicleInstance().deleteVehiculo(vehicle.getId());
-                        LOGGER.info("Successfully removed vehicle: " + vehicle.getId());
-
-                    } catch (WebApplicationException ex) {
-                        LOGGER.severe("Error processing vehicle: " + vehicle.getId()
-                                + " Error: " + ex.getMessage());
-                        throw ex;
                     }
+
+                    // Remover vehículos del TableView
+                    vehicleTableView.getItems().removeAll(selectedVehicles);
+
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Success");
+                    successAlert.setHeaderText("Vehicles Removed");
+                    successAlert.setContentText("The selected vehicles and their associated data have been removed successfully.");
+                    successAlert.showAndWait();
+
+                } catch (WebApplicationException ex) {
+                    LOGGER.severe("Error in deletion process: " + ex.getMessage());
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText("Deletion Failed");
+                    errorAlert.setContentText("An error occurred while deleting vehicles and their associated data: "
+                            + ex.getResponse().getStatusInfo().getReasonPhrase());
+                    errorAlert.showAndWait();
+                } catch (Exception e) {
+                    LOGGER.severe("Unexpected error during deletion: " + e.getMessage());
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText("Deletion Failed");
+                    errorAlert.setContentText("An unexpected error occurred while deleting vehicles and their associated data.");
+                    errorAlert.showAndWait();
                 }
-
-                // Remover vehículos del TableView
-                vehicleTableView.getItems().removeAll(selectedVehicles);
-
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                successAlert.setTitle("Success");
-                successAlert.setHeaderText("Vehicles Removed");
-                successAlert.setContentText("The selected vehicles and their associated data have been removed successfully.");
-                successAlert.showAndWait();
-
-            } catch (WebApplicationException ex) {
-                LOGGER.severe("Error in deletion process: " + ex.getMessage());
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setTitle("Error");
-                errorAlert.setHeaderText("Deletion Failed");
-                errorAlert.setContentText("An error occurred while deleting vehicles and their associated data: "
-                        + ex.getResponse().getStatusInfo().getReasonPhrase());
-                errorAlert.showAndWait();
-            } catch (Exception e) {
-                LOGGER.severe("Unexpected error during deletion: " + e.getMessage());
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setTitle("Error");
-                errorAlert.setHeaderText("Deletion Failed");
-                errorAlert.setContentText("An unexpected error occurred while deleting vehicles and their associated data.");
-                errorAlert.showAndWait();
             }
-        }
-    });
-}
+        });
+    }
 
     /**
      * Filters the vehicle list by license plate (matricula) when the search
@@ -794,7 +865,7 @@ private void onRemoveShipmentClicked() {
         String query = searchTextField.getText();
         // Implement search logic
     }
-    
+
     private void handlePrintReportAction(ActionEvent event) {
         // TODO: Implement print report logic
         System.out.println("Print Report clicked");
@@ -817,7 +888,7 @@ private void onRemoveShipmentClicked() {
             //If there is an error show message and
             //log it.
             utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
-            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}",ex.getMessage());
+            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
         }
     }
 
