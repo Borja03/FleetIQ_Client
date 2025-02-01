@@ -10,8 +10,11 @@ import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -545,33 +548,49 @@ public class RutaController {
     }
 
     private void showVehicleSelectionDialog(Ruta ruta) {
-        Stage vehicleStage = new Stage();
-        vehicleStage.setTitle("Seleccionar Vehículos");
+           Stage vehicleStage = new Stage();
+    vehicleStage.setTitle("Seleccionar Vehículos");
+    JFXListView<String> vehicleListView = new JFXListView<>();
+    ObservableList<String> selectedMatriculas = FXCollections.observableArrayList();
 
-        JFXListView<String> vehicleListView = new JFXListView<>();
-        ObservableList<String> selectedMatriculas = FXCollections.observableArrayList(); // Lista de elementos seleccionados manualmente
+    try {
+        List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
+        ObservableList<String> matriculas = FXCollections.observableArrayList();
+        
+        // Debug: Imprimir información de la ruta y sus vehículos asignados
+        System.out.println("Ruta ID: " + ruta.getLocalizador());
+        System.out.println("EnvioRutaVehiculos: " + (ruta.getEnvioRutaVehiculos() != null ? 
+            ruta.getEnvioRutaVehiculos().size() : "null"));
 
-        try {
-            List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
-            ObservableList<String> matriculas = FXCollections.observableArrayList();
-            
-            List<Integer> vehiculosAsignadosRuta = null;
-            
-            
-//            for (int i = 0; i<= ruta.getEnvioRutaVehiculos().size();i++){
-//                vehiculosAsignadosRuta.add(ruta.getEnvioRutaVehiculos().get(i).getVehiculoID());
-//            }
+        // Crear set de IDs de vehículos ya asignados para búsqueda más eficiente
+        Set<Integer> vehiculosAsignadosRuta = new HashSet<>();
+        if (ruta.getEnvioRutaVehiculos() != null && !ruta.getEnvioRutaVehiculos().isEmpty()) {
+            for (EnvioRutaVehiculo ervehiculo : ruta.getEnvioRutaVehiculos()) {
+                vehiculosAsignadosRuta.add(ervehiculo.getVehiculoID());
+                // Debug: Imprimir cada vehículo asignado
+                System.out.println("Vehículo asignado ID: " + ervehiculo.getVehiculoID());
+            }
+        }
 
-            for (Vehiculo vehiculo : vehiculos) {
-              //  for (int i = 0; i <= vehiculosAsignadosRuta.size(); i++){
-                //    if (vehiculosAsignadosRuta.get(i) != vehiculo.getId()){
-                         matriculas.add(vehiculo.getMatricula());
-                  //  }
-                }
-               
+        // Debug: Imprimir total de vehículos disponibles
+        System.out.println("Total vehículos en sistema: " + vehiculos.size());
+        
+        // Filtrar vehículos
+        for (Vehiculo vehiculo : vehiculos) {
+            // Debug: Imprimir información de cada vehículo
+            System.out.println("Evaluando vehículo - ID: " + vehiculo.getId() + 
+                             ", Matrícula: " + vehiculo.getMatricula() + 
+                             ", Está asignado: " + vehiculosAsignadosRuta.contains(vehiculo.getId()));
             
-
-            vehicleListView.setItems(matriculas);
+            if (!vehiculosAsignadosRuta.contains(vehiculo.getId())) {
+                matriculas.add(vehiculo.getMatricula());
+            }
+        }
+        
+        // Debug: Imprimir total de vehículos filtrados
+        System.out.println("Vehículos disponibles después del filtrado: " + matriculas.size());
+        
+        vehicleListView.setItems(matriculas);
 
             // Agregar manejador de clics personalizados
             vehicleListView.setCellFactory(lv -> {
