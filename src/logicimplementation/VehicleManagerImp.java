@@ -130,7 +130,6 @@ public class VehicleManagerImp implements VehicleManager {
         return webClient.createVehicle(vehiculo, responseType);
 
     }
-
     @Override
     public List<Vehiculo> findVehiclesBeforeDateITV(String endDate) throws SelectException {
         GenericType<List<Vehiculo>> responseType = new GenericType<List<Vehiculo>>() {

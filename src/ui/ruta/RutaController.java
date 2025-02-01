@@ -10,11 +10,15 @@ import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
@@ -46,6 +50,14 @@ import logicInterface.VehicleManager;
 import models.EnvioRutaVehiculo;
 import models.Ruta;
 import models.Vehiculo;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import utils.ThemeManager;
 import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
 
@@ -130,32 +142,47 @@ public class RutaController {
         } catch (SelectException ex) {
             Logger.getLogger(RutaController.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        ThemeManager.getInstance().applyTheme(stage.getScene());
         stage.show();
     }
 
-    private void loadRutaData() throws SelectException {
-        try {
-            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
-            });
+ private void loadRutaData() throws SelectException {
+    try {
+        List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {});
 
-            rutaData = FXCollections.observableArrayList(rutas);
-
-            localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
-            origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
-            destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
-            distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
-            tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-
-            rutaTable.setItems(rutaData);
-        } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error loading ruta data", e);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected error", e);
+        // Obtener y actualizar el conteo de vehículos para cada ruta
+        for (Ruta ruta : rutas) {
+            try {
+                String countStr = ervManager.countByRutaId(String.valueOf(ruta.getLocalizador()));
+                int vehicleCount = Integer.parseInt(countStr.trim());
+                ruta.setNumVehiculos(vehicleCount);
+            } catch (NumberFormatException e) {
+                logger.log(Level.SEVERE, "Error al convertir el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
+                ruta.setNumVehiculos(0);
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al obtener el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
+                ruta.setNumVehiculos(0);
+            }
         }
-    }
 
+        rutaData = FXCollections.observableArrayList(rutas);
+
+        localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
+        origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
+        destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
+        distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
+        tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
+        numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+
+        rutaTable.setItems(rutaData);
+    } catch (WebApplicationException e) {
+        logger.log(Level.SEVERE, "Error cargando datos de rutas", e);
+        UtilsMethods.showAlert("Error", "No se pudieron cargar las rutas.");
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Error inesperado", e);
+        UtilsMethods.showAlert("Error", "Ocurrió un error inesperado.");
+    }
+}
     private void updateUnitLabel() {
         String selectedFilter = sizeFilterComboBox.getValue();
         if ("Filter by Time".equals(selectedFilter)) {
@@ -387,13 +414,34 @@ public class RutaController {
     }
 
     private void printReport() {
-        // Lógica para imprimir un informe
+        System.out.println("Print Report clicked");
+        try {
+            logger.info("Beginning printing action...");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/RutaReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Ruta>) this.rutaTable.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
+            logger.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        }
     }
 
     private void configureEditableColumns() {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, String>>() {
+                        new EventHandler<CellEditEvent<Ruta, String>>() {
             @Override
             public void handle(CellEditEvent<Ruta, String> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -411,7 +459,7 @@ public class RutaController {
 
         destinoColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         destinoColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, String>>() {
+                        new EventHandler<CellEditEvent<Ruta, String>>() {
             @Override
             public void handle(CellEditEvent<Ruta, String> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -429,7 +477,7 @@ public class RutaController {
 
         distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
         distanciaColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, Float>>() {
+                        new EventHandler<CellEditEvent<Ruta, Float>>() {
             @Override
             public void handle(CellEditEvent<Ruta, Float> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -473,7 +521,7 @@ public class RutaController {
 
         tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         tiempoColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, Integer>>() {
+                        new EventHandler<CellEditEvent<Ruta, Integer>>() {
             @Override
             public void handle(CellEditEvent<Ruta, Integer> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());

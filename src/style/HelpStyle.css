@@ -130,27 +130,4 @@
         margin: 16px 0;
     }
 
-    @media (max-width: 768px) {
-        .navigation {
-            width: 100%;
-            height: auto;
-            position: relative;
-            padding: 16px;
-            top: 0;
-        }
-
-        .navigation ul {
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .content {
-            margin-left: 0;
-            margin-top: 32px;
-        }
-
-        .container {
-            flex-direction: column;
-        }
-    }
+  

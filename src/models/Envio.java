@@ -36,7 +36,6 @@ public class Envio implements Serializable {
     private List<Paquete> packageList;
 
     // Métodos de acceso (getters y setters) de los campos transitorios
-
     public void setPackageList(List<Paquete> packageList) {
         this.packageList = packageList;
     }
@@ -54,7 +53,6 @@ public class Envio implements Serializable {
     }
 
     // Getters y Setters de otros campos
-
     public Integer getId() {
         return id;
     }

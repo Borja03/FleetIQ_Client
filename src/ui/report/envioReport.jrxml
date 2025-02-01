@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="VehicleTrackingReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="67cf281b-90c2-47c1-ac0f-4faa18017d64">
-	<property name="ireport.zoom" value="1.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EnvioTrackingReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="67cf281b-90c2-47c1-ac0f-4faa18017d64">
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<style name="Table_Header" mode="Opaque" forecolor="#FFFFFF" backcolor="#2C3E50">
@@ -30,12 +30,13 @@
 	<style name="StatusInactive" forecolor="#E74C3C" fontSize="12" isBold="true"/>
 	<parameter name="LOGO_PATH" class="java.lang.String"/>
 	<field name="id" class="java.lang.Integer"/>
-	<field name="matricula" class="java.lang.String"/>
-	<field name="modelo" class="java.lang.String"/>
-	<field name="capacidadCarga" class="java.lang.Integer"/>
-	<field name="registrationDate" class="java.util.Date"/>
-	<field name="itvDate" class="java.util.Date"/>
-	<field name="activo" class="java.lang.Boolean"/>
+	<field name="fechaEnvio" class="java.util.Date"/>
+	<field name="fechaEntrega" class="java.util.Date"/>
+	<field name="estado" class="models.Estado"/>
+	<field name="numPaquetes" class="java.lang.Integer"/>
+	<field name="creadorEnvios" class="java.lang.String"/>
+	<field name="ruta" class="java.lang.String"/>
+	<field name="vehiculos" class="java.lang.String"/>
 	<title>
 		<band height="100" splitType="Stretch">
 			<rectangle>
@@ -49,7 +50,7 @@
 				<textElement textAlignment="Center">
 					<font size="24" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Vehicle Tracking Report]]></text>
+				<text><![CDATA[Envio Tracking Report]]></text>
 			</staticText>
 			<textField pattern="dd MMMMM yyyy">
 				<reportElement style="HeaderStyle" x="405" y="0" width="150" height="20" uuid="2208bff0-c209-4e15-afaf-5c2fa7b970b9"/>
@@ -58,12 +59,12 @@
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<image> 
+			<image>
 				<reportElement x="0" y="0" width="117" height="100" uuid="e39ec109-eeb8-4c9c-9578-227189b1af46"/>
-				<imageExpression><![CDATA["/Users/techy/Documents/GitHub/FleetIQ_Client/src/image/logo3.png"]]></imageExpression>
+				<imageExpression><![CDATA["image/logo3.png"]]></imageExpression>
 			</image>
 			<staticText>
-				<reportElement x="442" y="60" width="78" height="16" uuid="f3ee5e3d-c9b4-4bb4-bcb4-3c50664ac221"/>
+				<reportElement x="442" y="60" width="113" height="16" uuid="f3ee5e3d-c9b4-4bb4-bcb4-3c50664ac221"/>
 				<textElement>
 					<font isBold="false"/>
 				</textElement>
@@ -87,96 +88,110 @@
 	<columnHeader>
 		<band height="30" splitType="Stretch">
 			<staticText>
-				<reportElement style="Table_Header" x="0" y="0" width="50" height="30" uuid="dab83e04-b2a0-491e-bdd2-0ae8c8499594"/>
+				<reportElement style="Table_Header" x="0" y="0" width="35" height="30" uuid="dab83e04-b2a0-491e-bdd2-0ae8c8499594"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ID]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="50" y="0" width="90" height="30" uuid="78e76674-7d8f-4dc7-bb0d-5d7ba7227cf9"/>
+				<reportElement style="Table_Header" x="35" y="0" width="80" height="30" uuid="78e76674-7d8f-4dc7-bb0d-5d7ba7227cf9"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Matrícula]]></text>
+				<text><![CDATA[Fecha envio]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="140" y="0" width="100" height="30" uuid="e8831b5d-a488-4445-ae6c-942ffe0d12c1"/>
+				<reportElement style="Table_Header" x="115" y="0" width="80" height="30" uuid="e8831b5d-a488-4445-ae6c-942ffe0d12c1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Modelo]]></text>
+				<text><![CDATA[Fecha entrega]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="Table_Header" x="240" y="0" width="80" height="30" uuid="a5613093-3627-45fb-b5bc-12b1450f3359"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Capacidad]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Table_Header" x="320" y="0" width="85" height="30" uuid="ef50d148-7d24-464f-8c80-f39e35bcfc23"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Registro]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Table_Header" x="405" y="0" width="85" height="30" uuid="7d72ac0f-b6d8-4eb7-b4e4-e601f209786b"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[ITV]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Table_Header" x="490" y="0" width="65" height="30" uuid="53d1a380-d16d-4fcc-9f31-f4bf01a21775"/>
+				<reportElement style="Table_Header" x="195" y="0" width="70" height="30" uuid="a5613093-3627-45fb-b5bc-12b1450f3359"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="11" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Estado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="265" y="0" width="60" height="30" uuid="ef50d148-7d24-464f-8c80-f39e35bcfc23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Numero de paquetes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="325" y="0" width="102" height="30" uuid="7d72ac0f-b6d8-4eb7-b4e4-e601f209786b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Creador del envio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="427" y="0" width="62" height="30" uuid="339e67f4-a2cf-4b81-8df7-091ea4887bca"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ruta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="489" y="0" width="67" height="30" uuid="35d1a380-d61d-4fcc-9f31-f4bf01a12775"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Vehiculos]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="25" splitType="Stretch">
 			<textField>
-				<reportElement style="Table_Row" x="0" y="0" width="50" height="25" uuid="aebb1284-8703-4809-9d89-e38670035656"/>
+				<reportElement style="Table_Row" x="0" y="0" width="35" height="25" uuid="aebb1284-8703-4809-9d89-e38670035656"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Table_Row" x="50" y="0" width="90" height="25" uuid="9a0bc8d5-ea12-4f6f-81fb-2b2f36680ffc"/>
+				<reportElement style="Table_Row" x="35" y="0" width="80" height="25" uuid="9a0bc8d5-ea12-4f6f-81fb-2b2f36680ffc"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{matricula}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fechaEnvio}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
-				<reportElement style="Table_Row" x="140" y="0" width="100" height="25" uuid="f5dd71df-3edd-42c8-b5e8-c90979fa2581"/>
+				<reportElement style="Table_Row" x="115" y="0" width="80" height="25" uuid="f5dd71df-3edd-42c8-b5e8-c90979fa2581"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{modelo}]]></textFieldExpression>
-			</textField>
-			<textField pattern="#,##0.0">
-				<reportElement style="Table_Row" x="240" y="0" width="80" height="25" uuid="dc4a626c-d880-463b-9a69-669da882e044"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{capacidadCarga}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fechaEntrega}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement style="Table_Row" x="320" y="0" width="85" height="25" uuid="08abcfa6-131a-4116-b809-4156d0b02ae7"/>
+				<reportElement style="Table_Row" x="195" y="0" width="70" height="25" uuid="dc4a626c-d880-463b-9a69-669da882e044"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{registrationDate}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd/MM/yyyy">
-				<reportElement style="Table_Row" x="405" y="0" width="85" height="25" uuid="9031221b-867f-49d2-9bc0-799c0edfda60"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{itvDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Table_Row" x="490" y="0" width="65" height="25" uuid="339e67f4-a2cf-4b81-8df7-091ea4887bca"/>
+				<reportElement style="Table_Row" x="265" y="0" width="60" height="25" uuid="08abcfa6-131a-4116-b809-4156d0b02ae7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{numPaquetes}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Table_Row" x="325" y="0" width="102" height="25" uuid="9031221b-867f-49d2-9bc0-799c0edfda60"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{creadorEnvios}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Table_Row" x="427" y="0" width="62" height="25" uuid="339e67f4-a2cf-4b81-8df7-091ea4887bca"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{activo} ? "Activo" : "Inactivo"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{ruta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Table_Row" x="489" y="0" width="67" height="25" uuid="53d1a380-d16d-4fcc-9f31-f4bf01a21775"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{vehiculos}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
