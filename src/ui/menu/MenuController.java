@@ -193,7 +193,15 @@ public class MenuController {
 
     @FXML
     private void handleAboutRutaMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/ruta/rutaHelp.fxml"));
+            Parent root = loader.load();
+            PaqueteHelpController controller = loader.getController();
+            controller.initAndShowStage(root);
+            LOGGER.info("Help window opened");
+        } catch (IOException ex) {
+            LOGGER.severe("Error loading HelpPaquete window: " + ex);
+        }
     }
 
     @FXML

@@ -137,52 +137,51 @@ public class RutaController {
         configureEditableColumns();
 
         setupContextMenu();
-        try {
-            loadRutaData();
-        } catch (SelectException ex) {
-            Logger.getLogger(RutaController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        loadRutaData();
+
         ThemeManager.getInstance().applyTheme(stage.getScene());
         stage.show();
     }
 
- private void loadRutaData() throws SelectException {
-    try {
-        List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {});
+    private void loadRutaData() {
+        try {
+            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
+            });
 
-        // Obtener y actualizar el conteo de vehículos para cada ruta
-        for (Ruta ruta : rutas) {
-            try {
-                String countStr = ervManager.countByRutaId(String.valueOf(ruta.getLocalizador()));
-                int vehicleCount = Integer.parseInt(countStr.trim());
-                ruta.setNumVehiculos(vehicleCount);
-            } catch (NumberFormatException e) {
-                logger.log(Level.SEVERE, "Error al convertir el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
-                ruta.setNumVehiculos(0);
-            } catch (WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error al obtener el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
-                ruta.setNumVehiculos(0);
+            // Obtener y actualizar el conteo de vehículos para cada ruta
+            for (Ruta ruta : rutas) {
+                try {
+                    String countStr = ervManager.countByRutaId(String.valueOf(ruta.getLocalizador()));
+                    int vehicleCount = Integer.parseInt(countStr.trim());
+                    ruta.setNumVehiculos(vehicleCount);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.SEVERE, "Error al convertir el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
+                    ruta.setNumVehiculos(0);
+                } catch (WebApplicationException e) {
+                    logger.log(Level.SEVERE, "Error al obtener el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
+                    ruta.setNumVehiculos(0);
+                }
             }
+
+            rutaData = FXCollections.observableArrayList(rutas);
+
+            localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
+            origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
+            destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
+            distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
+            tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
+            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+
+            rutaTable.setItems(rutaData);
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error cargando datos de rutas", e);
+            UtilsMethods.showAlert("Error", "No se pudieron cargar las rutas.");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error inesperado", e);
+            UtilsMethods.showAlert("Error", "Ocurrió un error inesperado.");
         }
-
-        rutaData = FXCollections.observableArrayList(rutas);
-
-        localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
-        origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
-        destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
-        distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
-        tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-        numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-
-        rutaTable.setItems(rutaData);
-    } catch (WebApplicationException e) {
-        logger.log(Level.SEVERE, "Error cargando datos de rutas", e);
-        UtilsMethods.showAlert("Error", "No se pudieron cargar las rutas.");
-    } catch (Exception e) {
-        logger.log(Level.SEVERE, "Error inesperado", e);
-        UtilsMethods.showAlert("Error", "Ocurrió un error inesperado.");
     }
-}
+
     private void updateUnitLabel() {
         String selectedFilter = sizeFilterComboBox.getValue();
         if ("Filter by Time".equals(selectedFilter)) {
@@ -215,6 +214,7 @@ public class RutaController {
             logger.log(Level.INFO, "Routes filtered successfully by dates: {0} to {1}", new Object[]{fromDate, toDate});
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error filtering routes by dates from REST service", e);
+            showAlert("Error de servidor", "Error al filtrar por fechas");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected error while filtering routes by dates", e);
         }
@@ -226,12 +226,7 @@ public class RutaController {
         String filterValue = filterValueField.getText().trim();
 
         if (filterValue.isEmpty()) {
-            try {
-                loadRutaData();
-                logger.info("Recargando todas las rutas porque el campo de filtro está vacío.");
-            } catch (SelectException e) {
-                logger.log(Level.SEVERE, "Error al recargar las rutas", e);
-            }
+            loadRutaData();
             return;
         }
 
@@ -323,32 +318,31 @@ public class RutaController {
     private void searchByLocalizador() {
         String searchText = searchTextField.getText().trim();
         if (searchText.isEmpty()) {
-            try {
-                loadRutaData();
-                logger.info("Recargando todas las rutas.");
-            } catch (SelectException e) {
-                logger.log(Level.SEVERE, "Error al recargar las rutas", e);
-            }
+            loadRutaData();
             return;
         }
 
         try {
             Integer localizador = Integer.parseInt(searchText);
-
             Ruta ruta = rutaManager.findByLocalizadorInteger_XML(Ruta.class, localizador);
 
-            if (ruta != null) {
-                rutaData.clear();
-                rutaData.add(ruta);
-                rutaTable.setItems(rutaData);
-                logger.info("Ruta filtrada cargada correctamente.");
-            } else {
-                logger.info("No se encontró ninguna ruta con el localizador proporcionado.");
+            if (ruta == null) {
+                throw new Exception("No se encontró ninguna ruta con ese localizador.");
             }
+
+            rutaData.clear();
+            rutaData.add(ruta);
+            rutaTable.setItems(rutaData);
+            logger.info("Ruta filtrada cargada correctamente.");
         } catch (NumberFormatException e) {
             logger.warning("El texto de búsqueda no es un número válido.");
+            showAlert("Error de formato", "El texto de búsqueda no es un número válido.");
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error al buscar por localizador", e);
+            showAlert("Error de búsqueda", "Error al buscar por localizador.");
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            showAlert("Ruta no encontrada", e.getMessage());
         }
     }
 
@@ -370,9 +364,6 @@ public class RutaController {
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error al añadir una nueva ruta", e);
             showAlert("Error", "No se pudo añadir la nueva ruta.");
-        } catch (SelectException e) {
-            logger.log(Level.SEVERE, "Error al refrescar la tabla después de añadir la ruta", e);
-            showAlert("Error", "No se pudo actualizar la tabla después de añadir la ruta.");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error inesperado", e);
             showAlert("Error", "Error inesperado al añadir la nueva ruta.");
@@ -414,7 +405,7 @@ public class RutaController {
     }
 
     private void printReport() {
-        System.out.println("Print Report clicked");
+        logger.info("Print Report clicked");
         try {
             logger.info("Beginning printing action...");
             JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/RutaReport.jrxml"));
@@ -441,7 +432,7 @@ public class RutaController {
     private void configureEditableColumns() {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(
-                        new EventHandler<CellEditEvent<Ruta, String>>() {
+                new EventHandler<CellEditEvent<Ruta, String>>() {
             @Override
             public void handle(CellEditEvent<Ruta, String> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -459,7 +450,7 @@ public class RutaController {
 
         destinoColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         destinoColumn.setOnEditCommit(
-                        new EventHandler<CellEditEvent<Ruta, String>>() {
+                new EventHandler<CellEditEvent<Ruta, String>>() {
             @Override
             public void handle(CellEditEvent<Ruta, String> t) {
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
@@ -474,91 +465,103 @@ public class RutaController {
                 }
             }
         });
+        
+        FloatStringConverter customFloatConverter = new FloatStringConverter() {
+            @Override
+            public Float fromString(String value) {
+                try {
+                    return super.fromString(value);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                    showAlert("Error", "El valor ingresado no es un número válido.");
+                    // Devuelve null para indicar que la conversión falló.
+                    return null;
+                }
+            }
+        };
+        distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(customFloatConverter));
 
-        distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(new FloatStringConverter()));
-        distanciaColumn.setOnEditCommit(
-                        new EventHandler<CellEditEvent<Ruta, Float>>() {
+        distanciaColumn.setOnEditCommit(new EventHandler<CellEditEvent<Ruta, Float>>() {
             @Override
             public void handle(CellEditEvent<Ruta, Float> t) {
+                // Si la conversión devolvió null, se detiene la operación.
+                if (t.getNewValue() == null) {
+                    t.getTableView().refresh();
+                    return;
+                }
+
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                Float nuevaDistancia;
+                Float nuevaDistancia = t.getNewValue();
 
-                try {
-                    nuevaDistancia = t.getNewValue();
-                } catch (NumberFormatException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("El valor ingresado no es un número válido.");
-                    alert.showAndWait();
+                // Validar que la distancia no sea negativa.
+                if (nuevaDistancia < 0) {                
+                    showAlert("Error", "La distancia no puede ser negativa.");
                     t.getTableView().refresh();
                     return;
                 }
 
-                if (nuevaDistancia < 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("La distancia no puede ser negativa.");
-                    alert.showAndWait();
-                    t.getTableView().refresh();
-                    return;
-                }
-
+                // Actualizar la ruta con la nueva distancia.
                 ruta.setDistancia(nuevaDistancia);
-
                 try {
                     rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
                     logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("No se pudo actualizar la distancia.");
-                    alert.showAndWait();
+                     showAlert("Error", "No se pudo actualizar la distancia.");
                     t.getTableView().refresh();
+                }catch (NumberFormatException e) {
+                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                     showAlert("Error", "El valor ingresado no es un número válido.");
                 }
             }
         });
+        
+        IntegerStringConverter customIntegerConverter = new IntegerStringConverter() {
+            @Override
+            public Integer fromString(String value) {
+                try {
+                    return super.fromString(value);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                     showAlert("Error", "El valor ingresado no es un número válido.");
+                    return null;
+                }
+            }
+        };
 
-        tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        tiempoColumn.setOnEditCommit(
-                        new EventHandler<CellEditEvent<Ruta, Integer>>() {
+        tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(customIntegerConverter));
+
+        tiempoColumn.setOnEditCommit(new EventHandler<CellEditEvent<Ruta, Integer>>() {
             @Override
             public void handle(CellEditEvent<Ruta, Integer> t) {
+                // Si la conversión devolvió null, se detiene la operación.
+                if (t.getNewValue() == null) {
+                    t.getTableView().refresh();
+                    return;
+                }
+
                 Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                Integer nuevoTiempo;
+                Integer nuevoTiempo = t.getNewValue();
 
-                try {
-                    nuevoTiempo = t.getNewValue();
-                } catch (NumberFormatException e) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("El valor ingresado no es un número válido.");
-                    alert.showAndWait();
-                    t.getTableView().refresh();
-                    return;
-                }
-
+                // Validar que el tiempo no sea negativo.
                 if (nuevoTiempo < 0) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("El tiempo no puede ser negativo.");
-                    alert.showAndWait();
+                     showAlert("Error", "El tiempo no puede ser negativo.");
                     t.getTableView().refresh();
                     return;
                 }
 
+                // Actualizar la ruta con el nuevo tiempo.
                 ruta.setTiempo(nuevoTiempo);
-
                 try {
                     rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
                     logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setContentText("No se pudo actualizar el tiempo.");
-                    alert.showAndWait();
+                     showAlert("Error", "No se pudo actualizar el tiempo.");
                     t.getTableView().refresh();
+                }catch (NumberFormatException e) {
+                    logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
+                     showAlert("Error", "El valor ingresado no es un número válido.");
                 }
             }
         });
@@ -573,7 +576,7 @@ public class RutaController {
                 rutaManager.edit_XML(ruta, ruta.getLocalizador().toString());
             } catch (Exception e) {
                 logger.severe("Error al actualizar el estado del envío: " + e.getMessage());
-                new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
+                showAlert("Error al actualizar estado", e.getMessage());
             }
         });
 
@@ -596,49 +599,49 @@ public class RutaController {
     }
 
     private void showVehicleSelectionDialog(Ruta ruta) {
-           Stage vehicleStage = new Stage();
-    vehicleStage.setTitle("Seleccionar Vehículos");
-    JFXListView<String> vehicleListView = new JFXListView<>();
-    ObservableList<String> selectedMatriculas = FXCollections.observableArrayList();
+        Stage vehicleStage = new Stage();
+        vehicleStage.setTitle("Seleccionar Vehículos");
+        JFXListView<String> vehicleListView = new JFXListView<>();
+        ObservableList<String> selectedMatriculas = FXCollections.observableArrayList();
 
-    try {
-        List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
-        ObservableList<String> matriculas = FXCollections.observableArrayList();
-        
-        // Debug: Imprimir información de la ruta y sus vehículos asignados
-        System.out.println("Ruta ID: " + ruta.getLocalizador());
-        System.out.println("EnvioRutaVehiculos: " + (ruta.getEnvioRutaVehiculos() != null ? 
-            ruta.getEnvioRutaVehiculos().size() : "null"));
+        try {
+            List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
+            ObservableList<String> matriculas = FXCollections.observableArrayList();
 
-        // Crear set de IDs de vehículos ya asignados para búsqueda más eficiente
-        Set<Integer> vehiculosAsignadosRuta = new HashSet<>();
-        if (ruta.getEnvioRutaVehiculos() != null && !ruta.getEnvioRutaVehiculos().isEmpty()) {
-            for (EnvioRutaVehiculo ervehiculo : ruta.getEnvioRutaVehiculos()) {
-                vehiculosAsignadosRuta.add(ervehiculo.getVehiculoID());
-                // Debug: Imprimir cada vehículo asignado
-                System.out.println("Vehículo asignado ID: " + ervehiculo.getVehiculoID());
+            // Debug: Imprimir información de la ruta y sus vehículos asignados
+            logger.info("Ruta ID: " + ruta.getLocalizador());
+            logger.info("EnvioRutaVehiculos: " + (ruta.getEnvioRutaVehiculos() != null
+                    ? ruta.getEnvioRutaVehiculos().size() : "null"));
+
+            // Crear set de IDs de vehículos ya asignados para búsqueda más eficiente
+            Set<Integer> vehiculosAsignadosRuta = new HashSet<>();
+            if (ruta.getEnvioRutaVehiculos() != null && !ruta.getEnvioRutaVehiculos().isEmpty()) {
+                for (EnvioRutaVehiculo ervehiculo : ruta.getEnvioRutaVehiculos()) {
+                    vehiculosAsignadosRuta.add(ervehiculo.getVehiculoID());
+                    // Debug: Imprimir cada vehículo asignado
+                    logger.info("Vehículo asignado ID: " + ervehiculo.getVehiculoID());
+                }
             }
-        }
 
-        // Debug: Imprimir total de vehículos disponibles
-        System.out.println("Total vehículos en sistema: " + vehiculos.size());
-        
-        // Filtrar vehículos
-        for (Vehiculo vehiculo : vehiculos) {
-            // Debug: Imprimir información de cada vehículo
-            System.out.println("Evaluando vehículo - ID: " + vehiculo.getId() + 
-                             ", Matrícula: " + vehiculo.getMatricula() + 
-                             ", Está asignado: " + vehiculosAsignadosRuta.contains(vehiculo.getId()));
-            
-            if (!vehiculosAsignadosRuta.contains(vehiculo.getId())) {
-                matriculas.add(vehiculo.getMatricula());
+            // Debug: Imprimir total de vehículos disponibles
+            logger.info("Total vehículos en sistema: " + vehiculos.size());
+
+            // Filtrar vehículos
+            for (Vehiculo vehiculo : vehiculos) {
+                // Debug: Imprimir información de cada vehículo
+                logger.info("Evaluando vehículo - ID: " + vehiculo.getId()
+                        + ", Matrícula: " + vehiculo.getMatricula()
+                        + ", Está asignado: " + vehiculosAsignadosRuta.contains(vehiculo.getId()));
+
+                if (!vehiculosAsignadosRuta.contains(vehiculo.getId())) {
+                    matriculas.add(vehiculo.getMatricula());
+                }
             }
-        }
-        
-        // Debug: Imprimir total de vehículos filtrados
-        System.out.println("Vehículos disponibles después del filtrado: " + matriculas.size());
-        
-        vehicleListView.setItems(matriculas);
+
+            // Debug: Imprimir total de vehículos filtrados
+            logger.info("Vehículos disponibles después del filtrado: " + matriculas.size());
+
+            vehicleListView.setItems(matriculas);
 
             // Agregar manejador de clics personalizados
             vehicleListView.setCellFactory(lv -> {
