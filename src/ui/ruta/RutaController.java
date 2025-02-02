@@ -25,6 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -465,7 +466,7 @@ public class RutaController {
                 }
             }
         });
-        
+
         FloatStringConverter customFloatConverter = new FloatStringConverter() {
             @Override
             public Float fromString(String value) {
@@ -494,7 +495,7 @@ public class RutaController {
                 Float nuevaDistancia = t.getNewValue();
 
                 // Validar que la distancia no sea negativa.
-                if (nuevaDistancia < 0) {                
+                if (nuevaDistancia < 0) {
                     showAlert("Error", "La distancia no puede ser negativa.");
                     t.getTableView().refresh();
                     return;
@@ -507,15 +508,15 @@ public class RutaController {
                     logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                     showAlert("Error", "No se pudo actualizar la distancia.");
+                    showAlert("Error", "No se pudo actualizar la distancia.");
                     t.getTableView().refresh();
-                }catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                     showAlert("Error", "El valor ingresado no es un número válido.");
+                    showAlert("Error", "El valor ingresado no es un número válido.");
                 }
             }
         });
-        
+
         IntegerStringConverter customIntegerConverter = new IntegerStringConverter() {
             @Override
             public Integer fromString(String value) {
@@ -523,7 +524,7 @@ public class RutaController {
                     return super.fromString(value);
                 } catch (NumberFormatException e) {
                     logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                     showAlert("Error", "El valor ingresado no es un número válido.");
+                    showAlert("Error", "El valor ingresado no es un número válido.");
                     return null;
                 }
             }
@@ -545,7 +546,7 @@ public class RutaController {
 
                 // Validar que el tiempo no sea negativo.
                 if (nuevoTiempo < 0) {
-                     showAlert("Error", "El tiempo no puede ser negativo.");
+                    showAlert("Error", "El tiempo no puede ser negativo.");
                     t.getTableView().refresh();
                     return;
                 }
@@ -557,11 +558,11 @@ public class RutaController {
                     logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                     showAlert("Error", "No se pudo actualizar el tiempo.");
+                    showAlert("Error", "No se pudo actualizar el tiempo.");
                     t.getTableView().refresh();
-                }catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                     showAlert("Error", "El valor ingresado no es un número válido.");
+                    showAlert("Error", "El valor ingresado no es un número válido.");
                 }
             }
         });
@@ -608,96 +609,78 @@ public class RutaController {
             List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
             ObservableList<String> matriculas = FXCollections.observableArrayList();
 
-            // Debug: Imprimir información de la ruta y sus vehículos asignados
-            logger.info("Ruta ID: " + ruta.getLocalizador());
-            logger.info("EnvioRutaVehiculos: " + (ruta.getEnvioRutaVehiculos() != null
-                    ? ruta.getEnvioRutaVehiculos().size() : "null"));
-
-            // Crear set de IDs de vehículos ya asignados para búsqueda más eficiente
+            // Obtener todos los EnvioRutaVehiculo y filtrar por la ruta actual
+            List<EnvioRutaVehiculo> erv = ervManager.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
+            });
             Set<Integer> vehiculosAsignadosRuta = new HashSet<>();
-            if (ruta.getEnvioRutaVehiculos() != null && !ruta.getEnvioRutaVehiculos().isEmpty()) {
-                for (EnvioRutaVehiculo ervehiculo : ruta.getEnvioRutaVehiculos()) {
+
+            for (EnvioRutaVehiculo ervehiculo : erv) {
+                if (ervehiculo.getRutaLocalizador() == ruta.getLocalizador()) {
                     vehiculosAsignadosRuta.add(ervehiculo.getVehiculoID());
-                    // Debug: Imprimir cada vehículo asignado
-                    logger.info("Vehículo asignado ID: " + ervehiculo.getVehiculoID());
                 }
             }
 
-            // Debug: Imprimir total de vehículos disponibles
-            logger.info("Total vehículos en sistema: " + vehiculos.size());
-
-            // Filtrar vehículos
+            // Filtrar vehículos no asignados a esta ruta
             for (Vehiculo vehiculo : vehiculos) {
-                // Debug: Imprimir información de cada vehículo
-                logger.info("Evaluando vehículo - ID: " + vehiculo.getId()
-                        + ", Matrícula: " + vehiculo.getMatricula()
-                        + ", Está asignado: " + vehiculosAsignadosRuta.contains(vehiculo.getId()));
-
                 if (!vehiculosAsignadosRuta.contains(vehiculo.getId())) {
                     matriculas.add(vehiculo.getMatricula());
                 }
             }
 
-            // Debug: Imprimir total de vehículos filtrados
-            logger.info("Vehículos disponibles después del filtrado: " + matriculas.size());
-
             vehicleListView.setItems(matriculas);
 
-            // Agregar manejador de clics personalizados
-            vehicleListView.setCellFactory(lv -> {
-                JFXListCell<String> cell = new JFXListCell<>();
-                cell.setText(""); // Asigna un texto vacío por defecto (puedes usar un valor distinto si prefieres)
-                cell.setOnMouseClicked(event -> {
-                    if (cell.getItem() != null) {
-                        if (selectedMatriculas.contains(cell.getItem())) {
-                            selectedMatriculas.remove(cell.getItem()); // Deseleccionar si ya está seleccionado
-                            cell.setStyle(""); // Restablecer estilo
-                        } else {
-                            selectedMatriculas.add(cell.getItem()); // Seleccionar si no está seleccionado
-                            cell.setStyle("-fx-background-color: lightblue;"); // Cambiar el estilo del elemento seleccionado
+            // Resto del código sin cambios (manejador de clics, botón confirmar, etc.)
+            vehicleListView.setCellFactory(lv -> new JFXListCell<String>() {
+                @Override
+                protected void updateItem(String matricula, boolean empty) {
+                    super.updateItem(matricula, empty); // <-- Siempre llamar primero al super
+
+                    if (empty || matricula == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(matricula);
+
+                        // Actualizar el estilo basado en la selección
+                        if (selectedMatriculas.contains(matricula)) {
+                            setStyle("-fx-background-color: lightblue;");
+                        }else {
+                            setStyle("");
                         }
                     }
-                });
 
-                // Asigna el texto de la celda al valor del item
-                cell.textProperty().set(cell.getItem());
+                    // Manejar clics para selección/deselección
+                    setOnMouseClicked(event -> {
+                        if (!isEmpty() && matricula != null) {
+                            if (selectedMatriculas.contains(matricula)) {
+                                selectedMatriculas.remove(matricula);
+                            } else {
+                                selectedMatriculas.add(matricula);
+                            }
 
-                return cell;
+                            // Forzar actualización del estilo
+                            updateItem(matricula, false);
+                        }
+                    });
+                }
             });
 
             JFXButton confirmButton = new JFXButton("Confirmar");
             confirmButton.setOnAction(e -> {
                 if (!selectedMatriculas.isEmpty()) {
                     try {
-                        // Iterar sobre los vehículos seleccionados y crear un EnvioRutaVehiculo para cada uno
                         for (String matricula : selectedMatriculas) {
-
                             List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
-                            // Crear un nuevo objeto EnvioRutaVehiculo
                             EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
-                            //envioRutaVehiculo.setRuta(ruta); // Asignar la ruta
-                            //envioRutaVehiculo.setVehiculo(vehiculo.get(0)); // Asignar el vehículo
-                            envioRutaVehiculo.setFechaAsignacion(new Date()); // Establecer la fecha de asignación
                             envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
                             envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
-
-                            logger.info(ruta.toString());
-                            logger.info(vehiculo.get(0).toString());
-                            logger.info(envioRutaVehiculo.toString());
-                            logger.info(envioRutaVehiculo.getFechaAsignacion().toString());
-                            logger.info(envioRutaVehiculo.toString());
-
+                            envioRutaVehiculo.setFechaAsignacion(new Date());
                             ervManager.create_XML(envioRutaVehiculo);
-
-                            logger.info("Añadiendo vehículo " + matricula + " a la ruta " + ruta.getLocalizador());
                         }
 
-                        // Actualizar la ruta con los vehículos seleccionados
                         ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
                         rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-
                         loadRutaData();
-
                         vehicleStage.close();
 
                     } catch (Exception ex) {
@@ -709,14 +692,13 @@ public class RutaController {
 
             VBox layout = new VBox(10);
             layout.getStyleClass().add("jfx-popup-container");
-            layout.setPadding(new javafx.geometry.Insets(10));
+            layout.setPadding(new Insets(10));
             layout.getChildren().addAll(vehicleListView, confirmButton);
 
             Scene scene = new Scene(layout);
             vehicleStage.setScene(scene);
             vehicleStage.setWidth(300);
             vehicleStage.setHeight(300);
-
             vehicleStage.show();
 
         } catch (SelectException ex) {
@@ -724,5 +706,4 @@ public class RutaController {
             showAlert("Error", "No se pudieron cargar los vehículos");
         }
     }
-
 }
