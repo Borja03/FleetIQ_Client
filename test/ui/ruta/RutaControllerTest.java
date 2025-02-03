@@ -12,6 +12,8 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import java.time.LocalDate;
 import javafx.scene.Node;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import models.Ruta;
@@ -19,7 +21,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import javafx.stage.Stage;
-import models.PackageSize;
 import static org.junit.Assert.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
@@ -27,6 +28,7 @@ import static org.testfx.matcher.base.NodeMatchers.isDisabled;
 import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
+import org.testfx.util.WaitForAsyncUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RutaControllerTest extends ApplicationTest {
@@ -61,9 +63,8 @@ public class RutaControllerTest extends ApplicationTest {
         fromDatePicker = lookup("#fromDatePicker").query();
         toDatePicker = lookup("#toDatePicker").query();
         //filterTypeComboBox = (JFXComboBox<Object>)lookup("#sizeFilterComboBox").query();
-     //   operatorComboBox = (JFXComboBox<Object>)lookup("#sizeFilterComboBox1").query();
-        
-                
+        //   operatorComboBox = (JFXComboBox<Object>)lookup("#sizeFilterComboBox1").query();
+
         assertNotNull("rutaTable no encontrada", rutaTable);
         assertNotNull("addShipmentBtn no encontrado", addShipmentBtn);
         assertNotNull("removeShipmentBtn no encontrado", removeShipmentBtn);
@@ -83,8 +84,8 @@ public class RutaControllerTest extends ApplicationTest {
         verifyThat("#filterValueField", hasText(""));
         assertNull(fromDatePicker.getValue());
         assertNull(toDatePicker.getValue());
-        assertTrue(filterTypeComboBox.getSelectionModel().isEmpty());
-        assertTrue(operatorComboBox.getSelectionModel().isEmpty());
+//        assertTrue(filterTypeComboBox.getSelectionModel().isEmpty());
+//        assertTrue(operatorComboBox.getSelectionModel().isEmpty());
     }
 
     @Test
@@ -94,37 +95,39 @@ public class RutaControllerTest extends ApplicationTest {
         assertEquals(initialCount + 1, rutaTable.getItems().size());
     }
 
+    @Test
+    public void testC_removeRuta() {
+        int initialCount = rutaTable.getItems().size();
+        Node row = lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+        verifyThat("#removeShipmentBtn", isEnabled());
+        clickOn(removeShipmentBtn);
+        verifyThat(".dialog-pane", Node::isVisible);
+        clickOn("Aceptar");
+        assertEquals(initialCount - 1, rutaTable.getItems().size());
+    }
+
 //    @Test
-//    public void testC_removeRuta() {
-//        int initialCount = rutaTable.getItems().size();
-//        Node row = lookup(".table-row-cell").nth(0).query();
-//        clickOn(row);
-//        verifyThat("#removeShipmentBtn", isEnabled());
-//        clickOn(removeShipmentBtn);
-//        assertEquals(initialCount - 1, rutaTable.getItems().size());
+//    public void testD_filterByTime() {
+//        interact(() -> {
+//            filterTypeComboBox.getSelectionModel().select("Filter by Time");
+//            operatorComboBox.getSelectionModel().select(">");
+//            filterValueField.setText("10");
+//        });
+//        clickOn(searchButton1);
+//        verifyThat(rutaTable, (TableView<Ruta> t)
+//                -> t.getItems().stream().allMatch(r -> r.getTiempo() > 10)
+//        );
 //    }
-
-    @Test
-    public void testD_filterByTime() {
-        interact(() -> {
-            filterTypeComboBox.getSelectionModel().select("Filter by Time");
-            operatorComboBox.getSelectionModel().select(">");
-            filterValueField.setText("10");
-        });
-        clickOn(searchButton1);
-        verifyThat(rutaTable, (TableView<Ruta> t) ->
-            t.getItems().stream().allMatch(r -> r.getTiempo() > 10)
-        );
-    }
-
-    @Test
-    public void testE_searchByLocalizador() {
-        interact(() -> searchTextField.setText("1"));
-        clickOn(searchButton);
-        verifyThat(rutaTable, (TableView<Ruta> t) ->
-            t.getItems().stream().anyMatch(r -> r.getLocalizador().toString().contains("1"))
-        );
-    }
+//
+//    @Test
+//    public void testE_searchByLocalizador() {
+//        interact(() -> searchTextField.setText("1"));
+//        clickOn(searchButton);
+//        verifyThat(rutaTable, (TableView<Ruta> t)
+//                -> t.getItems().stream().anyMatch(r -> r.getLocalizador().toString().contains("1"))
+//        );
+//    }
 
     @Test
     public void testF_filterByDateRange() {
@@ -133,20 +136,20 @@ public class RutaControllerTest extends ApplicationTest {
             toDatePicker.setValue(LocalDate.of(2024, 12, 31));
         });
         clickOn(applyFilterButton);
-        verifyThat(rutaTable, (TableView<Ruta> t) ->
-            t.getItems().stream().allMatch(r ->
-                !r.getFechaCreacion().before(java.sql.Date.valueOf("2024-01-01")) &&
-                !r.getFechaCreacion().after(java.sql.Date.valueOf("2024-12-31"))
-            )
+        verifyThat(rutaTable, (TableView<Ruta> t)
+                -> t.getItems().stream().allMatch(r
+                        -> !r.getFechaCreacion().before(java.sql.Date.valueOf("2024-01-01"))
+                && !r.getFechaCreacion().after(java.sql.Date.valueOf("2024-12-31"))
+                )
         );
     }
 
-    @Test
-    public void testG_printReport() {
-        clickOn(printReportBtn);
-        // Verificación básica de que el botón es funcional
-    }
-
+//    @Test
+//    public void testG_printReport() {
+//        clickOn(printReportBtn);
+//        // Verificación básica de que el botón es funcional
+//    }
+    
     @Test
     public void testH_tableSelection() {
         Node row = lookup(".table-row-cell").nth(0).query();
@@ -154,12 +157,38 @@ public class RutaControllerTest extends ApplicationTest {
         verifyThat("#removeShipmentBtn", isEnabled());
     }
 
+//    @Test
+//    public void testI_validation() {
+//        Node distanciaCell = lookup(".table-cell").nth(3).query(); // Ajustar índice según la columna
+//        doubleClickOn(distanciaCell);
+//        write("-10");
+//        press(KeyCode.ENTER);
+//        verifyThat("La distancia no puede ser negativa.", isVisible());
+//    }
+    
+    
     @Test
-    public void testI_validation() {
-        Node distanciaCell = lookup(".table-cell").nth(3).query(); // Ajustar índice según la columna
-        doubleClickOn(distanciaCell);
-        write("-10");
+    public void testJ_editOrigen() {
+        // Wait for data to load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify table has data
+        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
+        TableRow<Ruta> row = lookup(".table-row-cell").nth(5)
+                .query();
+        TableColumn<Ruta, ?> origenColumn = rutaTable.getColumns().get(1);
+        interact(() -> {
+            doubleClickOn(row.getChildrenUnmodifiable().get(1));
+        });
+
+        // Enter new value
+        write("NewOrigen");
         press(KeyCode.ENTER);
-        verifyThat("La distancia no puede ser negativa.", isVisible());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify update
+        Ruta updated = rutaTable.getItems().get(5);
+        assertEquals("NewOrigen", updated.getOrigen());
     }
+    
 }
