@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="stylesheet" href="../../style/HelpStyle.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Usuario - Gestión de Rutas</title>
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            <img src="/image/fleet_icon.png" alt="FleetIQ Logo">
+        </div>
+        <h1>Gestor de Rutas - FleetIQ</h1>
+    </header>
+
+    <div class="container">
+        <nav class="navigation">
+            <ul>
+                <li><a href="#getting-started">Inicio</a></li>
+                <li><a href="#filtros-fecha">Filtros por Fecha</a></li>
+                <li><a href="#filtros-numericos">Filtros Numéricos</a></li>
+                <li><a href="#busqueda">Búsqueda</a></li>
+                <li><a href="#tabla-editable">Tabla Editable</a></li>
+                <li><a href="#acciones">Acciones</a></li>
+                <li><a href="#menu-contextual">Menú Contextual</a></li>
+                <li><a href="#reportes">Reportes</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <section id="getting-started" class="section">
+                <h2>Introducción</h2>
+                <p>Bienvenido al módulo de gestión de rutas de FleetIQ. Esta guía explica cómo utilizar todas las funcionalidades disponibles.</p>
+                <div class="tip">
+                    <strong>Consejo:</strong> Utiliza el menú de navegación lateral para acceder rápidamente a las diferentes secciones.
+                </div>
+            </section>
+
+            <section id="filtros-fecha" class="section">
+                <h2>Filtrado por Fechas</h2>
+                <p>Filtra rutas por rango de fechas usando los selectores de fecha:</p>
+                <img src="/api/placeholder/800/400" alt="Filtro por Fechas" class="screenshot">
+                <ul>
+                    <li>Selecciona fecha inicial en el primer selector</li>
+                    <li>Selecciona fecha final en el segundo selector</li>
+                    <li>Haz clic en "Aplicar Filtro" para ver los resultados</li>
+                </ul>
+            </section>
+
+            <section id="filtros-numericos" class="section">
+                <h2>Filtros Numéricos</h2>
+                <p>Filtra rutas por tiempo o distancia:</p>
+                <img src="/api/placeholder/800/400" alt="Filtros Numéricos" class="screenshot">
+                <ol>
+                    <li>Selecciona "Tiempo" o "Distancia" en el primer desplegable</li>
+                    <li>Elige el operador de comparación (> , < , =)</li>
+                    <li>Ingresa el valor numérico</li>
+                    <li>Haz clic en el botón de búsqueda para aplicar</li>
+                </ol>
+                <div class="warning">
+                    <strong>Importante:</strong> Los valores deben ser números válidos y no negativos.
+                </div>
+            </section>
+
+            <section id="busqueda" class="section">
+                <h2>Búsqueda por Localizador</h2>
+                <p>Busca rutas específicas por su número de localizador:</p>
+                <img src="/api/placeholder/800/400" alt="Búsqueda por Localizador" class="screenshot">
+                <ul>
+                    <li>Ingresa el número de localizador en el campo de texto</li>
+                    <li>Haz clic en el botón de búsqueda (lupa)</li>
+                    <li>Para ver todas las rutas nuevamente, borra el campo y busca</li>
+                </ul>
+            </section>
+
+            <section id="tabla-editable" class="section">
+                <h2>Edición en Tabla</h2>
+                <p>Modifica directamente los datos en la tabla:</p>
+                <img src="/api/placeholder/800/400" alt="Tabla Editable" class="screenshot">
+                <h3>Columnas Editables</h3>
+                <ul>
+                    <li><strong>Origen/Destino:</strong> Doble clic para editar texto</li>
+                    <li><strong>Distancia:</strong> Edita valores numéricos (en km)</li>
+                    <li><strong>Tiempo:</strong> Edita duración en horas</li>
+                    <li><strong>Fecha:</strong> Usa el calendario desplegable</li>
+                </ul>
+                <div class="tip">
+                    <strong>Validación:</strong> Los campos numéricos solo aceptan valores positivos.
+                </div>
+            </section>
+
+            <section id="acciones" class="section">
+                <h2>Acciones Principales</h2>
+                <div class="button-group">
+                    <div class="button-item">
+                        <h3>Añadir Ruta</h3>
+                        <img src="/api/placeholder/200/100" alt="Botón Añadir">
+                        <p>Crea una nueva ruta vacía con valores predeterminados</p>
+                    </div>
+                    <div class="button-item">
+                        <h3>Eliminar Rutas</h3>
+                        <img src="/api/placeholder/200/100" alt="Botón Eliminar">
+                        <p>Selecciona una o más rutas y haz clic para eliminarlas</p>
+                    </div>
+                    <div class="button-item">
+                        <h3>Generar Reporte</h3>
+                        <img src="/api/placeholder/200/100" alt="Botón Reporte">
+                        <p>Genera un reporte PDF con todas las rutas visibles</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="menu-contextual" class="section">
+                <h2>Menú Contextual</h2>
+                <p>Acciones avanzadas con clic derecho:</p>
+                <img src="/api/placeholder/800/400" alt="Menú Contextual" class="screenshot">
+                <h3>Opciones Disponibles</h3>
+                <ul>
+                    <li><strong>Añadir Vehículo:</strong> Asigna vehículos a la ruta seleccionada
+                        <ol>
+                            <li>Selecciona una ruta</li>
+                            <li>Clic derecho → "Añadir Vehículo"</li>
+                            <li>Selecciona vehículos disponibles en la lista</li>
+                            <li>Confirma para asignar</li>
+                        </ol>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="reportes" class="section">
+                <h2>Generación de Reportes</h2>
+                <p>Para generar un reporte PDF:</p>
+                <ol>
+                    <li>Aplica los filtros deseados</li>
+                    <li>Haz clic en "Generar Reporte"</li>
+                    <li>El reporte se abrirá en una ventana nueva</li>
+                    <li>Usa los controles para imprimir o guardar</li>
+                </ol>
+                <div class="tip">
+                    <strong>Nota:</strong> El reporte incluye todas las rutas actualmente visibles en la tabla.
+                </div>
+            </section>
+
+            <section id="contacto" class="section">
+                <h2>Soporte Técnico</h2>
+                <p>Para asistencia técnica contacte a nuestro equipo:</p>
+                <ul>
+                    <li>Email: fleetiqg5@gmail.com</li>
+                    <li>Teléfono: +34 123456789</li>
+                    <li>Horario de atención: L-V 9:00 - 18:00</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+<script>
+    // (El script original de manejo de navegación se mantiene igual)
+    document.addEventListener("DOMContentLoaded", function () {
+        const sections = document.querySelectorAll(".section");
+        const navLinks = document.querySelectorAll(".navigation a");
+
+        function updateActiveMenu() {
+            let current = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.scrollY >= sectionTop - sectionHeight / 3) {
+                    current = section.getAttribute("id");
+                }
+            });
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+                if (link.getAttribute("href").includes(current)) {
+                    link.classList.add("active");
+                }
+            });
+            if (window.scrollY === 0) {
+                navLinks.forEach((link) => link.classList.remove("active"));
+                navLinks[0].classList.add("active");
+            }
+        }
+
+        window.addEventListener("scroll", updateActiveMenu);
+        navLinks.forEach((link) => {
+            link.addEventListener("click", (event) => {
+                navLinks.forEach((link) => link.classList.remove("active"));
+                event.target.classList.add("active");
+            });
+        });
+        window.dispatchEvent(new Event("scroll"));
+    });
+</script>
+</body>
+</html>
