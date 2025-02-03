@@ -447,6 +447,7 @@ public class RutaController {
 
                 originalRuta.setOrigen(newOrigen);
             } catch (CloneNotSupportedException | WebApplicationException e) {
+                System.out.println("-----------------------------------------------------");
                 logger.log(Level.SEVERE, "Error al actualizar origen en el servidor", e);
                 showAlert("Error", "No se pudo actualizar el origen.");
                 originalRuta.setOrigen(originalOrigen);
