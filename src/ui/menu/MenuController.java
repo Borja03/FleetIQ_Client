@@ -21,6 +21,7 @@ import ui.paquete.PaqueteHelpController;
 import ui.profile.MainController;
 import ui.ruta.RutaController;
 import ui.vehicle.VehicleController;
+import ui.vehicle.VehicleHelpController;
 import utils.ThemeManager;
 
 public class MenuController {
@@ -211,7 +212,15 @@ public class MenuController {
 
     @FXML
     private void handleAboutVehiculoMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/vehicle/vehicleHelp.fxml"));
+            Parent root = loader.load();
+            VehicleHelpController controller = loader.getController();
+            controller.initAndShowStage(root);
+            LOGGER.info("Help window opened");
+        } catch (IOException ex) {
+            LOGGER.severe("Error loading HelpVehiculo window: " + ex);
+        }
     }
 
     @FXML

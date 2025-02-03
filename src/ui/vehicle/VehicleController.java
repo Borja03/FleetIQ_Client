@@ -52,10 +52,10 @@ import javax.ws.rs.WebApplicationException;
 import models.EnvioRutaVehiculo;
 import models.Vehiculo;
 import utils.ThemeManager;
-
 import utils.UtilsMethods;
 import static utils.UtilsMethods.logger;
 import javafx.scene.control.TablePosition;
+import javafx.scene.image.Image;
 import javax.ws.rs.core.GenericType;
 import logicInterface.EnvioRutaVehiculoManager;
 import net.sf.jasperreports.engine.JRException;
@@ -178,6 +178,7 @@ public class VehicleController {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Vehicle Management");
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
         stage.setResizable(false);
         stage.centerOnScreen();
 
@@ -239,7 +240,8 @@ public class VehicleController {
     }
 
     /**
-     * Configures the remove shipment button to be disabled when no row is selected.
+     * Configures the remove shipment button to be disabled when no row is
+     * selected.
      */
     private void configureRemoveShipmentButton() {
         // Listener para deshabilitar el botón si no hay ninguna fila seleccionada
