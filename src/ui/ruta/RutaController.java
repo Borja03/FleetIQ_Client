@@ -432,38 +432,47 @@ public class RutaController {
 
     private void configureEditableColumns() {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        origenColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, String>>() {
-            @Override
-            public void handle(CellEditEvent<Ruta, String> t) {
-                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                ruta.setOrigen(t.getNewValue());
+        origenColumn.setOnEditCommit(event -> {
+            Ruta originalRuta = event.getRowValue();
+            
+            String newOrigen = event.getNewValue();
+            String originalOrigen = originalRuta.getOrigen();
 
-                try {
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    logger.info("Origen actualizado en el servidor: " + t.getNewValue());
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar origen en el servidor", e);
-                    showAlert("Error", "No se pudo actualizar el origen.");
-                }
+            try {
+                Ruta clonedRuta = originalRuta.clone();
+                clonedRuta.setOrigen(newOrigen);
+
+                rutaManager.edit_XML(clonedRuta, String.valueOf(clonedRuta.getLocalizador()));
+                logger.info("Origen actualizado en el servidor: " + newOrigen);
+
+                originalRuta.setOrigen(newOrigen);
+            } catch (CloneNotSupportedException | WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar origen en el servidor", e);
+                showAlert("Error", "No se pudo actualizar el origen.");
+                originalRuta.setOrigen(originalOrigen);
+                rutaTable.refresh();
             }
         });
 
         destinoColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        destinoColumn.setOnEditCommit(
-                new EventHandler<CellEditEvent<Ruta, String>>() {
-            @Override
-            public void handle(CellEditEvent<Ruta, String> t) {
-                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                ruta.setDestino(t.getNewValue());
+        destinoColumn.setOnEditCommit(event -> {
+            Ruta originalRuta = event.getRowValue();
+            String newDestino = event.getNewValue();
+            String originalDestino = originalRuta.getDestino();
 
-                try {
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    logger.info("Destino actualizado en el servidor: " + t.getNewValue());
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar destino en el servidor", e);
-                    showAlert("Error", "No se pudo actualizar el destino.");
-                }
+            try {
+                Ruta clonedRuta = (Ruta) originalRuta.clone();
+                clonedRuta.setDestino(newDestino);
+
+                rutaManager.edit_XML(clonedRuta, String.valueOf(clonedRuta.getLocalizador()));
+                logger.info("Destino actualizado en el servidor: " + newDestino);
+
+                originalRuta.setDestino(newDestino);
+            } catch (CloneNotSupportedException | WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar destino en el servidor", e);
+                showAlert("Error", "No se pudo actualizar el destino.");
+                originalRuta.setDestino(originalDestino);
+                event.getTableView().refresh();
             }
         });
 
@@ -473,47 +482,43 @@ public class RutaController {
                 try {
                     return super.fromString(value);
                 } catch (NumberFormatException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                    logger.log(Level.SEVERE, "Error al convertir distancia", e);
                     showAlert("Error", "El valor ingresado no es un número válido.");
-                    // Devuelve null para indicar que la conversión falló.
                     return null;
                 }
             }
         };
+
         distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(customFloatConverter));
+        distanciaColumn.setOnEditCommit(event -> {
+            if (event.getNewValue() == null) {
+                event.getTableView().refresh();
+                return;
+            }
 
-        distanciaColumn.setOnEditCommit(new EventHandler<CellEditEvent<Ruta, Float>>() {
-            @Override
-            public void handle(CellEditEvent<Ruta, Float> t) {
-                // Si la conversión devolvió null, se detiene la operación.
-                if (t.getNewValue() == null) {
-                    t.getTableView().refresh();
-                    return;
-                }
+            Float nuevaDistancia = event.getNewValue();
+            if (nuevaDistancia < 0) {
+                showAlert("Error", "La distancia no puede ser negativa.");
+                event.getTableView().refresh();
+                return;
+            }
 
-                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                Float nuevaDistancia = t.getNewValue();
+            Ruta originalRuta = event.getRowValue();
+            Float originalDistancia = originalRuta.getDistancia();
 
-                // Validar que la distancia no sea negativa.
-                if (nuevaDistancia < 0) {
-                    showAlert("Error", "La distancia no puede ser negativa.");
-                    t.getTableView().refresh();
-                    return;
-                }
+            try {
+                Ruta clonedRuta = (Ruta) originalRuta.clone();
+                clonedRuta.setDistancia(nuevaDistancia);
 
-                // Actualizar la ruta con la nueva distancia.
-                ruta.setDistancia(nuevaDistancia);
-                try {
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                    showAlert("Error", "No se pudo actualizar la distancia.");
-                    t.getTableView().refresh();
-                } catch (NumberFormatException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                    showAlert("Error", "El valor ingresado no es un número válido.");
-                }
+                rutaManager.edit_XML(clonedRuta, String.valueOf(clonedRuta.getLocalizador()));
+                logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
+
+                originalRuta.setDistancia(nuevaDistancia);
+            } catch (CloneNotSupportedException | WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                showAlert("Error", "No se pudo actualizar la distancia.");
+                originalRuta.setDistancia(originalDistancia);
+                event.getTableView().refresh();
             }
         });
 
@@ -523,7 +528,7 @@ public class RutaController {
                 try {
                     return super.fromString(value);
                 } catch (NumberFormatException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
+                    logger.log(Level.SEVERE, "Error al convertir tiempo", e);
                     showAlert("Error", "El valor ingresado no es un número válido.");
                     return null;
                 }
@@ -531,57 +536,62 @@ public class RutaController {
         };
 
         tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(customIntegerConverter));
+        tiempoColumn.setOnEditCommit(event -> {
+            if (event.getNewValue() == null) {
+                event.getTableView().refresh();
+                return;
+            }
 
-        tiempoColumn.setOnEditCommit(new EventHandler<CellEditEvent<Ruta, Integer>>() {
-            @Override
-            public void handle(CellEditEvent<Ruta, Integer> t) {
-                // Si la conversión devolvió null, se detiene la operación.
-                if (t.getNewValue() == null) {
-                    t.getTableView().refresh();
-                    return;
-                }
+            Integer nuevoTiempo = event.getNewValue();
+            if (nuevoTiempo < 0) {
+                showAlert("Error", "El tiempo no puede ser negativo.");
+                event.getTableView().refresh();
+                return;
+            }
 
-                Ruta ruta = t.getTableView().getItems().get(t.getTablePosition().getRow());
-                Integer nuevoTiempo = t.getNewValue();
+            Ruta originalRuta = event.getRowValue();
+            Integer originalTiempo = originalRuta.getTiempo();
 
-                // Validar que el tiempo no sea negativo.
-                if (nuevoTiempo < 0) {
-                    showAlert("Error", "El tiempo no puede ser negativo.");
-                    t.getTableView().refresh();
-                    return;
-                }
+            try {
+                Ruta clonedRuta = (Ruta) originalRuta.clone();
+                clonedRuta.setTiempo(nuevoTiempo);
 
-                // Actualizar la ruta con el nuevo tiempo.
-                ruta.setTiempo(nuevoTiempo);
-                try {
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                    showAlert("Error", "No se pudo actualizar el tiempo.");
-                    t.getTableView().refresh();
-                } catch (NumberFormatException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                    showAlert("Error", "El valor ingresado no es un número válido.");
-                }
+                rutaManager.edit_XML(clonedRuta, String.valueOf(clonedRuta.getLocalizador()));
+                logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
+
+                originalRuta.setTiempo(nuevoTiempo);
+            } catch (CloneNotSupportedException | WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
+                showAlert("Error", "No se pudo actualizar el tiempo.");
+                originalRuta.setTiempo(originalTiempo);
+                event.getTableView().refresh();
             }
         });
 
         fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
         fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
         fechaColumn.setOnEditCommit(event -> {
-            Ruta ruta = event.getRowValue();
+            Ruta originalRuta = event.getRowValue();
             Date newDate = event.getNewValue();
-            ruta.setFechaCreacion(newDate);
+            Date originalDate = originalRuta.getFechaCreacion();
+
             try {
-                rutaManager.edit_XML(ruta, ruta.getLocalizador().toString());
-            } catch (Exception e) {
-                logger.severe("Error al actualizar el estado del envío: " + e.getMessage());
-                showAlert("Error al actualizar estado", e.getMessage());
+                Ruta clonedRuta = (Ruta) originalRuta.clone();
+                clonedRuta.setFechaCreacion(newDate);
+
+                rutaManager.edit_XML(clonedRuta, String.valueOf(clonedRuta.getLocalizador()));
+                logger.info("Fecha actualizada en el servidor: " + newDate);
+
+                originalRuta.setFechaCreacion(newDate);
+            } catch (CloneNotSupportedException | WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al actualizar fecha en el servidor", e);
+                showAlert("Error", "No se pudo actualizar la fecha.");
+                originalRuta.setFechaCreacion(originalDate);
+                event.getTableView().refresh();
             }
         });
-
     }
+    
 
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
@@ -644,7 +654,7 @@ public class RutaController {
                         // Actualizar el estilo basado en la selección
                         if (selectedMatriculas.contains(matricula)) {
                             setStyle("-fx-background-color: lightblue;");
-                        }else {
+                        } else {
                             setStyle("");
                         }
                     }
