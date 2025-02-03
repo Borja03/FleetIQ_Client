@@ -5,12 +5,16 @@
  */
 package service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import logicInterface.RutaManager;
 import models.Paquete;
 import models.Ruta;
@@ -63,9 +67,17 @@ public class RutaRESTClient implements RutaManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+   public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
+    Response response = webTarget
+        .path(MessageFormat.format("{0}", new Object[]{id}))
+        .request(MediaType.APPLICATION_XML)
+        .put(Entity.entity(requestEntity, MediaType.APPLICATION_XML));
+
+    // Verifica si la respuesta es un error (4xx o 5xx)
+    if (response.getStatus() >= 400) {
+        throw new WebApplicationException("Error del servidor: " + response.getStatus(), response);
     }
+}
 
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));

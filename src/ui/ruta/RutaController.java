@@ -434,7 +434,7 @@ public class RutaController {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(event -> {
             Ruta originalRuta = event.getRowValue();
-            
+
             String newOrigen = event.getNewValue();
             String originalOrigen = originalRuta.getOrigen();
 
@@ -447,9 +447,8 @@ public class RutaController {
 
                 originalRuta.setOrigen(newOrigen);
             } catch (CloneNotSupportedException | WebApplicationException e) {
-                System.out.println("-----------------------------------------------------");
                 logger.log(Level.SEVERE, "Error al actualizar origen en el servidor", e);
-                showAlert("Error", "No se pudo actualizar el origen.");
+                showAlert("Error del servidor", "No se pudo actualizar el origen.");
                 originalRuta.setOrigen(originalOrigen);
                 rutaTable.refresh();
             }
@@ -471,7 +470,7 @@ public class RutaController {
                 originalRuta.setDestino(newDestino);
             } catch (CloneNotSupportedException | WebApplicationException e) {
                 logger.log(Level.SEVERE, "Error al actualizar destino en el servidor", e);
-                showAlert("Error", "No se pudo actualizar el destino.");
+                showAlert("Error del servidor", "No se pudo actualizar el destino.");
                 originalRuta.setDestino(originalDestino);
                 event.getTableView().refresh();
             }
@@ -517,7 +516,7 @@ public class RutaController {
                 originalRuta.setDistancia(nuevaDistancia);
             } catch (CloneNotSupportedException | WebApplicationException e) {
                 logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
-                showAlert("Error", "No se pudo actualizar la distancia.");
+                showAlert("Error del servidor", "No se pudo actualizar la distancía.");
                 originalRuta.setDistancia(originalDistancia);
                 event.getTableView().refresh();
             }
@@ -563,7 +562,7 @@ public class RutaController {
                 originalRuta.setTiempo(nuevoTiempo);
             } catch (CloneNotSupportedException | WebApplicationException e) {
                 logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
-                showAlert("Error", "No se pudo actualizar el tiempo.");
+                showAlert("Error del servidor", "No se pudo actualizar el tiempo.");
                 originalRuta.setTiempo(originalTiempo);
                 event.getTableView().refresh();
             }
@@ -586,13 +585,12 @@ public class RutaController {
                 originalRuta.setFechaCreacion(newDate);
             } catch (CloneNotSupportedException | WebApplicationException e) {
                 logger.log(Level.SEVERE, "Error al actualizar fecha en el servidor", e);
-                showAlert("Error", "No se pudo actualizar la fecha.");
+                 showAlert("Error del servidor", "No se pudo actualizar la fecha.");
                 originalRuta.setFechaCreacion(originalDate);
                 event.getTableView().refresh();
             }
         });
     }
-    
 
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
