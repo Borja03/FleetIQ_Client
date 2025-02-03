@@ -35,7 +35,7 @@ public class RutaHelpController {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(scene);
-        stage.setTitle("Ayuda para la Gestion de Usuarios");
+        stage.setTitle("Ayuda para la Gestion de Rutas");
         stage.setResizable(false);
 //        stage.setMinWidth(1024);
 //        stage.setMinHeight(720);

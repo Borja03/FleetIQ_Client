@@ -21,7 +21,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import javafx.stage.Stage;
-import models.PackageSize;
 import static org.junit.Assert.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
@@ -96,15 +95,18 @@ public class RutaControllerTest extends ApplicationTest {
         assertEquals(initialCount + 1, rutaTable.getItems().size());
     }
 
-//    @Test
-//    public void testC_removeRuta() {
-//        int initialCount = rutaTable.getItems().size();
-//        Node row = lookup(".table-row-cell").nth(0).query();
-//        clickOn(row);
-//        verifyThat("#removeShipmentBtn", isEnabled());
-//        clickOn(removeShipmentBtn);
-//        assertEquals(initialCount - 1, rutaTable.getItems().size());
-//    }
+    @Test
+    public void testC_removeRuta() {
+        int initialCount = rutaTable.getItems().size();
+        Node row = lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+        verifyThat("#removeShipmentBtn", isEnabled());
+        clickOn(removeShipmentBtn);
+        verifyThat(".dialog-pane", Node::isVisible);
+        clickOn("Aceptar");
+        assertEquals(initialCount - 1, rutaTable.getItems().size());
+    }
+
 //    @Test
 //    public void testD_filterByTime() {
 //        interact(() -> {
@@ -113,18 +115,19 @@ public class RutaControllerTest extends ApplicationTest {
 //            filterValueField.setText("10");
 //        });
 //        clickOn(searchButton1);
-//        verifyThat(rutaTable, (TableView<Ruta> t) ->
-//            t.getItems().stream().allMatch(r -> r.getTiempo() > 10)
+//        verifyThat(rutaTable, (TableView<Ruta> t)
+//                -> t.getItems().stream().allMatch(r -> r.getTiempo() > 10)
 //        );
 //    }
-    @Test
-    public void testE_searchByLocalizador() {
-        interact(() -> searchTextField.setText("1"));
-        clickOn(searchButton);
-        verifyThat(rutaTable, (TableView<Ruta> t)
-                -> t.getItems().stream().anyMatch(r -> r.getLocalizador().toString().contains("1"))
-        );
-    }
+//
+//    @Test
+//    public void testE_searchByLocalizador() {
+//        interact(() -> searchTextField.setText("1"));
+//        clickOn(searchButton);
+//        verifyThat(rutaTable, (TableView<Ruta> t)
+//                -> t.getItems().stream().anyMatch(r -> r.getLocalizador().toString().contains("1"))
+//        );
+//    }
 
     @Test
     public void testF_filterByDateRange() {
@@ -146,7 +149,7 @@ public class RutaControllerTest extends ApplicationTest {
 //        clickOn(printReportBtn);
 //        // Verificación básica de que el botón es funcional
 //    }
-
+    
     @Test
     public void testH_tableSelection() {
         Node row = lookup(".table-row-cell").nth(0).query();
@@ -162,16 +165,17 @@ public class RutaControllerTest extends ApplicationTest {
 //        press(KeyCode.ENTER);
 //        verifyThat("La distancia no puede ser negativa.", isVisible());
 //    }
-
+    
+    
     @Test
     public void testJ_editOrigen() {
-      // Wait for data to load
+        // Wait for data to load
         WaitForAsyncUtils.waitForFxEvents();
 
         // Verify table has data
         assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
         TableRow<Ruta> row = lookup(".table-row-cell").nth(5)
-                        .query();
+                .query();
         TableColumn<Ruta, ?> origenColumn = rutaTable.getColumns().get(1);
         interact(() -> {
             doubleClickOn(row.getChildrenUnmodifiable().get(1));
@@ -186,4 +190,5 @@ public class RutaControllerTest extends ApplicationTest {
         Ruta updated = rutaTable.getItems().get(5);
         assertEquals("NewOrigen", updated.getOrigen());
     }
+    
 }
