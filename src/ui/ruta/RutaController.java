@@ -142,28 +142,43 @@ public class RutaController {
         stage.show();
     }
 
-    private void loadRutaData() throws SelectException {
-        try {
-            List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
-            });
+ private void loadRutaData() throws SelectException {
+    try {
+        List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {});
 
-            rutaData = FXCollections.observableArrayList(rutas);
-
-            localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
-            origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
-            destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
-            distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
-            tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
-            numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-
-            rutaTable.setItems(rutaData);
-        } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error loading ruta data", e);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected error", e);
+        // Obtener y actualizar el conteo de vehículos para cada ruta
+        for (Ruta ruta : rutas) {
+            try {
+                String countStr = ervManager.countByRutaId(String.valueOf(ruta.getLocalizador()));
+                int vehicleCount = Integer.parseInt(countStr.trim());
+                ruta.setNumVehiculos(vehicleCount);
+            } catch (NumberFormatException e) {
+                logger.log(Level.SEVERE, "Error al convertir el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
+                ruta.setNumVehiculos(0);
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error al obtener el conteo de vehículos para la ruta " + ruta.getLocalizador(), e);
+                ruta.setNumVehiculos(0);
+            }
         }
-    }
 
+        rutaData = FXCollections.observableArrayList(rutas);
+
+        localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
+        origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
+        destinoColumn.setCellValueFactory(new PropertyValueFactory<>("destino"));
+        distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
+        tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
+        numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+
+        rutaTable.setItems(rutaData);
+    } catch (WebApplicationException e) {
+        logger.log(Level.SEVERE, "Error cargando datos de rutas", e);
+        UtilsMethods.showAlert("Error", "No se pudieron cargar las rutas.");
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Error inesperado", e);
+        UtilsMethods.showAlert("Error", "Ocurrió un error inesperado.");
+    }
+}
     private void updateUnitLabel() {
         String selectedFilter = sizeFilterComboBox.getValue();
         if ("Filter by Time".equals(selectedFilter)) {

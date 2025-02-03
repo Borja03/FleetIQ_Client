@@ -17,8 +17,11 @@ import models.Envio;
 import logicInterface.EnvioManager;
 import utils.UtilsMethods;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.ListChangeListener;
@@ -27,11 +30,20 @@ import javafx.scene.Scene;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import javax.ws.rs.core.GenericType;
 import logicInterface.*;
 import models.*;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import utils.ThemeManager;
 
 public class EnvioController {
 
@@ -109,6 +121,7 @@ public class EnvioController {
         stage.setScene(scene);
         stage.setTitle("Envio");
         stage.setResizable(false);
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
         stage.centerOnScreen();
 
         envioService = EnvioFactory.getEnvioInstance();
@@ -131,6 +144,7 @@ public class EnvioController {
         configureRemoveButton();
         setUpContextMenu();
 
+        ThemeManager.getInstance().applyTheme(stage.getScene());
         loadInitialData();
         stage.show();
     }
@@ -483,6 +497,25 @@ public class EnvioController {
 
     @FXML
     private void printReport(ActionEvent event) {
-        new UtilsMethods().showAlert("Reporte", "Funcionalidad de impresión aún no implementada.");
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/RutaReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Envio>) this.table.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
+        }
     }
+
 }

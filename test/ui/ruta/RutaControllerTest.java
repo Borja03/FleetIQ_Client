@@ -47,11 +47,8 @@ public class RutaControllerTest extends ApplicationTest {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // Iniciar la aplicación y cargar el controlador Ruta
-        // Asume que la clase principal de la aplicación inicia correctamente la UI de Ruta
         new RutaMain().start(stage);
 
-        // Buscar componentes de la UI
         rutaTable = lookup("#rutaTable").queryTableView();
         addShipmentBtn = (JFXButton) lookup("#addShipmentBtn").queryButton();
         removeShipmentBtn = (JFXButton) lookup("#removeShipmentBtn").queryButton();
@@ -67,8 +64,6 @@ public class RutaControllerTest extends ApplicationTest {
      //   operatorComboBox = (JFXComboBox<Object>)lookup("#sizeFilterComboBox1").query();
         
                 
-
-        // Verificar que los componentes existen
         assertNotNull("rutaTable no encontrada", rutaTable);
         assertNotNull("addShipmentBtn no encontrado", addShipmentBtn);
         assertNotNull("removeShipmentBtn no encontrado", removeShipmentBtn);
