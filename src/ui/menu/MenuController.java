@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import models.User;
 import ui.envio.EnvioController;
+import ui.envio.EnvioHelpController;
 import ui.login.LogInController;
 import ui.paquete.PaqueteController;
 import ui.paquete.PaqueteHelpController;
@@ -198,7 +199,15 @@ public class MenuController {
 
     @FXML
     private void handleAboutEnvioMenuItemAction(Event event) {
-        System.out.println("Change password menu item clicked");
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/envio/envioHelp.fxml"));
+            Parent root = loader.load();
+            EnvioHelpController controller = loader.getController();
+            controller.initAndShowStage(root);
+            LOGGER.info("Help window opened");
+        } catch (IOException ex) {
+            LOGGER.severe("Error loading HelpEnvio window: " + ex);
+        }
     }
 
     @FXML
