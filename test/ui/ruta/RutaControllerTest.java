@@ -62,8 +62,6 @@ public class RutaControllerTest extends ApplicationTest {
         filterValueField = lookup("#filterValueField").query();
         fromDatePicker = lookup("#fromDatePicker").query();
         toDatePicker = lookup("#toDatePicker").query();
-        //filterTypeComboBox = (JFXComboBox<Object>)lookup("#sizeFilterComboBox").query();
-        //   operatorComboBox = (JFXComboBox<Object>)lookup("#sizeFilterComboBox1").query();
 
         assertNotNull("rutaTable no encontrada", rutaTable);
         assertNotNull("addShipmentBtn no encontrado", addShipmentBtn);
@@ -84,8 +82,6 @@ public class RutaControllerTest extends ApplicationTest {
         verifyThat("#filterValueField", hasText(""));
         assertNull(fromDatePicker.getValue());
         assertNull(toDatePicker.getValue());
-//        assertTrue(filterTypeComboBox.getSelectionModel().isEmpty());
-//        assertTrue(operatorComboBox.getSelectionModel().isEmpty());
     }
 
     @Test
@@ -128,7 +124,6 @@ public class RutaControllerTest extends ApplicationTest {
 //                -> t.getItems().stream().anyMatch(r -> r.getLocalizador().toString().contains("1"))
 //        );
 //    }
-
     @Test
     public void testF_filterByDateRange() {
         interact(() -> {
@@ -149,7 +144,6 @@ public class RutaControllerTest extends ApplicationTest {
 //        clickOn(printReportBtn);
 //        // Verificación básica de que el botón es funcional
 //    }
-    
     @Test
     public void testH_tableSelection() {
         Node row = lookup(".table-row-cell").nth(0).query();
@@ -157,16 +151,16 @@ public class RutaControllerTest extends ApplicationTest {
         verifyThat("#removeShipmentBtn", isEnabled());
     }
 
-//    @Test
-//    public void testI_validation() {
-//        Node distanciaCell = lookup(".table-cell").nth(3).query(); // Ajustar índice según la columna
-//        doubleClickOn(distanciaCell);
-//        write("-10");
-//        press(KeyCode.ENTER);
-//        verifyThat("La distancia no puede ser negativa.", isVisible());
-//    }
-    
-    
+    @Test
+    public void testI_validation() {
+        Node distanciaCell = lookup(".table-cell").nth(3).query();
+        doubleClickOn(distanciaCell);
+        write("-10");
+        press(KeyCode.ENTER);
+        verifyThat("La distancia no puede ser negativa.", isVisible());
+        clickOn("Aceptar");
+    }
+
     @Test
     public void testJ_editOrigen() {
         // Wait for data to load
@@ -190,5 +184,5 @@ public class RutaControllerTest extends ApplicationTest {
         Ruta updated = rutaTable.getItems().get(5);
         assertEquals("NewOrigen", updated.getOrigen());
     }
-    
+
 }
