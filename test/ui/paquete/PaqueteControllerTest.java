@@ -34,6 +34,7 @@ import javax.ws.rs.ProcessingException;
 import logicimplementation.PackageManagerImp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -149,21 +150,105 @@ public class PaqueteControllerTest extends ApplicationTest {
 
         // Verify table has data
         assertFalse("Table empty - no packages found", paqueteTableView.getItems().isEmpty());
-        TableRow<Paquete> row = lookup(".table-row-cell").nth(5)
-                        .query();
-        TableColumn<Paquete, ?> senderColumn = paqueteTableView.getColumns().get(1);
-        interact(() -> {
-            doubleClickOn(row.getChildrenUnmodifiable().get(1));
-        });
+        TableRow<Paquete> row = lookup(".table-row-cell").nth(5).query();
+        Paquete paqueteSelected = (Paquete) paqueteTableView.getSelectionModel().getSelectedItem();
 
+        doubleClickOn(row.getChildrenUnmodifiable().get(1));
         // Enter new value
-        write("NewSender");
+        write("new sender");
         press(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
+        doubleClickOn(row.getChildrenUnmodifiable().get(2));
+        // Enter new value
+        write("new receiver");
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        doubleClickOn(row.getChildrenUnmodifiable().get(3));
+        // Enter new value
+        write("10");
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        doubleClickOn(row.getChildrenUnmodifiable().get(4));
+        if (paqueteSelected.getSize().equals(PackageSize.EXTRA_LARGE)) {
+            push(KeyCode.UP);
+        } else {
+            push(KeyCode.DOWN);
+        }
+
         // Verify update
         Paquete updated = paqueteTableView.getItems().get(5);
-        assertEquals("NewSender", updated.getSender());
+        assertEquals("new sender", updated.getSender());
+        assertEquals("new receiver", updated.getReceiver());
+        assertEquals(10, updated.getWeight());
+
+    }
+
+    @Test
+    public void test2_update() {
+        paqueteTableView = lookup("#tbSubjects").query();
+        Node row = lookup(".table-row-cell").nth(0).query();
+
+        clickOn(row);
+        //Seleccionar el nodo de todas las filas para poder hacer click en ella.
+        Integer tablerow = paqueteTableView.getSelectionModel().getSelectedIndex();
+        Node idColumn = lookup("#idColumn").nth(tablerow + 1).query();
+        Node senderColumn = lookup("#senderColumn").nth(tablerow + 1).query();
+        Node receiverColumn = lookup("#receiverColumn").nth(tablerow + 1).query();
+        Node weightColumn = lookup("#weightColumn").nth(tablerow + 1).query();
+        Node sizeColumn = lookup("#sizeColumn").nth(tablerow + 1).query();
+        Node dateColumn = lookup("#dateColumn").nth(tablerow + 1).query();
+        Node fragileColumn = lookup("#fragileColumn").nth(tablerow + 1).query();
+
+        //
+        Paquete paqueteSelected = (Paquete) paqueteTableView.getSelectionModel().getSelectedItem();
+
+        String sender = paqueteSelected.getSender();
+        String receiver = paqueteSelected.getReceiver();
+        Double weight = paqueteSelected.getWeight();
+        PackageSize size = paqueteSelected.getSize();
+        Date createDate = paqueteSelected.getCreationDate();
+        Boolean fragile = paqueteSelected.isFragile();
+
+        LocalDate createDateAsLocalDate = createDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        //Click en 
+        clickOn(senderColumn);
+        write("aaa");
+        push(KeyCode.ENTER);
+
+        clickOn(receiverColumn);
+        write("bbbb");
+        push(KeyCode.ENTER);
+
+        doubleClickOn(sizeColumn);
+        if (size.equals(PackageSize.EXTRA_LARGE)) {
+            push(KeyCode.UP);
+        } else {
+            push(KeyCode.DOWN);
+        }
+
+        doubleClickOn(dateColumn);
+        clickOn(dateColumn);
+        write("01/01/2023");
+        press(KeyCode.ENTER);
+        press(KeyCode.ENTER);
+
+        //
+        Paquete paqueteUpdated = (Paquete) paqueteTableView.getSelectionModel().getSelectedItem();
+        Date crDate = paqueteUpdated.getCreationDate();
+        LocalDate dateInitLocalMo = crDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        //
+//        assertEquals("aaa", paqueteUpdated.getSender());
+//        assertNotEquals(originalTeacherList, paqueteUpdated);
+//        assertNotEquals(levelType, paqueteUpdated.getLevelType());
+//        assertNotEquals(languageType, paqueteUpdated.getLanguageType());
+//        assertNotEquals(dateEndLocal, dateEndLocalMo);
+//        assertNotEquals(dateInitLocal, dateInitLocalMo);
+//        assertNotEquals(hours, paqueteUpdated.getHours());
     }
 
     /**
@@ -180,7 +265,7 @@ public class PaqueteControllerTest extends ApplicationTest {
         }
 
         TableRow<Paquete> row = lookup(".table-row-cell").query();
-        
+
         clickOn(row);
 
         clickOn("#removeShipmentBtn");
@@ -196,8 +281,9 @@ public class PaqueteControllerTest extends ApplicationTest {
         clickOn(okButton);
 
         WaitForAsyncUtils.waitForFxEvents();
-        assertEquals("Package count should decrease by 1",initialCount - 1, paqueteTableView.getItems().size());
+        assertEquals("Package count should decrease by 1", initialCount - 1, paqueteTableView.getItems().size());
     }
+
     // test backend
     @Test
     public void testServerConnectionStatus() {

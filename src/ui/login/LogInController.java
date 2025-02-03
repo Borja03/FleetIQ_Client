@@ -70,7 +70,7 @@ public class LogInController {
     /**
      * Logger para registrar eventos y mensajes.
      */
-    private static final Logger logger = Logger.getLogger(LogInController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LogInController.class.getName());
 
     @FXML
     private TextField emailTextField;
@@ -208,7 +208,7 @@ public class LogInController {
             props.setProperty("theme", theme);
             props.store(new FileOutputStream("src/config/config_theme.properties"), "Theme Settings");
         } catch (IOException e) {
-            logger.severe("Error saving theme preference: " + e.getMessage());
+            LOGGER.severe("Error saving theme preference: " + e.getMessage());
         }
     }
 
@@ -299,20 +299,23 @@ public class LogInController {
         String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
 
         User user = new User();
-        user.setEmail("multitartanga@gmail.com");
-        //user.setPassword("12345");
+        user.setEmail(email);
 
+        // user.setEmail("multitartanga@gmail.com");
+        //user.setPassword("12345");
         // Call ClientSideEncryption to encrypt the message
-        byte[] encryptedData = null;
+        String encryptedPaasowrd = null;
         try {
-            encryptedData = ClientSideEncryption.encrypt(password);
+            //  User user = new User(email, password, name, isActive, street, city, zip);
+            // Call ClientSideEncryption to encrypt the message
+            LOGGER.log(Level.INFO, "Password before encrypting : " + password);
+            encryptedPaasowrd = ClientSideEncryption.encrypt(password);
+            LOGGER.log(Level.INFO, "Password after encrypting : " + encryptedPaasowrd);
+            user.setPassword(encryptedPaasowrd);
+
         } catch (Exception ex) {
-            Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // Convert to Base64 for easy printing (optional)
-        String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
-        System.out.println("Encrypted Message (Base64): " + encryptedBase64);
-        user.setPassword(encryptedBase64);
 
         User loggedInUser;
         try {
@@ -350,7 +353,7 @@ public class LogInController {
      */
     @FXML
     private void handleCreateUserLinkAction() {
-        logger.info("Abrir vista de registro.");
+        LOGGER.info("Abrir vista de registro.");
         navigateToScreen("/ui/signup/SignUpView.fxml", "SignUp", false, null);
     }
 
@@ -374,12 +377,12 @@ public class LogInController {
         isPasswordVisible = !isPasswordVisible;
 
         if (isPasswordVisible) {
-            passwordImage.setImage(new Image(getClass().getResourceAsStream("/Images/eye-slash-solid.png")));
+            passwordImage.setImage(new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png")));
             passwordField.setVisible(false);
             visiblePasswordField.setVisible(true);
             visiblePasswordField.setText(passwordField.getText());
         } else {
-            passwordImage.setImage(new Image(getClass().getResourceAsStream("/Images/eye-solid.png")));
+            passwordImage.setImage(new Image(getClass().getResourceAsStream("/image/eye-solid.png")));
             passwordField.setVisible(true);
             visiblePasswordField.setVisible(false);
             passwordField.setText(visiblePasswordField.getText());
@@ -414,7 +417,7 @@ public class LogInController {
             }
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to load " + title + " screen: " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Failed to load " + title + " screen: " + e.getMessage(), e);
         }
     }
 
