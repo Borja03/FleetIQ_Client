@@ -251,7 +251,7 @@ public class EnvioController {
                     Integer idVehiculo = vehiculo.getId();
                     List<Ruta> rList = envioRutaVehiculoService.getRutaId(new GenericType<List<Ruta>>() {
                     }, idVehiculo.toString());
-                    if (rList.get(0) != null) {
+                    if (!rList.isEmpty() && rList.get(0) != null) {
                         vehiculoMatriculaList.add(vehiculo.getMatricula());
                     }
                 }
