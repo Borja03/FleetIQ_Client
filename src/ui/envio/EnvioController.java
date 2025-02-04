@@ -172,10 +172,16 @@ public class EnvioController {
             estadoColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 Estado nuevoEstado = event.getNewValue();
-                envio.setEstado(nuevoEstado);
+                Estado originalEstado = envio.getEstado();
                 try {
-                    envioService.edit_XML(envio, envio.getId().toString());
+                    Envio envioClone = envio.clone();
+                    envioClone.setEstado(nuevoEstado);
+
+                    envioService.edit_XML(envioClone, envioClone.getId().toString());
+                    envio.setEstado(nuevoEstado);
                 } catch (Exception e) {
+                    envio.setEstado(originalEstado);
+                    table.refresh();
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -203,19 +209,25 @@ public class EnvioController {
             numPaquetesColumn.setOnEditCommit(event -> event.getRowValue().setNumPaquetes(event.getNewValue()));
             numPaquetesColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
-                Integer newWeightValue = event.getNewValue();
+                Integer nuevosPaquetes = event.getNewValue();
+                Integer paquetesAntiguos = envio.getNumPaquetes();
 
                 try {
+                    Envio envioClone = envio.clone();
                     // Validate the new receiver value
-                    if (newWeightValue <= 0) {
+                    if (nuevosPaquetes <= 0) {
                         throw new IllegalArgumentException("En numero de paquetes debe ser mayor o igual a cero");
                     }
-                    envio.setNumPaquetes(event.getNewValue());
-                    EnvioFactory.getEnvioInstance().edit_XML(envio, envio.getId().toString());
+                    envioClone.setNumPaquetes(nuevosPaquetes);
+
+                    envioService.edit_XML(envioClone, envioClone.getId().toString());
+                    envio.setNumPaquetes(nuevosPaquetes);
 
                 } catch (Exception ex) {
+                    envio.setNumPaquetes(paquetesAntiguos);
+                    table.refresh();
                     UtilsMethods.showAlert("Error", ex.getMessage());
-                    LOGGER.warning("Invalid weight input: " + newWeightValue);
+                    LOGGER.warning("Error al actualizar el numero de paquetes: " + nuevosPaquetes);
                     numPaquetesColumn.getTableView().refresh();
 
                 }
@@ -233,10 +245,15 @@ public class EnvioController {
             creadorEnvioColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 String nombre = event.getNewValue();
-                envio.setCreadorEnvio(nombre);
+                String nombreAntiguo = envio.getCreadorEnvio();
                 try {
+                    Envio envioClone = envio.clone();
+                    envioClone.setCreadorEnvio(nombre);
                     envioService.edit_XML(envio, envio.getId().toString());
+                    envio.setCreadorEnvio(nombre);
                 } catch (Exception e) {
+                    envio.setCreadorEnvio(nombreAntiguo);
+                    table.refresh();
                     LOGGER.severe("Error al actualizar el creador del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -327,19 +344,24 @@ public class EnvioController {
             fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
             fechaEntregaColumn.setCellFactory(column -> new EnvioDateEditingCell());
             fechaEntregaColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Date newDate = event.getNewValue();
+                Date oldDate = envio.getFechaEntrega();
                 try {
-                    Envio envio = event.getRowValue();
-                    Date newDate = event.getNewValue();
-                    if (envio.getFechaEnvio() == null) {
+                    Envio envioClone = envio.clone();
+                    if (envioClone.getFechaEnvio() == null) {
                         throw new IllegalArgumentException("Debes insertar la fecha de envio antes de insertar la fecha de entrega");
                     } else {
                         if (newDate.before(envio.getFechaEnvio())) {
                             throw new IllegalArgumentException("La fecha entrega debe ser posterior a la fecha envio");
                         }
                     }
-                    envio.setFechaEntrega(newDate);
+                    envioClone.setFechaEnvio(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
+                    envio.setFechaEnvio(newDate);
                 } catch (Exception e) {
+                    envio.setFechaEnvio(oldDate);
+                    table.refresh();
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -350,10 +372,15 @@ public class EnvioController {
             fechaEnvioColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 Date newDate = event.getNewValue();
-                envio.setFechaEnvio(newDate);
+                Date oldDate = envio.getFechaEnvio();
                 try {
+                    Envio envioClone = envio.clone();
+                    envioClone.setFechaEnvio(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
+                    envio.setFechaEnvio(newDate);
                 } catch (Exception e) {
+                    envio.setFechaEnvio(oldDate);
+                    table.refresh();
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -480,8 +507,12 @@ public class EnvioController {
             table.refresh();
         } catch (UpdateException ex) {
             Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+            new UtilsMethods().showAlert("Error al añadir envío", ex.getMessage());
         } catch (SelectException ex) {
             Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+            new UtilsMethods().showAlert("Error al añadir envío", ex.getMessage());
+        } catch (Exception ex) {
+            new UtilsMethods().showAlert("Error al añadir envío", ex.getMessage());
         }
     }
 
