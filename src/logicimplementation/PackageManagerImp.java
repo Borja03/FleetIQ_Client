@@ -23,9 +23,6 @@ public class PackageManagerImp implements PaqueteManager  {
         this.webClient = new PackageRESTClient();
         
     }
-     private void initializeClient() {
-        this.webClient = new PackageRESTClient();
-    }
 
     @Override
     public Paquete addPackage(Paquete paquete) throws CreateException {
@@ -46,11 +43,7 @@ public class PackageManagerImp implements PaqueteManager  {
             return webClient.updatePackage(paquete, responseType, paquete.getId());
         } catch (WebApplicationException e) {
             throw new UpdateException("Server error: " + e.getMessage());
-        } catch (ProcessingException e) {
-                  webClient.close();
-            initializeClient();
-            throw new UpdateException("Database server connection failed: " + e.getMessage());
-        }
+        } 
     }
 
     @Override
@@ -135,8 +128,5 @@ public class PackageManagerImp implements PaqueteManager  {
             throw new SelectException("Database server connection failed: " + e.getMessage());
         }
     }
-  // Add this method to be called when your application closes
-    public void cleanup() {
-        webClient.close();
-    }
+
 }

@@ -267,6 +267,7 @@ public class PaqueteController {
         senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         senderColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
+            
             String newSenderValue = event.getNewValue();
             String originalValue = paquete.getSender(); // Store original value
             LOGGER.info("Sender original value" + originalValue);
@@ -295,7 +296,7 @@ public class PaqueteController {
             } catch (UpdateException ex) {
                 // Handle database update failure
                 LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Error", "Failed to update sender." + ex.getMessage() + " Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", "Failed to update sender." + ex.getMessage() + " Please try again LATER.", "ERROR");
                 paquete.setSender(originalValue);
                 senderColumn.getTableView().refresh();
             } catch (CloneNotSupportedException ex) {
@@ -332,10 +333,8 @@ public class PaqueteController {
                 // Handle all exceptions
                 String errorMessage = ex instanceof InvalidNameFormatException
                                 ? ex.getMessage() : "Failed to update receiver. Please try again.";
-
                 UtilsMethods.showAlert("Error", errorMessage, "ERROR");
                 LOGGER.warning("Update failed: " + ex.getMessage());
-
                 // Restore original value
                 paquete.setReceiver(originalValue);
                 receiverColumn.getTableView().refresh();
