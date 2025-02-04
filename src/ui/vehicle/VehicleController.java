@@ -470,7 +470,14 @@ public class VehicleController {
                 VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
             } catch (UpdateException ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }catch (Exception e) {
+            LOGGER.severe("Error updating vehicle capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Update Failed");
+            alert.setContentText("An error occurred while updating vehicle. Please try again later.");
+            alert.showAndWait();
+        }
         });
     }
 
@@ -494,6 +501,13 @@ public class VehicleController {
         } catch (NumberFormatException e) {
             LOGGER.warning("Invalid capacity value: " + capacityTextField.getText());
             capacityTextField.setText("0");
+        }catch (Exception e) {
+            LOGGER.severe("Error updating vehicle capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Update Failed");
+            alert.setContentText("An error occurred while updating vehicle. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -580,6 +594,13 @@ public class VehicleController {
         } catch (SelectException ex) {
             Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -608,6 +629,13 @@ public class VehicleController {
         } catch (SelectException ex) {
             Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -628,6 +656,13 @@ public class VehicleController {
         } catch (SelectException ex) {
             Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        }catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -645,6 +680,13 @@ public class VehicleController {
         } catch (SelectException ex) {
             Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -665,6 +707,13 @@ public class VehicleController {
         } catch (SelectException ex) {
             Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -685,6 +734,13 @@ public class VehicleController {
         } catch (SelectException ex) {
             Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             UtilsMethods.showAlert("Error", "Failed to filter vehicles: " + ex.getMessage());
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 
@@ -708,6 +764,13 @@ public class VehicleController {
             //   UtilsMethods.showAlert("Error", "Failed to create package: " + ex.getMessage());
         } catch (SelectException ex) {
             Logger.getLogger(VehicleFactory.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
 
     }
@@ -891,6 +954,13 @@ public class VehicleController {
             //log it.
             utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
             LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        } catch (Exception e) {
+            LOGGER.severe("Error filtering vehicles by capacity: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Filter Failed");
+            alert.setContentText("An error occurred while filtering vehicles. Please try again later.");
+            alert.showAndWait();
         }
     }
 

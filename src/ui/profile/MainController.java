@@ -2,6 +2,7 @@ package ui.profile;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
+import com.jfoenix.controls.JFXTextField;
 import encryption.ClientSideEncryption;
 import exception.UpdateException;
 import factories.SignableFactory;
@@ -99,16 +100,25 @@ public class MainController {
     private VBox vb_password;
 
     @FXML
+    private JFXButton showPasswordBtn;
+
+    @FXML
     private JFXPasswordField newPasswordField;
 
     @FXML
-    private JFXButton showPasswordBtn;
+    private JFXTextField newPassTxt;
 
     @FXML
     private JFXPasswordField repeatPasswordField;
 
     @FXML
+    private JFXTextField newPassTxtRepeat;
+
+    @FXML
     private JFXButton showRepeatedPasswordBtn;
+
+    @FXML
+    private ImageView repeatEyeImageView;
 
     @FXML
     private JFXButton btn_update_password;
@@ -117,10 +127,7 @@ public class MainController {
     private final Image eyeClosed = new Image(getClass().getResourceAsStream("/image/eye-solid.png"));
     private final Image eyeOpen = new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png"));
 
-    private boolean passwordIsVisible = false;
     // Text fields to show passwords when visible
-    private TextField visibleNewPasswordField;
-    private TextField visibleRepeatPasswordField;
     // Context menus for copying selected text
     private ContextMenu contextMenu;
 
@@ -135,6 +142,8 @@ public class MainController {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+    private boolean isPasswordVisible = false; // Flag to check if the password is visible
+    private boolean isPasswordVisibleR = false;
 
     public static final Logger LOGGER = Logger.getLogger(MainController.class.getName());
 
@@ -154,15 +163,17 @@ public class MainController {
         // stage.getIcons().add(new Image("/Images/userIcon.png"));
 
         // Set initial visibility of password fields
-        passwordField.setVisible(true);
-        plainPasswordField.setVisible(false);
-        eyeImageView.setImage(eyeClosed);
+        newPassTxt.setVisible(false);
+        newPassTxtRepeat.setVisible(false);
+
+        showPasswordBtn.setOnAction(this::handlePasswordBtnShowHideAction);
+        showRepeatedPasswordBtn.setOnAction(this::handlePasswordBtnRepeatShowHideAction);
 
         // Initialize the context menu for copy functionality
         createContextMenu();
 
         // Link event handlers
-        eyeButton.setOnAction(this::togglePasswordVisibility);
+        // eyeButton.setOnAction(this::togglePasswordVisibility);
         //User user = PaqueteController.userSession;
         // Set user details in text fields
         emailField.setText(LogInController.userSession.getEmail());
@@ -195,6 +206,36 @@ public class MainController {
 
         LOGGER.info("MainController initialized.");
         stage.show();
+    }
+
+    private void handlePasswordBtnShowHideAction(ActionEvent event) {
+        isPasswordVisible = !isPasswordVisible;
+        if (isPasswordVisible) {
+            eyeImageView.setImage(new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png")));
+            newPasswordField.setVisible(false);
+            newPassTxt.setVisible(true);
+            newPassTxt.setText(newPasswordField.getText());
+        } else {
+            eyeImageView.setImage(new Image(getClass().getResourceAsStream("/image/eye-solid.png")));
+            newPasswordField.setVisible(true);
+            newPassTxt.setVisible(false);
+            newPasswordField.setText(newPassTxt.getText());
+        }
+    }
+
+    private void handlePasswordBtnRepeatShowHideAction(ActionEvent event) {
+        isPasswordVisibleR = !isPasswordVisibleR;
+        if (isPasswordVisibleR) {
+            repeatEyeImageView.setImage(new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png")));
+            repeatPasswordField.setVisible(false);
+            newPassTxtRepeat.setVisible(true);
+            newPassTxtRepeat.setText(repeatPasswordField.getText());
+        } else {
+            repeatEyeImageView.setImage(new Image(getClass().getResourceAsStream("/image/eye-solid.png")));
+            repeatPasswordField.setVisible(true);
+            newPassTxtRepeat.setVisible(false);
+            repeatPasswordField.setText(newPassTxtRepeat.getText());
+        }
     }
 
     /**
@@ -287,41 +328,47 @@ public class MainController {
     }
 
     private void handleUpdatePassword() {
-        String newPassword = newPasswordField.getText();
-        String repeatPassword = repeatPasswordField.getText();
+        // Retrieve passwords only if the fields are visible
+        String newPassword = newPasswordField.isVisible() ? newPasswordField.getText() : repeatPasswordField.getText();
+        String repeatPassword = repeatPasswordField.isVisible() ? repeatPasswordField.getText() : newPasswordField.getText();
 
-        if (newPassword.isEmpty() || repeatPassword.isEmpty()) {
+        // Validate only visible fields
+        if ((newPasswordField.isVisible() && newPassword.isEmpty())
+                        || (repeatPasswordField.isVisible() && repeatPassword.isEmpty())) {
             showAlert(Alert.AlertType.ERROR, "Empty Fields", "Both password fields must be filled.");
-        } else if (!newPassword.equals(repeatPassword)) {
-            showAlert(Alert.AlertType.ERROR, "Password Mismatch", "Passwords do not match. Please try again.");
-        } else {
-
-            // Call ClientSideEncryption to encrypt the message
-            byte[] encryptedData = null;
-            try {
-                encryptedData = ClientSideEncryption.encrypt(newPassword);
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-            String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
-            System.out.println("Encrypted Message (Base64): " + encryptedBase64);
-
-            User user = new User();
-            user.setEmail(userSession.getEmail());
-            user.setPassword(encryptedBase64);
-            try {
-
-                SignableFactory.getSignable().updatePassword(user);
-
-                LOGGER.info("Password updated successfully.");
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Your password has been updated successfully!");
-                // to add  crypto her
-            } catch (UpdateException ex) {
-                Logger.getLogger(ResetPasswordController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
+            return;
         }
+
+        // Compare passwords
+        if (!newPassword.equals(repeatPassword)) {
+            showAlert(Alert.AlertType.ERROR, "Password Mismatch", "Passwords do not match. Please try again.");
+            return;
+        }
+
+        // Determine which password to encrypt
+        String mPassword = newPasswordField.isVisible() ? newPasswordField.getText() : repeatPasswordField.getText();
+        String encryptedPassword = null;
+
+        try {
+            encryptedPassword = ClientSideEncryption.encrypt(mPassword);
+        } catch (Exception ex) {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Encryption error", ex);
+            return;
+        }
+
+        // Update user password
+        User user = new User();
+        user.setEmail(userSession.getEmail());
+        user.setPassword(encryptedPassword);
+
+        try {
+            SignableFactory.getSignable().updatePassword(user);
+        } catch (UpdateException ex) {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, "Password update failed", ex);
+            return;
+        }
+
+        navigateToScreen("/ui/login/LogIn.fxml", "LogIn");
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {
@@ -463,32 +510,31 @@ public class MainController {
      *
      * @param event The action event triggered by the eye button.
      */
-    @FXML
-    private void togglePasswordVisibility(ActionEvent event) {
-        // Check if the password is currently visible
-        if (passwordIsVisible) {
-            // Show the password field (masked) and hide the plain password field
-            passwordField.setVisible(true);
-            plainPasswordField.setVisible(false);
-
-            // Change the eye icon to indicate the password is hidden
-            eyeImageView.setImage(eyeClosed);
-        } else {
-            // Hide the password field (masked) and show the plain password field
-            passwordField.setVisible(false);
-            plainPasswordField.setVisible(true);
-
-            // Set the plain password field to show the actual password text
-            plainPasswordField.setText(passwordField.getText()); // Show the real password
-
-            // Change the eye icon to indicate the password is visible
-            eyeImageView.setImage(eyeOpen);
-        }
-
-        // Toggle the visibility state for the next action
-        passwordIsVisible = !passwordIsVisible;
-    }
-
+//    @FXML
+//    private void togglePasswordVisibility(ActionEvent event) {
+//        // Check if the password is currently visible
+//        if (passwordIsVisible) {
+//            // Show the password field (masked) and hide the plain password field
+//            passwordField.setVisible(true);
+//            plainPasswordField.setVisible(false);
+//
+//            // Change the eye icon to indicate the password is hidden
+//            eyeImageView.setImage(eyeClosed);
+//        } else {
+//            // Hide the password field (masked) and show the plain password field
+//            passwordField.setVisible(false);
+//            plainPasswordField.setVisible(true);
+//
+//            // Set the plain password field to show the actual password text
+//            plainPasswordField.setText(passwordField.getText()); // Show the real password
+//
+//            // Change the eye icon to indicate the password is visible
+//            eyeImageView.setImage(eyeOpen);
+//        }
+//
+//        // Toggle the visibility state for the next action
+//        passwordIsVisible = !passwordIsVisible;
+//    }
     /**
      * Navigates to a different screen based on the provided FXML path and
      * title.

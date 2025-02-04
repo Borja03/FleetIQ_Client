@@ -30,6 +30,7 @@ public class UserManagerImp implements UserManager {
 
     public UserManagerImp() {
         this.webClient = new UserRESTClient();
+        
     }
 
     @Override
