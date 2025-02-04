@@ -127,5 +127,7 @@ public class EnvioRutaVehiculoRESTClient implements EnvioRutaVehiculoManager {
     public String count() throws ClientErrorException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    
 
 }
