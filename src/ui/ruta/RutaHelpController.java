@@ -6,7 +6,6 @@ package ui.ruta;
  * and open the template in the editor.
  */
 
-import ui.paquete.*;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

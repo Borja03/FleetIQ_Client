@@ -1,196 +1,132 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <link rel="stylesheet" href="../../style/HelpStyle.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Usuario - Gestión de Rutas</title>
-</head>
-<body>
-    <header>
-        <div class="header-logo">
-            <img src="/image/fleet_icon.png" alt="FleetIQ Logo">
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="../../style/HelpStyle.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gestión de Rutas</title>
+    </head>
+    <body>
+        <header>
+            <div class="header-logo">
+                <img src="path/to/your/logo.png" alt="Logo">
+            </div>
+            <h1>Guía de Usuario - Gestión de Envíos</h1>
+        </header>
+
+        <div class="container">
+            <nav class="navigation">
+                <ul>
+                    <li><a href="#overview">Descripción General</a></li>
+                    <li><a href="#menu">Menú</a></li>
+                    <li><a href="#filters">Filtros</a></li>
+                    <li><a href="#table">Tabla</a></li>
+                    <li><a href="#buttons">Botones</a></li>
+                </ul>
+            </nav>
+
+            <div class="content">
+                <section id="overview" class="section">
+                    <h2>Descripción General</h2>
+                    <p>La ventana de gestión de envíos permite visualizar, filtrar y modificar los registros de envíos dentro del sistema. 
+                        Se compone de cuatro secciones principales: el menú de navegación, la sección de filtros, la tabla de datos y los botones de acción.
+                        A continuación, se detallará cada sección para facilitar su uso.</p>
+                </section>
+
+                <section id="menu" class="section">
+                    <h2>Menú</h2>
+                    <p>El menú principal de la aplicación está compuesto por cuatro pestañas, cada una con una función específica:</p>
+                    <ul>
+                        <li><strong>Go To:</strong> Permite moverte entre las distintas ventanas de gestión de la aplicación de manera rápida y eficiente.</li>
+                        <li><strong>View:</strong> Se usa para alternar entre los modos de visualización oscuro y claro. La elección del tema se aplicará a toda la aplicación.</li>
+                        <li><strong>Help:</strong> Muestra ventanas de ayuda para proporcionar información detallada sobre el uso de cada sección de la aplicación.</li>
+                    </ul>
+                </section>
+
+                <section id="filters" class="section">
+                    <h2>Filtros</h2>
+                    <p>Los filtros permiten refinar la búsqueda de rutas dentro de la tabla para mejorar la gestión de la información:</p>
+                    <ul>
+                        <li><strong>Filtrado de fecha:</strong> Permite visualizar las rutas según la fecha de creación. Se debe ingresar un rango de fechas válido ("From" debe ser anterior a "To").</li>
+                        <li><strong>Filtrado de distancia o tiempo:</strong> Primero, seleccione el tipo de filtro: Distancia (km) o Tiempo (h). Luego, elija el criterio de comparación: mayor que (>), menor que (<) o igual a (=). Ingrese el valor a filtrar y, finalmente, haga clic en el botón "Buscar". Si el campo está vacío, se eliminan los filtros aplicados.</li>
+                        <li><strong>Filtrado por localizador:</strong> Permite visualizar solo la ruta con el localizador deseado. Si el campo está vacío, se eliminan los filtros aplicados.</li>
+                    </ul>
+                </section>
+
+                <section id="table" class="section">
+                    <h2>Tabla</h2>
+                    <p>La tabla de rutas muestra los registros almacenados en el sistema y permite modificar ciertos datos directamente:</p>
+                    <ul>
+                        <li><strong>Origen:</strong> Puede escribirse cualquier origen.</li>
+                        <li><strong>Destino:</strong> Puede escribirse cualquier origen.</li>
+                        <li><strong>Distancia:</strong>Únicamente se podrá escribir un valor numérico positivo, no hace falta que sea un número entero.</li>
+                        <li><strong>Tiempo:</strong> Únicamente se podrá escribir un valor numérico positivo, tiene que ser un número entero.</li>
+                        <li><strong>Fecha Creación:</strong> Puede seleccionar cualquier fecha en el selector. En caso de escribirla manualmente, deberá ingresarse en el formato dd/mm/yyyy.</li>
+                        <li><strong>Número Vehiculos:</strong> Se actualizará automáticamente al añadir uno o más vehículos a la ruta seleccionada.</li>
+
+                    </ul>
+                    <p>Al hacer clic derecho sobre una ruta, se desplegará un menú contextual con una opción para añadir vehículos. Si la selecciona, se mostrará un diálogo con todos los vehículos disponibles</p>
+                </section>
+
+                <section id="buttons" class="section">
+                    <h2>Botones</h2>
+                    <p>Los botones ubicados en la parte inferior de la ventana permiten gestionar los registros de la tabla:</p>
+                    <ul>
+                        <li><strong>Botón verde:</strong> Permite añadir una nueva ruta al sistema.</li>
+                        <li><strong>Botón rojo:</strong> Elimina la o las rutas seleccionadas de la tabla.</li>
+                        <li><strong>Botón naranja:</strong> Genera un reporte detallado de las rutas de la tabla.</li>
+                    </ul>
+                </section>
+            </div>
         </div>
-        <h1>Gestor de Rutas - FleetIQ</h1>
-    </header>
 
-    <div class="container">
-        <nav class="navigation">
-            <ul>
-                <li><a href="#getting-started">Inicio</a></li>
-                <li><a href="#filtros-fecha">Filtros por Fecha</a></li>
-                <li><a href="#filtros-numericos">Filtros Numéricos</a></li>
-                <li><a href="#busqueda">Búsqueda</a></li>
-                <li><a href="#tabla-editable">Tabla Editable</a></li>
-                <li><a href="#acciones">Acciones</a></li>
-                <li><a href="#menu-contextual">Menú Contextual</a></li>
-                <li><a href="#reportes">Reportes</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </nav>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sections = document.querySelectorAll(".section");
+                const navLinks = document.querySelectorAll(".navigation a");
 
-        <div class="content">
-            <section id="getting-started" class="section">
-                <h2>Introducción</h2>
-                <p>Bienvenido al módulo de gestión de rutas de FleetIQ. Esta guía explica cómo utilizar todas las funcionalidades disponibles.</p>
-                <div class="tip">
-                    <strong>Consejo:</strong> Utiliza el menú de navegación lateral para acceder rápidamente a las diferentes secciones.
-                </div>
-            </section>
+                // Function to update the active menu item
+                function updateActiveMenu() {
+                    let current = "";
 
-            <section id="filtros-fecha" class="section">
-                <h2>Filtrado por Fechas</h2>
-                <p>Filtra rutas por rango de fechas usando los selectores de fecha:</p>
-                <img src="/api/placeholder/800/400" alt="Filtro por Fechas" class="screenshot">
-                <ul>
-                    <li>Selecciona fecha inicial en el primer selector</li>
-                    <li>Selecciona fecha final en el segundo selector</li>
-                    <li>Haz clic en "Aplicar Filtro" para ver los resultados</li>
-                </ul>
-            </section>
+                    sections.forEach((section) => {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.clientHeight;
+                        if (window.scrollY >= sectionTop - sectionHeight / 3) {
+                            current = section.getAttribute("id");
+                        }
+                    });
 
-            <section id="filtros-numericos" class="section">
-                <h2>Filtros Numéricos</h2>
-                <p>Filtra rutas por tiempo o distancia:</p>
-                <img src="/api/placeholder/800/400" alt="Filtros Numéricos" class="screenshot">
-                <ol>
-                    <li>Selecciona "Tiempo" o "Distancia" en el primer desplegable</li>
-                    <li>Elige el operador de comparación (> , < , =)</li>
-                    <li>Ingresa el valor numérico</li>
-                    <li>Haz clic en el botón de búsqueda para aplicar</li>
-                </ol>
-                <div class="warning">
-                    <strong>Importante:</strong> Los valores deben ser números válidos y no negativos.
-                </div>
-            </section>
+                    navLinks.forEach((link) => {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href").includes(current)) {
+                            link.classList.add("active");
+                        }
+                    });
 
-            <section id="busqueda" class="section">
-                <h2>Búsqueda por Localizador</h2>
-                <p>Busca rutas específicas por su número de localizador:</p>
-                <img src="/api/placeholder/800/400" alt="Búsqueda por Localizador" class="screenshot">
-                <ul>
-                    <li>Ingresa el número de localizador en el campo de texto</li>
-                    <li>Haz clic en el botón de búsqueda (lupa)</li>
-                    <li>Para ver todas las rutas nuevamente, borra el campo y busca</li>
-                </ul>
-            </section>
-
-            <section id="tabla-editable" class="section">
-                <h2>Edición en Tabla</h2>
-                <p>Modifica directamente los datos en la tabla:</p>
-                <img src="/api/placeholder/800/400" alt="Tabla Editable" class="screenshot">
-                <h3>Columnas Editables</h3>
-                <ul>
-                    <li><strong>Origen/Destino:</strong> Doble clic para editar texto</li>
-                    <li><strong>Distancia:</strong> Edita valores numéricos (en km)</li>
-                    <li><strong>Tiempo:</strong> Edita duración en horas</li>
-                    <li><strong>Fecha:</strong> Usa el calendario desplegable</li>
-                </ul>
-                <div class="tip">
-                    <strong>Validación:</strong> Los campos numéricos solo aceptan valores positivos.
-                </div>
-            </section>
-
-            <section id="acciones" class="section">
-                <h2>Acciones Principales</h2>
-                <div class="button-group">
-                    <div class="button-item">
-                        <h3>Añadir Ruta</h3>
-                        <img src="/api/placeholder/200/100" alt="Botón Añadir">
-                        <p>Crea una nueva ruta vacía con valores predeterminados</p>
-                    </div>
-                    <div class="button-item">
-                        <h3>Eliminar Rutas</h3>
-                        <img src="/api/placeholder/200/100" alt="Botón Eliminar">
-                        <p>Selecciona una o más rutas y haz clic para eliminarlas</p>
-                    </div>
-                    <div class="button-item">
-                        <h3>Generar Reporte</h3>
-                        <img src="/api/placeholder/200/100" alt="Botón Reporte">
-                        <p>Genera un reporte PDF con todas las rutas visibles</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="menu-contextual" class="section">
-                <h2>Menú Contextual</h2>
-                <p>Acciones avanzadas con clic derecho:</p>
-                <img src="/api/placeholder/800/400" alt="Menú Contextual" class="screenshot">
-                <h3>Opciones Disponibles</h3>
-                <ul>
-                    <li><strong>Añadir Vehículo:</strong> Asigna vehículos a la ruta seleccionada
-                        <ol>
-                            <li>Selecciona una ruta</li>
-                            <li>Clic derecho → "Añadir Vehículo"</li>
-                            <li>Selecciona vehículos disponibles en la lista</li>
-                            <li>Confirma para asignar</li>
-                        </ol>
-                    </li>
-                </ul>
-            </section>
-
-            <section id="reportes" class="section">
-                <h2>Generación de Reportes</h2>
-                <p>Para generar un reporte PDF:</p>
-                <ol>
-                    <li>Aplica los filtros deseados</li>
-                    <li>Haz clic en "Generar Reporte"</li>
-                    <li>El reporte se abrirá en una ventana nueva</li>
-                    <li>Usa los controles para imprimir o guardar</li>
-                </ol>
-                <div class="tip">
-                    <strong>Nota:</strong> El reporte incluye todas las rutas actualmente visibles en la tabla.
-                </div>
-            </section>
-
-            <section id="contacto" class="section">
-                <h2>Soporte Técnico</h2>
-                <p>Para asistencia técnica contacte a nuestro equipo:</p>
-                <ul>
-                    <li>Email: fleetiqg5@gmail.com</li>
-                    <li>Teléfono: +34 123456789</li>
-                    <li>Horario de atención: L-V 9:00 - 18:00</li>
-                </ul>
-            </section>
-        </div>
-    </div>
-
-<script>
-    // (El script original de manejo de navegación se mantiene igual)
-    document.addEventListener("DOMContentLoaded", function () {
-        const sections = document.querySelectorAll(".section");
-        const navLinks = document.querySelectorAll(".navigation a");
-
-        function updateActiveMenu() {
-            let current = "";
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (window.scrollY >= sectionTop - sectionHeight / 3) {
-                    current = section.getAttribute("id");
+                    // Handle the case when the user is at the top of the page
+                    if (window.scrollY === 0) {
+                        navLinks.forEach((link) => link.classList.remove("active"));
+                        navLinks[0].classList.add("active"); // Highlight the first menu item
+                    }
                 }
-            });
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href").includes(current)) {
-                    link.classList.add("active");
-                }
-            });
-            if (window.scrollY === 0) {
-                navLinks.forEach((link) => link.classList.remove("active"));
-                navLinks[0].classList.add("active");
-            }
-        }
 
-        window.addEventListener("scroll", updateActiveMenu);
-        navLinks.forEach((link) => {
-            link.addEventListener("click", (event) => {
-                navLinks.forEach((link) => link.classList.remove("active"));
-                event.target.classList.add("active");
+                // Update active menu on scroll
+                window.addEventListener("scroll", updateActiveMenu);
+
+                // Update active menu when a menu item is clicked
+                navLinks.forEach((link) => {
+                    link.addEventListener("click", (event) => {
+                        // Remove active class from all links
+                        navLinks.forEach((link) => link.classList.remove("active"));
+                        // Add active class to the clicked link
+                        event.target.classList.add("active");
+                    });
+                });
+
+                // Trigger the scroll event once on page load to set the initial active state
+                window.dispatchEvent(new Event("scroll"));
             });
-        });
-        window.dispatchEvent(new Event("scroll"));
-    });
-</script>
-</body>
+        </script>
+    </body>
 </html>
