@@ -21,9 +21,9 @@
     
               
          <children>
-      <VBox prefHeight="720.0" prefWidth="300.0">
+      <VBox prefHeight="720.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fitHeight="736.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="818.0" fitWidth="360.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../image/fleetside.png" />
                </image>

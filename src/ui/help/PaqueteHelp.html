@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="stylesheet" href="../../style/HelpStyle.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FleetIQ App User Guide</title>
 </head>
+
 <body>
     <header>
         <!-- Logo Zone -->
         <div class="header-logo">
-            <img src="path/to/your/logo.png" alt="Logo">
+            <img src="../../image/logo3.png" alt="Logo">
         </div>
         <h1>FleetIQ User Guide</h1>
     </header>
@@ -28,12 +30,14 @@
             </ul>
         </nav>
 
-        <div class="content" class="section" >
+        <div class="content" class="section">
             <section id="getting-started" class="section">
                 <h2>Getting Started</h2>
-                <p>Welcome to our desktop application! This guide will help you navigate and make the most of our software.</p>
+                <p>Welcome to our desktop application! This guide will help you navigate and make the most of our
+                    software.</p>
                 <div class="tip">
-                    <strong>Tip:</strong> Familiarize yourself with the different sections of the application to optimize your workflow.
+                    <strong>Tip:</strong> Familiarize yourself with the different sections of the application to
+                    optimize your workflow.
                 </div>
             </section>
 
@@ -98,6 +102,74 @@
 
             <section id="contact-us" class="section">
                 <h2>Contact Support</h2>
+
+                <!-- stat of profil cards -->
+
+                <div class="card-profile-container">
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Adrian</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@adrian</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/Alderoto16"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="https://www.youtube.com/watch?v=BygjDzJ1Z7k"><img src="../../image/icons-linkedin.png"
+                                    alt="fa-linkedin" class="social-icon"></a>
+                        </div>
+                    </div>
+
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Alder</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@alder</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/Borja03"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="#"><img src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                        </div>
+                    </div>
+
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Borja</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@Borja</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/ebenitz18"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="#"><img src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                        </div>
+                    </div>
+
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Omar</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@Omar</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/8xbit"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href=""><img src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- end of profile cards -->
                 <p>If you need additional help, please contact our support team:</p>
                 <ul>
                     <li>Email: fleetiqg5@gmail.com</li>
@@ -106,55 +178,56 @@
             </section>
         </div>
     </div>
-	
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const sections = document.querySelectorAll(".section");
-        const navLinks = document.querySelectorAll(".navigation a");
 
-        // Function to update the active menu item
-        function updateActiveMenu() {
-            let current = "";
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sections = document.querySelectorAll(".section");
+            const navLinks = document.querySelectorAll(".navigation a");
 
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (window.scrollY >= sectionTop - sectionHeight / 3) {
-                    current = section.getAttribute("id");
+            // Function to update the active menu item
+            function updateActiveMenu() {
+                let current = "";
+
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.scrollY >= sectionTop - sectionHeight / 3) {
+                        current = section.getAttribute("id");
+                    }
+                });
+
+                navLinks.forEach((link) => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("href").includes(current)) {
+                        link.classList.add("active");
+                    }
+                });
+
+                // Handle the case when the user is at the top of the page
+                if (window.scrollY === 0) {
+                    navLinks.forEach((link) => link.classList.remove("active"));
+                    navLinks[0].classList.add("active"); // Highlight the first menu item
                 }
-            });
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href").includes(current)) {
-                    link.classList.add("active");
-                }
-            });
-
-            // Handle the case when the user is at the top of the page
-            if (window.scrollY === 0) {
-                navLinks.forEach((link) => link.classList.remove("active"));
-                navLinks[0].classList.add("active"); // Highlight the first menu item
             }
-        }
 
-        // Update active menu on scroll
-        window.addEventListener("scroll", updateActiveMenu);
+            // Update active menu on scroll
+            window.addEventListener("scroll", updateActiveMenu);
 
-        // Update active menu when a menu item is clicked
-        navLinks.forEach((link) => {
-            link.addEventListener("click", (event) => {
-                // Remove active class from all links
-                navLinks.forEach((link) => link.classList.remove("active"));
-                // Add active class to the clicked link
-                event.target.classList.add("active");
+            // Update active menu when a menu item is clicked
+            navLinks.forEach((link) => {
+                link.addEventListener("click", (event) => {
+                    // Remove active class from all links
+                    navLinks.forEach((link) => link.classList.remove("active"));
+                    // Add active class to the clicked link
+                    event.target.classList.add("active");
+                });
             });
-        });
 
-        // Trigger the scroll event once on page load to set the initial active state
-        window.dispatchEvent(new Event("scroll"));
-    });
-</script>
-</script>
+            // Trigger the scroll event once on page load to set the initial active state
+            window.dispatchEvent(new Event("scroll"));
+        });
+    </script>
+    </script>
 </body>
+
 </html>

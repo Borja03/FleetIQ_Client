@@ -5,12 +5,16 @@
  */
 package service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import logicInterface.RutaManager;
 import models.Paquete;
 import models.Ruta;
@@ -32,7 +36,7 @@ public class RutaRESTClient implements RutaManager {
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = ResourceBundle.getBundle("config/config")
-                    .getString("RESTful.baseURI");
+            .getString("RESTful.baseURI");
 
     public RutaRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -64,7 +68,15 @@ public class RutaRESTClient implements RutaManager {
     }
 
     public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        try {
+            Response response = webTarget
+                    .path(MessageFormat.format("{0}", new Object[]{id}))
+                    .request(MediaType.APPLICATION_XML)
+                    .put(Entity.entity(requestEntity, MediaType.APPLICATION_XML));
+        } catch (Exception ex) {
+            // Captura errores de conexión (servidor caído, timeout, etc)
+            throw new WebApplicationException("Error de conexión: " + ex.getMessage(), ex);
+        }
     }
 
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {

@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
-public class Ruta implements Serializable {
+public class Ruta implements Serializable ,Cloneable  {
 
     private Integer localizador;
 
@@ -106,6 +106,14 @@ public class Ruta implements Serializable {
     public void setNumVehiculos(Integer numVehiculos) {
         this.numVehiculos = numVehiculos;
     }
+    
+      @Override
+    public Ruta clone() throws CloneNotSupportedException {
+        Ruta cloned = (Ruta) super.clone();
+        // Si 'fechaCreacion' es mutable (ej. java.util.Date), clonalo también
+        return cloned;
+    }
+    
 
     @Override
     public String toString() {

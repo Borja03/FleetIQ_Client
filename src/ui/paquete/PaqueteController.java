@@ -20,6 +20,8 @@ import java.time.DayOfWeek;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,6 +41,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -164,32 +167,30 @@ public class PaqueteController {
 
         stage.show();
     }
-    // end of initStage 
 
+    // end of initStage 
     private void setUpDatePickers() {
         fromDatePicker.setShowWeekNumbers(false);
         toDatePicker.setShowWeekNumbers(false);
-        fromDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
 
-                if (date != null && (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-                    setDisable(true); // Disable weekends
-                    setStyle("-fx-background-color: #FFCCCC;"); // Style weekends
+        // Load and parse date range from config
+        LocalDate startDate = parseConfigDate("start.date");
+        LocalDate endDate = parseConfigDate("end.date");
+
+        // Set DateCellFactory for fromDatePicker
+        configureDatePicker(fromDatePicker, startDate, endDate, null);
+
+        // Set DateCellFactory for toDatePicker (must be after "From Date")
+        configureDatePicker(toDatePicker, startDate, endDate, fromDatePicker);
+
+        // Ensure "To Date" cannot be before "From Date"
+        fromDatePicker.valueProperty().addListener((obs, oldDate, newDate) -> {
+            if (newDate != null) {
+                // Adjust toDatePicker to ensure it's after the new "From Date"
+                if (toDatePicker.getValue() == null || toDatePicker.getValue().isBefore(newDate)) {
+                    toDatePicker.setValue(newDate);
                 }
-            }
-        });
-
-        toDatePicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-
-                if (date != null && (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY)) {
-                    setDisable(true); // Disable weekends
-                    setStyle("-fx-background-color: #FFCCCC;"); // Style weekends
-                }
+                configureDatePicker(toDatePicker, startDate, endDate, fromDatePicker);
             }
         });
     }
@@ -266,6 +267,7 @@ public class PaqueteController {
         senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         senderColumn.setOnEditCommit(event -> {
             Paquete paquete = event.getRowValue();
+            
             String newSenderValue = event.getNewValue();
             String originalValue = paquete.getSender(); // Store original value
             LOGGER.info("Sender original value" + originalValue);
@@ -294,7 +296,7 @@ public class PaqueteController {
             } catch (UpdateException ex) {
                 // Handle database update failure
                 LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Error", "Failed to update sender."+ex.getMessage() + " Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", "Failed to update sender." + ex.getMessage() + " Please try again LATER.", "ERROR");
                 paquete.setSender(originalValue);
                 senderColumn.getTableView().refresh();
             } catch (CloneNotSupportedException ex) {
@@ -331,10 +333,8 @@ public class PaqueteController {
                 // Handle all exceptions
                 String errorMessage = ex instanceof InvalidNameFormatException
                                 ? ex.getMessage() : "Failed to update receiver. Please try again.";
-
                 UtilsMethods.showAlert("Error", errorMessage, "ERROR");
                 LOGGER.warning("Update failed: " + ex.getMessage());
-
                 // Restore original value
                 paquete.setReceiver(originalValue);
                 receiverColumn.getTableView().refresh();
@@ -505,6 +505,60 @@ public class PaqueteController {
         });
     }
 
+    /**
+     * Parses a date from the config.properties file.
+     */
+    private LocalDate parseConfigDate(String key) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            return LocalDate.parse(ResourceBundle.getBundle("config/config").getString(key), formatter);
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException("Invalid date format in config.properties for key: " + key + ". Expected format: dd-MM-yyyy.", e);
+        }
+    }
+
+    /**
+     * Configures a DatePicker with a DayCellFactory to disable weekends and
+     * out-of-range dates.
+     *
+     * @param datePicker The DatePicker to configure.
+     * @param startDate The minimum allowed date.
+     * @param endDate The maximum allowed date.
+     * @param minDatePicker (Optional) A DatePicker that sets the minimum
+     * selectable date.
+     */
+    private void configureDatePicker(DatePicker datePicker, LocalDate startDate, LocalDate endDate, DatePicker minDatePicker) {
+        datePicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+
+                if (date == null || empty) {
+                    setDisable(true);
+                    return;
+                }
+
+                // Disable weekends
+                if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #FFCCCC;");
+                }
+
+                // Disable out-of-range dates
+                if (date.isBefore(startDate) || date.isAfter(endDate)) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #D3D3D3;");
+                }
+
+                // Ensure "To Date" is not before "From Date"
+                if (minDatePicker != null && date.isBefore(minDatePicker.getValue())) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #D3D3D3;");
+                }
+            }
+        });
+    }
+
     // fill test data from server 
     private void fillTableFromDataBase() {
         try {
@@ -519,45 +573,21 @@ public class PaqueteController {
     }
 
     private void handleFilterByDatesAction(ActionEvent event) {
-
-        String mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
-        SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
-
         try {
+            // Get date format from config
+            String dateFormatPattern = ResourceBundle.getBundle("config/config").getString("date.format");
+            SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatPattern);
+
+            // Get selected dates
             LocalDate fromDate = fromDatePicker.getValue();
             LocalDate toDate = toDatePicker.getValue();
 
-            // Convert to Date only if LocalDate is not null
-            Date fromDateAsDate = (fromDate != null)
-                            ? Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                            : null;
-            Date toDateAsDate = (toDate != null)
-                            ? Date.from(toDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-                            : null;
+            // Convert and format dates
+            String formattedFromDate = formatDate(fromDate, dateFormat);
+            String formattedToDate = formatDate(toDate, dateFormat);
 
-            // Format dates only if they are not null
-            String mfromDate = (fromDateAsDate != null) ? dateFormat.format(fromDateAsDate) : null;
-            String mtoDate = (toDateAsDate != null) ? dateFormat.format(toDateAsDate) : null;
-
-            System.out.println("From Date: " + mfromDate);
-            System.out.println("To Date: " + mtoDate);
-
-            if (fromDate == null && toDate == null) {
-                // No dates selected
-                UtilsMethods.showAlert("Error de filtro", "Select a date", "ERROR");
-            } else if (fromDate == null) {
-                // Only toDate is selected
-                System.out.println("Filtering packages before: " + mtoDate);
-                filterPackagesBeforeDate(mtoDate);
-            } else if (toDate == null) {
-                // Only fromDate is selected
-                System.out.println("Filtering packages after: " + mfromDate);
-                filterPackagesAfterDate(mfromDate);
-            } else {
-                // Both dates are selected
-                System.out.println("Filtering packages between: " + mfromDate + " and " + mtoDate);
-                filterPackagesBetweenDates(mfromDate, mtoDate);
-            }
+            // Handle filtering logic
+            processDateFiltering(fromDate, toDate, formattedFromDate, formattedToDate);
 
             // Clear other filters
             sizeFilterComboBox.setValue(null);
@@ -568,8 +598,37 @@ public class PaqueteController {
             UtilsMethods.showAlert("Error al filtrar por fechas", e.getMessage(), "ERROR");
         }
     }
-    // Method to handle the filter change
 
+    /**
+     * Converts a LocalDate to a formatted string.
+     */
+    private String formatDate(LocalDate date, SimpleDateFormat dateFormat) {
+        if (date == null) {
+            return null;
+        }
+        Date convertedDate = Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        return dateFormat.format(convertedDate);
+    }
+
+    /**
+     * Processes filtering logic based on selected dates.
+     */
+    private void processDateFiltering(LocalDate fromDate, LocalDate toDate, String formattedFromDate, String formattedToDate) {
+        if (fromDate == null && toDate == null) {
+            UtilsMethods.showAlert("Error de filter", "Select a date", "ERROR");
+        } else if (fromDate == null) {
+            System.out.println("Filtering packages before: " + formattedToDate);
+            filterPackagesBeforeDate(formattedToDate);
+        } else if (toDate == null) {
+            System.out.println("Filtering packages after: " + formattedFromDate);
+            filterPackagesAfterDate(formattedFromDate);
+        } else {
+            System.out.println("Filtering packages between: " + formattedFromDate + " and " + formattedToDate);
+            filterPackagesBetweenDates(formattedFromDate, formattedToDate);
+        }
+    }
+
+    // Method to handle the filter change
     private void handleSizeFilterChange(PackageSize selectedSize) {
 
         List<Paquete> filteredPaqueteList = null;
