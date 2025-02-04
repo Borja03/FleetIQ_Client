@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import models.User;
+import ui.envio.EnvioController;
 import ui.login.LogInController;
 import static ui.login.LogInController.userSession;
 import ui.paquete.PaqueteController;
@@ -32,7 +33,7 @@ public class EnvioMain extends Application {
             Parent root = loader.load();
 
             // Get the controller and initialize the stage
-            PaqueteController controller = loader.getController();
+            EnvioController controller = loader.getController();
             controller.setStage(primaryStage);
             controller.initStage(root);
 
