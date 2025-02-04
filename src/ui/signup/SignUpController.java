@@ -179,6 +179,7 @@ public class SignUpController {
 
         tf_password.setVisible(false);
         tf_password_confirm.setVisible(false);
+        btn_show_password.setOnAction(this::handlePasswordImageButtonAction);
 
         btn_signup.setOnAction(this::handleSignUpButtonAction);
         hl_login.setOnAction(this::handleLoginHyperlinkAction);
@@ -211,8 +212,6 @@ public class SignUpController {
         LOGGER.info("Window opened.");
 
         // Show the stage
-        
-        
         stage.show();
     }
 
@@ -588,19 +587,20 @@ public class SignUpController {
      * @param isActive the active status of the user.
      */
     private void performSignUp(String email, String password, String name, String street, String city, int zip) {
-        //  User user = new User(email, password, name, isActive, street, city, zip);
-        // Call ClientSideEncryption to encrypt the message
-        byte[] encryptedData = null;
+        String encryptedPaasowrd = null;
         try {
-            encryptedData = ClientSideEncryption.encrypt(password);
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
-        // Convert to Base64 for easy printing (optional)
-        String encryptedBase64 = Base64.getEncoder().encodeToString(encryptedData);
-        System.out.println("Encrypted Message (Base64): " + encryptedBase64);
+            //  User user = new User(email, password, name, isActive, street, city, zip);
+            // Call ClientSideEncryption to encrypt the message
+            LOGGER.log(Level.INFO, "Password before encrypting : " + password);
+            encryptedPaasowrd = ClientSideEncryption.encrypt(password);
+            LOGGER.log(Level.INFO, "Password after encrypting : " + encryptedPaasowrd);
 
-        User user = new User(email, name, encryptedBase64, city, street, zip);
+        } catch (Exception ex) {
+            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+        User user = new User(email, name, encryptedPaasowrd, city, street, zip);
         user.setUser_type("admin");
         try {
             // Attempting to sign up the user

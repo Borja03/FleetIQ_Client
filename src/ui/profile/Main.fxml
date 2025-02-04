@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -11,7 +12,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
@@ -45,7 +45,7 @@
             </VBox>
          </children>
       </VBox>
-      <VBox fx:id="rightVBox" layoutX="300.0" layoutY="29.0" prefHeight="691.0" prefWidth="668.0">
+      <VBox fx:id="rightVBox" layoutX="300.0" layoutY="31.0" prefHeight="691.0" prefWidth="668.0">
          <children>
             <VBox fx:id="vb_profile" alignment="TOP_CENTER" maxWidth="600.0" minWidth="600.0" prefHeight="320.0" prefWidth="600.0" styleClass="section-box" stylesheets="@../../style/style.css" translateX="10.0" translateY="150.0">
                <children>
@@ -85,7 +85,7 @@
             
                               <TextField id="passwordTextField" fx:id="plainPasswordField" style="-fx-background-color: transparent; -fx-border-color: transparent;" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                       
-                             <Button fx:id="eyeButton" mnemonicParsing="false" onAction="#togglePasswordVisibility" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                             <Button fx:id="eyeButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                            <graphic>
                                <ImageView fx:id="eyeImageView" fitHeight="30.0" fitWidth="30.0">
                                    <image>
@@ -109,49 +109,70 @@
                         <Insets bottom="50.0" top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <HBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="427.0">
+                  <GridPane>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="214.33331298828125" minWidth="10.0" prefWidth="127.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="261.0" minWidth="10.0" prefWidth="261.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
+                        <JFXButton fx:id="showPasswordBtn" textAlignment="CENTER" GridPane.columnIndex="2">
+                           <graphic>
+                              <ImageView fx:id="eyeImageView" fitHeight="20.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/eye-slash-solid.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <GridPane.margin>
+                              <Insets left="10.0" />
+                           </GridPane.margin>
+                        </JFXButton>
                         <Label prefHeight="30.0" prefWidth="150.0" styleClass="field-label" text="New Password" />
-                        <JFXPasswordField fx:id="newPasswordField" prefHeight="30.0" prefWidth="200" />
-                        <JFXButton fx:id="showPasswordBtn">
-                           <graphic>
-                              <ImageView fitHeight="20.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../image/eye-slash-solid.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <HBox.margin>
-                              <Insets left="15.0" />
-                           </HBox.margin>
-                        </JFXButton>
-                     </children>
-                  </HBox>
-                  <HBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="427.0">
-                     <children>
-                        <Label prefHeight="30.0" prefWidth="150.0" styleClass="field-label" text="Repeat Password" />
-                        <JFXPasswordField fx:id="repeatPasswordField" prefHeight="30.0" prefWidth="200.0">
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
+                        <JFXPasswordField fx:id="newPasswordField" prefHeight="30.0" prefWidth="200" GridPane.columnIndex="1">
+                           <opaqueInsets>
+                              <Insets left="7.0" />
+                           </opaqueInsets>
                         </JFXPasswordField>
-                        <JFXButton fx:id="showRepeatedPasswordBtn">
-                           <graphic>
-                              <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../../image/eye-slash-solid.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <HBox.margin>
-                              <Insets left="15.0" />
-                           </HBox.margin>
-                        </JFXButton>
+                        <JFXTextField fx:id="newPassTxt" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" />
                      </children>
+                     <VBox.margin>
+                        <Insets left="7.0" />
+                     </VBox.margin>
+                  </GridPane>
+                  <GridPane>
                      <VBox.margin>
                         <Insets top="20.0" />
                      </VBox.margin>
-                  </HBox>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="214.3333740234375" minWidth="10.0" prefWidth="165.99998982747397" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.3333740234375" minWidth="10.0" prefWidth="263.3333435058594" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="129.33331298828125" minWidth="10.0" prefWidth="129.33331298828125" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label prefHeight="30.0" prefWidth="150.0" styleClass="field-label" text="Repeat Password" />
+                        <JFXPasswordField fx:id="repeatPasswordField" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" />
+                        <JFXTextField fx:id="newPassTxtRepeat" prefHeight="30.0" prefWidth="248.0" GridPane.columnIndex="1" />
+                        <JFXButton fx:id="showRepeatedPasswordBtn" GridPane.columnIndex="2">
+                           <graphic>
+                              <ImageView fx:id="repeatEyeImageView" fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../image/eye-slash-solid.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <GridPane.margin>
+                              <Insets left="10.0" />
+                           </GridPane.margin>
+                        </JFXButton>
+                     </children>
+                  </GridPane>
                   <JFXButton fx:id="btn_update_password" styleClass="update-button" text="update">
                      <VBox.margin>
                         <Insets top="50.0" />

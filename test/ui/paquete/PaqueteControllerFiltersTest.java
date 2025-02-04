@@ -31,9 +31,11 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import javafx.stage.Stage;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.GenericType;
 import logicimplementation.PackageManagerImp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -48,13 +50,14 @@ import static org.testfx.matcher.control.ButtonMatchers.isDefaultButton;
 import static org.testfx.matcher.control.ComboBoxMatchers.hasSelectedItem;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 import org.testfx.util.WaitForAsyncUtils;
+import service.PackageRESTClient;
 
 /**
  * Testing class for PaqueteController. Tests package management view behavior
  * using TestFX framework.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PaqueteControllerTest extends ApplicationTest {
+public class PaqueteControllerFiltersTest extends ApplicationTest {
 
     private TableView<Paquete> paqueteTableView;
     private JFXButton addShipmentBtn;
@@ -112,122 +115,11 @@ public class PaqueteControllerTest extends ApplicationTest {
         // Check that the date pickers are unset (value is null)
         assertNull(fromDatePicker.getValue());
         assertNull(toDatePicker.getValue());
-
         assertNull(sizeFilterComboBox.getValue());
 
     }
 
-    /**
-     * Test adding a new package to the system.
-     */
-    @Test
-    public void testB_addPackage() {
-        int initialRowCount = paqueteTableView.getItems().size();
-
-        // Click the "Add Shipment" button
-        clickOn("#addShipmentBtn");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verify the table has one more row than before
-        int newRowCount = paqueteTableView.getItems().size();
-        assertEquals(initialRowCount + 1, newRowCount);
-
-        // Verify default values of the new package
-        Paquete newPackage = paqueteTableView.getItems().get(newRowCount - 1);
-        assertEquals("", newPackage.getSender());
-        assertEquals("", newPackage.getReceiver());
-        assertEquals(PackageSize.MEDIUM, newPackage.getSize());
-    }
-
-    /**
-     * Test updating a package's sender name through table editing.
-     */
-    @Test
-    public void testC_updatePackage() {
-        // Wait for data to load
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verify table has data
-        assertFalse("Table empty - no packages found", paqueteTableView.getItems().isEmpty());
-        TableRow<Paquete> row = lookup(".table-row-cell").nth(5)
-                        .query();
-        TableColumn<Paquete, ?> senderColumn = paqueteTableView.getColumns().get(1);
-        interact(() -> {
-            doubleClickOn(row.getChildrenUnmodifiable().get(1));
-        });
-
-        // Enter new value
-        write("NewSender");
-        press(KeyCode.ENTER);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verify update
-        Paquete updated = paqueteTableView.getItems().get(5);
-        assertEquals("NewSender", updated.getSender());
-    }
-
-    /**
-     * Test deleting a package from the table.
-     */
-    @Test
-    public void testD_deletePackage() {
-        // Wait for initial data load
-        WaitForAsyncUtils.waitForFxEvents();
-
-        int initialCount = paqueteTableView.getItems().size();
-        if (initialCount == 0) {
-            return;
-        }
-
-        TableRow<Paquete> row = lookup(".table-row-cell").query();
-        
-        clickOn(row);
-
-        clickOn("#removeShipmentBtn");
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        DialogPane dialogPane = lookup(".dialog-pane").query();
-        assertNotNull("Confirmation dialog not shown", dialogPane);
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        assertNotNull("OK button not found in dialog", okButton);
-
-        clickOn(okButton);
-
-        WaitForAsyncUtils.waitForFxEvents();
-        assertEquals("Package count should decrease by 1",initialCount - 1, paqueteTableView.getItems().size());
-    }
-    // test backend
-    @Test
-    public void testServerConnectionStatus() {
-        try {
-            // Attempt a lightweight server operation
-            PackageManagerImp packageManager = new PackageManagerImp();
-
-            // Test connection by fetching minimal data
-            List<Paquete> result = packageManager.findAllPackages();
-
-            // If we reach here, server is connected
-            assertTrue("Server is connected", true);
-
-            // Optional: Verify response format if needed
-            assertNotNull("Received valid response", result);
-        } catch (SelectException e) {
-            // Analyze exception to determine connection failure
-            if (e.getMessage().contains("Database server connection failed")) {
-                fail("Server connection failed: " + e.getMessage());
-            } else if (e.getCause() instanceof ProcessingException) {
-                fail("Network error: " + e.getCause().getMessage());
-            } else {
-                // Other database-related error (server is connected)
-                assertTrue("Server is reachable but operation failed", true);
-            }
-        } catch (Exception e) {
-            fail("Unexpected error: " + e.getMessage());
-        }
-    }
-
+   
     /**
      * Test date range filtering functionality.
      */
@@ -285,18 +177,21 @@ public class PaqueteControllerTest extends ApplicationTest {
     /**
      * Test error handling for invalid inputs.
      */
-//    @Test
-//    public void testH_errorHandling() {
-//        // Test invalid sender name format
-//        paqueteTableView.getSelectionModel().selectFirst();
-//        doubleClickOn(paqueteTableView.lookup(".table-row-cell").nth(0).lookup(".table-cell").nth(1));
-//        write("123Invalid"); // Numbers are invalid
-//        press(KeyCode.ENTER);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        // Verify error alert is shown
-//        Node dialogPane = lookup(".alert").query();
-//        assertNotNull(dialogPane);
-//        clickOn("OK");
-//    }
+    @Test
+    public void testH_errorHandling() {
+        // Test invalid sender name format
+        paqueteTableView.getSelectionModel().selectFirst();
+        Node tableColumnSender = lookup("#senderColumn").nth(1).query();
+        clickOn(tableColumnSender);
+        write("123Invalid ");
+        type(KeyCode.ENTER);
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify error alert is shown
+        Node dialogPane = lookup(".alert").query();
+        assertNotNull(dialogPane);
+        clickOn("OK");
+    }
+
 }
