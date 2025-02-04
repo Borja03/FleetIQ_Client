@@ -667,7 +667,6 @@ public class RutaController {
                     setStyle("");
                 } else {
                     setText(matricula);
-
                     if (selectedMatriculas.contains(matricula)) {
                         setStyle("-fx-background-color: lightblue;");
                     } else {
@@ -692,6 +691,7 @@ public class RutaController {
         confirmButton.setOnAction(e -> {
             if (!selectedMatriculas.isEmpty()) {
                 try {
+                    // Procesar cada vehículo seleccionado
                     for (String matricula : selectedMatriculas) {
                         List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
                         EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
@@ -701,20 +701,23 @@ public class RutaController {
                         ervManager.create_XML(envioRutaVehiculo);
                     }
 
+                    // Actualizar el número de vehículos de la ruta
                     ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
                     rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-                    
-                    // Limpiar selección y recargar la lista
+
+                    // En lugar de recargar toda la lista, eliminamos de 'matriculas' los vehículos asignados
+                    matriculas.removeAll(selectedMatriculas);
+
+                    // Limpiar la selección
                     selectedMatriculas.clear();
-                    loadAvailableVehicles.run();
-                    
+
+                    // Actualizar datos de la ruta (si es necesario que se refleje en otra parte)
                     loadRutaData();
-                    
+
                     // Si no quedan vehículos disponibles, cerrar la ventana
                     if (matriculas.isEmpty()) {
                         vehicleStage.close();
                     }
-
                 } catch (Exception ex) {
                     logger.log(Level.SEVERE, "Error al añadir vehículos a la ruta", ex);
                     showAlert("Error", "No se pudieron añadir los vehículos a la ruta");
@@ -738,4 +741,5 @@ public class RutaController {
         showAlert("Error", "No se pudo abrir el diálogo de selección");
     }
 }
+
 }
