@@ -6,6 +6,8 @@
 
 package exception;
 
+import javax.ws.rs.ClientErrorException;
+
 /**
  *
  * @author Alder
@@ -28,6 +30,14 @@ public class CreateException extends Exception {
      */
     public CreateException(String msg) {
         super(msg);
+    }
+
+    public CreateException(String string, ClientErrorException e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public CreateException(String string, Exception e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
  
