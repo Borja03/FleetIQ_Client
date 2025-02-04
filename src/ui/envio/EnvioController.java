@@ -16,33 +16,34 @@ import javafx.scene.control.*;
 import models.Envio;
 import logicInterface.EnvioManager;
 import utils.UtilsMethods;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javax.ws.rs.core.GenericType;
-import logicInterface.EnvioRutaVehiculoManager;
-import logicInterface.PaqueteManager;
-import logicInterface.UserManager;
-import logicInterface.VehicleManager;
-import models.EnvioRutaVehiculo;
-import models.Estado;
-import models.Paquete;
-import models.Ruta;
-import models.User;
-import models.Vehiculo;
+import logicInterface.*;
+import models.*;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import utils.ThemeManager;
 
 public class EnvioController {
 
@@ -120,6 +121,7 @@ public class EnvioController {
         stage.setScene(scene);
         stage.setTitle("Envio");
         stage.setResizable(false);
+        stage.getIcons().add(new Image("/image/fleet_icon.png"));
         stage.centerOnScreen();
 
         envioService = EnvioFactory.getEnvioInstance();
@@ -140,9 +142,26 @@ public class EnvioController {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         configureRemoveButton();
+        setUpContextMenu();
 
+        ThemeManager.getInstance().applyTheme(stage.getScene());
         loadInitialData();
         stage.show();
+    }
+
+    private void setUpContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        // First menu item
+        MenuItem addItem = new MenuItem("Add New Envio");
+        addItem.setOnAction(this::addEnvio);
+        // Second menu item
+        MenuItem deleteItem = new MenuItem("Delete Envio");
+        deleteItem.setOnAction(this::removeEnvio);
+        MenuItem printItem = new MenuItem("Print Report");
+        printItem.setOnAction(this::printReport);
+        // Add menu items to the context menu
+        contextMenu.getItems().addAll(addItem, deleteItem, printItem);
+        table.setContextMenu(contextMenu);
     }
 
     private void setUpTableColumns() {
@@ -163,6 +182,45 @@ public class EnvioController {
             });
 
             numPaquetesColumn.setCellValueFactory(new PropertyValueFactory<>("numPaquetes"));
+            numPaquetesColumn.setCellFactory(TextFieldTableCell.forTableColumn(
+                    new StringConverter<Integer>() {
+                @Override
+                public String toString(Integer object) {
+                    return object != null ? object.toString() : "";
+                }
+
+                @Override
+                public Integer fromString(String string) {
+                    try {
+                        return Integer.valueOf(string);
+                    } catch (NumberFormatException e) {
+                        LOGGER.warning("Numero de paquetes invalido: " + string);
+                        return null;
+                    }
+                }
+            }));
+
+            numPaquetesColumn.setOnEditCommit(event -> event.getRowValue().setNumPaquetes(event.getNewValue()));
+            numPaquetesColumn.setOnEditCommit(event -> {
+                Envio envio = event.getRowValue();
+                Integer newWeightValue = event.getNewValue();
+
+                try {
+                    // Validate the new receiver value
+                    if (newWeightValue <= 0) {
+                        throw new IllegalArgumentException("En numero de paquetes debe ser mayor o igual a cero");
+                    }
+                    envio.setNumPaquetes(event.getNewValue());
+                    EnvioFactory.getEnvioInstance().edit_XML(envio, envio.getId().toString());
+
+                } catch (Exception ex) {
+                    UtilsMethods.showAlert("Error", ex.getMessage());
+                    LOGGER.warning("Invalid weight input: " + newWeightValue);
+                    numPaquetesColumn.getTableView().refresh();
+
+                }
+
+            });
 
             creadorEnvioColumn.setCellValueFactory(new PropertyValueFactory<>("creadorEnvio"));
             userList = userService.findAll();
@@ -188,10 +246,14 @@ public class EnvioController {
 
             vehiculoColumn.setCellValueFactory(new PropertyValueFactory<>("vehiculo"));
             vehiculoList = vehicleService.findAllVehiculos();
-
             for (Vehiculo vehiculo : vehiculoList) {
-                if(!vehiculo.isActivo()){
-                vehiculoMatriculaList.add(vehiculo.getMatricula());
+                if (!vehiculo.isActivo()) {
+                    Integer idVehiculo = vehiculo.getId();
+                    List<Ruta> rList = envioRutaVehiculoService.getRutaId(new GenericType<List<Ruta>>() {
+                    }, idVehiculo.toString());
+                    if (rList.get(0) != null) {
+                        vehiculoMatriculaList.add(vehiculo.getMatricula());
+                    }
                 }
             }
             ObservableList<String> vehiclesNamesObservableList = FXCollections.observableArrayList(vehiculoMatriculaList);
@@ -205,7 +267,7 @@ public class EnvioController {
                 } else {
                     return;
                 }
-                String localizador = "12";
+                String localizador = "";
                 EnvioRutaVehiculo erv = new EnvioRutaVehiculo();
                 try {
                     envioRutaVehiculoList = envioRutaVehiculoService.findAll_XML(new GenericType<List<EnvioRutaVehiculo>>() {
@@ -230,17 +292,27 @@ public class EnvioController {
                         i++;
                     }
 
+                } catch (IndexOutOfBoundsException ex) {
+                    LOGGER.severe("El vehiculo seleccionado no está asignado a ninguna ruta" + ex.getMessage());
+                    new UtilsMethods().showAlert("El vehiculo seleccionado no está asignado a ninguna ruta", ex.getMessage());
                 } catch (Exception ex) {
                     Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                envio.setRuta(localizador);
-                envio.setVehiculo(matricula);
-                envio.setEnvioRutaVehiculo(erv);
                 try {
-                    vActualizado.setActivo(true);
-                    vehicleService.updateVehiculo(vActualizado);
-                } catch (UpdateException ex) {
+                    String matriculaVAntiguo = envio.getVehiculo();
+                    if (matriculaVAntiguo != null) {
+                        List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
+                        Vehiculo vAntiguo = vComprobar.get(0);
+                        vAntiguo.setActivo(false);
+                        vehicleService.updateVehiculo(vAntiguo);
+                        vActualizado.setActivo(true);
+                        vehicleService.updateVehiculo(vActualizado);
+                    }
+                    envio.setRuta(localizador);
+                    envio.setVehiculo(matricula);
+                    envio.setEnvioRutaVehiculo(erv);
+                } catch (UpdateException | SelectException ex) {
                     Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 table.refresh();
@@ -255,10 +327,17 @@ public class EnvioController {
             fechaEntregaColumn.setCellValueFactory(new PropertyValueFactory<>("fechaEntrega"));
             fechaEntregaColumn.setCellFactory(column -> new EnvioDateEditingCell());
             fechaEntregaColumn.setOnEditCommit(event -> {
-                Envio envio = event.getRowValue();
-                Date newDate = event.getNewValue();
-                envio.setFechaEntrega(newDate);
                 try {
+                    Envio envio = event.getRowValue();
+                    Date newDate = event.getNewValue();
+                    if (envio.getFechaEnvio() == null) {
+                        throw new IllegalArgumentException("Debes insertar la fecha de envio antes de insertar la fecha de entrega");
+                    } else {
+                        if (newDate.before(envio.getFechaEnvio())) {
+                            throw new IllegalArgumentException("La fecha entrega debe ser posterior a la fecha envio");
+                        }
+                    }
+                    envio.setFechaEntrega(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
@@ -342,17 +421,18 @@ public class EnvioController {
         try {
             String numPaquetes = numeroPaquetesTextField.getText();
             if (numPaquetes == null || numPaquetes.isEmpty()) {
-                throw new IllegalArgumentException("El campo está vacío, inserta un número de paquetes.");
-            }
+                loadInitialData();
+            } else {
 
-            int num = Integer.parseInt(numPaquetes);
-            if (num <= 0) {
-                throw new IllegalArgumentException("El número de paquetes debe ser mayor a 0.");
-            }
+                int num = Integer.parseInt(numPaquetes);
+                if (num <= 0) {
+                    throw new IllegalArgumentException("El número de paquetes debe ser mayor a 0.");
+                }
 
-            List<Envio> filteredData = envioService.filterNumPaquetes_XML(new GenericType<List<Envio>>() {
-            }, num);
-            envioList.setAll(filteredData);
+                List<Envio> filteredData = envioService.filterNumPaquetes_XML(new GenericType<List<Envio>>() {
+                }, num);
+                envioList.setAll(filteredData);
+            }
         } catch (IllegalArgumentException e) {
             new UtilsMethods().showAlert("Error de filtro", e.getMessage());
         } catch (Exception e) {
@@ -380,20 +460,28 @@ public class EnvioController {
             ObservableList<Envio> selectedEnvios = table.getSelectionModel().getSelectedItems();
             LOGGER.info("Iniciando la eliminación de los envíos seleccionados.");
             for (Envio envio : selectedEnvios) {
+                LOGGER.info(selectedEnvios.toString());
                 if (envio.getEnvioRutaVehiculo() != null) {
                     envioService.remove(envio.getId());
                 }
+                if (envio.getVehiculo() == null) {
+
+                } else {
+                    String matriculaVAntiguo = envio.getVehiculo();
+                    List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
+                    Vehiculo vAntiguo = vComprobar.get(0);
+                    vAntiguo.setActivo(false);
+                    vehicleService.updateVehiculo(vAntiguo);
+                }
                 envioService.remove(envio.getId());
                 envioList.remove(envio);
-                table.refresh();
-            }
 
-        } catch (IllegalArgumentException e) {
-            LOGGER.warning("Error en la selección de envíos: " + e.getMessage());
-            new UtilsMethods().showAlert("Error", e.getMessage());
-        } catch (Exception e) {
-            LOGGER.severe("Error al eliminar envío(s): " + e.getMessage());
-            new UtilsMethods().showAlert("Error al eliminar envío(s)", e.getMessage());
+            }
+            table.refresh();
+        } catch (UpdateException ex) {
+            Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SelectException ex) {
+            Logger.getLogger(EnvioController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -409,6 +497,25 @@ public class EnvioController {
 
     @FXML
     private void printReport(ActionEvent event) {
-        new UtilsMethods().showAlert("Reporte", "Funcionalidad de impresión aún no implementada.");
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/RutaReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Envio>) this.table.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
+        }
     }
+
 }
