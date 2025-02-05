@@ -85,13 +85,16 @@
         <TableView fx:id="rutaTable" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="localizadorColumn" prefWidth="90.40002131462097" text="Localizador" />
-                <TableColumn fx:id="origenColumn" prefWidth="164.8000030517578" text="Origen" />
-                <TableColumn fx:id="destinoColumn" prefWidth="177.5999755859375" text="Destino" />
+                <TableColumn fx:id="origenColumn" prefWidth="160.0" text="Origen" />
+                <TableColumn fx:id="destinoColumn" prefWidth="160.0" text="Destino" />
                 <TableColumn fx:id="distanciaColumn" prefWidth="111.99996948242188" text="Distancia (km)" />
                 <TableColumn fx:id="tiempoColumn" prefWidth="113.60003662109375" text="Tiempo (h)" />
                 <TableColumn fx:id="fechaColumn" prefWidth="159.99993896484375" text="Fecha Creación" />
-                <TableColumn fx:id="numeroVehiculosColumn" prefWidth="248.79998779296875" text="Número Vehículos" />
+                <TableColumn fx:id="numeroVehiculosColumn" prefWidth="159.0" text="Número Vehículos" />
             </columns>
+         <BorderPane.margin>
+            <Insets left="15.0" right="15.0" />
+         </BorderPane.margin>
         </TableView>
     </center>
 

@@ -8,6 +8,7 @@ import com.jfoenix.controls.JFXListCell;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
+import factories.EnvioRutaVehiculoFactory;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
 import java.util.HashSet;
@@ -90,7 +91,7 @@ public class RutaController {
 
     private RutaManager rutaManager;
     private VehicleManager vehicleManager;
-    private EnvioRutaVehiculoManager ervManager = new EnvioRutaVehiculoRESTClient();
+    private EnvioRutaVehiculoManager ervManager;
 
     private ObservableList<Ruta> rutaData;
 
@@ -108,6 +109,7 @@ public class RutaController {
     public void initialize(Parent root) {
         rutaManager = RutaManagerFactory.getRutaManager();
         vehicleManager = VehicleFactory.getVehicleInstance();
+        ervManager = EnvioRutaVehiculoFactory.getEnvioRutaVehiculoInstance();
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -392,6 +394,7 @@ public class RutaController {
                         rutaManager.remove(String.valueOf(ruta.getLocalizador()));
                     }
                     rutaData.removeAll(selectedRutas);
+                    rutaTable.getSelectionModel().clearSelection();
                     logger.info("Rutas eliminadas correctamente.");
                 } catch (WebApplicationException e) {
                     logger.log(Level.SEVERE, "Error al eliminar rutas", e);
