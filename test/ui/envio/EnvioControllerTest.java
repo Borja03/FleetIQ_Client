@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.paquete;
+package ui.envio;
 
 import application.PaqueteMain;
 import com.jfoenix.controls.JFXButton;
@@ -54,7 +54,7 @@ import org.testfx.util.WaitForAsyncUtils;
  * using TestFX framework.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PaqueteControllerTest extends ApplicationTest {
+public class EnvioControllerTest extends ApplicationTest {
 
     private TableView<Paquete> paqueteTableView;
     private JFXButton addShipmentBtn;

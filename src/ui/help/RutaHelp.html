@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <link rel="stylesheet" href="../../style/HelpStyle.css">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Gestión de Rutas</title>
-    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../style/HelpStyle.css">
+    <style>
+        .help-gif {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+    </style>
+    <title>Gestión de Rutas</title>
+</head>
+
     <body>
         <header>
             <div class="header-logo">
@@ -28,7 +37,7 @@
             <div class="content">
                 <section id="overview" class="section">
                     <h2>Descripción General</h2>
-                    <p>La ventana de gestión de envíos permite visualizar, filtrar y modificar los registros de envíos dentro del sistema. 
+                    <p>La ventana de gestión de rutas permite visualizar, filtrar y modificar los registros de rutas dentro del sistema. 
                         Se compone de cuatro secciones principales: el menú de navegación, la sección de filtros, la tabla de datos y los botones de acción.
                         A continuación, se detallará cada sección para facilitar su uso.</p>
                 </section>
@@ -41,6 +50,7 @@
                         <li><strong>View:</strong> Se usa para alternar entre los modos de visualización oscuro y claro. La elección del tema se aplicará a toda la aplicación.</li>
                         <li><strong>Help:</strong> Muestra ventanas de ayuda para proporcionar información detallada sobre el uso de cada sección de la aplicación.</li>
                     </ul>
+                          <img src="../../image/rutaMenu.gif" alt="Demostración uso del menú" class="help-gif">
                 </section>
 
                 <section id="filters" class="section">
@@ -51,6 +61,7 @@
                         <li><strong>Filtrado de distancia o tiempo:</strong> Primero, seleccione el tipo de filtro: Distancia (km) o Tiempo (h). Luego, elija el criterio de comparación: mayor que (>), menor que (<) o igual a (=). Ingrese el valor a filtrar y, finalmente, haga clic en el botón "Buscar". Si el campo está vacío, se eliminan los filtros aplicados.</li>
                         <li><strong>Filtrado por localizador:</strong> Permite visualizar solo la ruta con el localizador deseado. Si el campo está vacío, se eliminan los filtros aplicados.</li>
                     </ul>
+                      <img src="../../image/rutaFilter.gif" alt="Demostración aplicación de filtros" class="help-gif">
                 </section>
 
                 <section id="table" class="section">
@@ -76,6 +87,7 @@
                         <li><strong>Botón rojo:</strong> Elimina la o las rutas seleccionadas de la tabla.</li>
                         <li><strong>Botón naranja:</strong> Genera un reporte detallado de las rutas de la tabla.</li>
                     </ul>
+                     <img src="../../image/rutaCrud.gif" alt="Demostración funcionamiento de botones" class="help-gif">
                 </section>
             </div>
         </div>
