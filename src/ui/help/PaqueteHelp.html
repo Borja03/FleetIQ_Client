@@ -44,46 +44,114 @@
             <section id="top-menu" class="section">
                 <h2>Top Menu</h2>
                 <p>The top menu provides quick access to primary functions of the application.</p>
-                <img src="/api/placeholder/800/400" alt="Top Menu Screenshot" class="screenshot">
                 <h3>Menu Options</h3>
+
+                <h3>Go to</h3>
                 <ul>
-                    <li><strong>Option 1:</strong> Description of first menu option</li>
-                    <li><strong>Option 2:</strong> Description of second menu option</li>
+                    <li><strong>Paquete:</strong> Navigate to the package management section.</li>
+                    <li><strong>Envio:</strong> Access the shipment management interface.</li>
+                    <li><strong>Ruta:</strong> View and manage delivery routes.</li>
+                    <li><strong>Vehiculo:</strong> Manage vehicle-related information.</li>
                 </ul>
+
+                <h3>View</h3>
+                <ul>
+                    <li><strong>Dark mode:</strong> Switch the application to dark mode for a better low-light
+                        experience.</li>
+                    <li><strong>Light mode:</strong> Switch the application back to light mode for standard visibility.
+                    </li>
+                </ul>
+
+                <h3>Help</h3>
+                <ul>
+                    <li><strong>About Paquete:</strong> Learn more about the package management module.</li>
+                    <li><strong>About Ruta:</strong> Get information regarding the route management functionality.</li>
+                    <li><strong>About Envio:</strong> Read details about the shipment system.</li>
+                    <li><strong>About Vehiculo:</strong> Understand vehicle-related features.</li>
+                </ul>
+
+                <h3>User Options</h3>
+                <ul>
+                    <li><strong>Profile:</strong> Access and manage your profile settings and password changing.</li>
+                    <li><strong>Logout:</strong> Log out of the application securely.</li>
+                </ul>
+
+
+                <img src="../../image/paquete menu.gif" alt="Top Menu Screenshot" class="screenshot">
+
             </section>
 
             <section id="filters" class="section">
                 <h2>Filters</h2>
-                <p>Use filters to refine and customize your view of the data.</p>
-                <img src="/api/placeholder/800/400" alt="Filters Screenshot" class="screenshot">
-                <h3>Available Filters</h3>
                 <ul>
-                    <li><strong>Filter 1:</strong> How to use and apply this filter</li>
-                    <li><strong>Filter 2:</strong> Explanation of filter functionality</li>
-                    <!-- Add more filters as needed -->
+                    <p>Use filters to refine and customize your view of the data.</p>
+
+                    <li><strong>Filter By Dates </strong></li>
+                    <p>How to use and apply this filter:</p>
+                    <ul>
+                        <li>You can select a date range using two date pickers: <strong>From</strong> and
+                            <strong>To</strong>.
+                        </li>
+                        <li>If only the <strong>From</strong> date is selected and the user clicks
+                            <strong>Apply</strong>, all packages created after the selected date will be displayed.
+                        </li>
+                        <li>If only the <strong>To</strong> date is selected and the user clicks <strong>Apply</strong>,
+                            all packages created before the selected date will be displayed.</li>
+                        <li>If both <strong>From</strong> and <strong>To</strong> dates are selected and the user clicks
+                            <strong>Apply</strong>, all packages created between the two dates will be displayed.
+                        </li>
+                    </ul>
+
+
+                    <img src="../../image/paquete filter date.gif" alt="Filters Screenshot" class="screenshot">
+
+                    <li><strong>Filter By Size:</strong> You can filter packages based on size categories:</li>
+                    <ul>
+                        <li><strong>SMALL:</strong> Displays only small packages.</li>
+                        <li><strong>MEDIUM:</strong> Displays only medium-sized packages.</li>
+                        <li><strong>LARGE:</strong> Displays only large packages.</li>
+                        <li><strong>EXTRA_LARGE:</strong> Displays only extra-large packages.</li>
+                    </ul>
+                    <img src="../../image/paquete size filter.gif" alt="Filters Screenshot" class="screenshot">
+
+                    <li><strong>Filter By Name(Sender/Reciver):</strong>As you type the name of the sender or receiver, the table will automatically update to display all matching names that contain the characters you have entered.
+                        <!-- Add more filters as needed --></li>
+                    <img src="../../image/paquete search filter.gif" alt="Filters Screenshot" class="screenshot">
                 </ul>
             </section>
 
             <section id="table-view" class="section">
                 <h2>Editable Table View</h2>
+
                 <p>Interact with and modify data directly in the table view.</p>
-                <img src="/api/placeholder/800/400" alt="Table View Screenshot" class="screenshot">
+
                 <h3>Editing Instructions</h3>
                 <ul>
-                    <li>How to edit cells</li>
-                    <li>Saving changes</li>
-                    <li>Undo/Redo functionality</li>
+                    <li><strong>How to edit cells:</strong> Double-click on a cell to enter edit mode. Once the cell is
+                        active, modify its content.</li>
+                    <li><strong>Saving changes:</strong> Press <strong>Enter</strong> to confirm and save changes.
+                        Clicking outside the cell or pressing <strong>Escape</strong> will cancel the modification.</li>
                 </ul>
+
+
+                <img src="../../image/paquete  update next.gif" alt="Update Screenshot" class="screenshot">
+
             </section>
 
             <section id="bottom-buttons" class="section">
                 <h2>Bottom Buttons</h2>
                 <p>Quick actions available at the bottom of the application.</p>
-                <img src="/api/placeholder/800/400" alt="Bottom Buttons Screenshot" class="screenshot">
                 <h3>Button Functions</h3>
                 <ul>
-                    <li><strong>Button 1:</strong> Description and use case</li>
-                    <li><strong>Button 2:</strong> Description and use case</li>
+                    <li><strong>Add new Package :</strong> Adds a new package with default data that can be modified
+                        after. </li>
+                    <img src="../../image/paquete add.gif" alt="Bottom Buttons Screenshot" class="screenshot">
+                    <li><strong>Delete Package :</strong>When a row(s) is/are selected, clicking delete will prompt the
+                        user for confirmation before removing the package(s).</li>
+                    <img src="../../image/paquete  delte.gif" alt="Bottom Buttons Screenshot" class="screenshot">
+                    <li><strong>Print Report:</strong> Generates a report that can either be saved as a PDF or printed
+                        directly.</li>
+                    <img src="../../image/paquete  print.gif" alt="Bottom Buttons Screenshot" class="screenshot">
                     <!-- Add more buttons as needed -->
                 </ul>
             </section>
@@ -91,13 +159,18 @@
             <section id="context-menu" class="section">
                 <h2>Context Menu</h2>
                 <p>Right-click options for advanced interactions.</p>
-                <img src="/api/placeholder/800/400" alt="Context Menu Screenshot" class="screenshot">
+
                 <h3>Context Menu Options</h3>
                 <ul>
-                    <li><strong>Option 1:</strong> Description of first context menu option</li>
-                    <li><strong>Option 2:</strong> Description of second context menu option</li>
-                    <!-- Add more context menu options as needed -->
+                    <li><strong>Add Package:</strong> Adds a new package with default data that can be modified after.
+                    </li>
+                    <li><strong>Delete Package:</strong> When a row(s) is/are selected, clicking delete will prompt the
+                        user for confirmation before removing the package(s).</li>
+                    <li><strong>Print Report:</strong> Generates a report that can either be saved as a PDF or printed
+                        directly.</li>
                 </ul>
+                <img src="../../image/paquete context meun.gif" alt="Context Menu Screenshot" class="screenshot">
+
             </section>
 
             <section id="contact-us" class="section">
@@ -115,12 +188,13 @@
                             <a href="#" class="mail">@adrian</a>
                         </div>
                         <div class="social-links">
-                            <a href="https://github.com/Alderoto16"><img src="../../image/icons-github.png" alt="github"
+                            <a href="https://github.com/AdrianGarciaCaballero"><img src="../../image/icons-github.png" alt="github"
                                     class="social-icon"></a>
-                            <a href="https://www.youtube.com/watch?v=BygjDzJ1Z7k"><img src="../../image/icons-linkedin.png"
-                                    alt="fa-linkedin" class="social-icon"></a>
+                            <a href="https://github.com/AdrianGarciaCaballero"><img
+                                    src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
                         </div>
                     </div>
+                    
 
                     <div class="card-profile">
                         <div class="card-header">
@@ -131,9 +205,10 @@
                             <a href="#" class="mail">@alder</a>
                         </div>
                         <div class="social-links">
-                            <a href="https://github.com/Borja03"><img src="../../image/icons-github.png" alt="github"
+                            <a href="https://github.com/Alderoto16"><img src="../../image/icons-github.png" alt="github"
                                     class="social-icon"></a>
-                            <a href="#"><img src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                            <a href="https://github.com/Alderoto16"><img src="../../image/icons-linkedin.png" alt="fa-linkedin"
+                                    class="social-icon"></a>
                         </div>
                     </div>
 
@@ -146,9 +221,10 @@
                             <a href="#" class="mail">@Borja</a>
                         </div>
                         <div class="social-links">
-                            <a href="https://github.com/ebenitz18"><img src="../../image/icons-github.png" alt="github"
+                            <a href="https://github.com/Borja03/"><img src="../../image/icons-github.png" alt="github"
                                     class="social-icon"></a>
-                            <a href="#"><img src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                            <a href="https://github.com/Borja03/"><img src="../../image/icons-linkedin.png" alt="fa-linkedin"
+                                    class="social-icon"></a>
                         </div>
                     </div>
 
@@ -163,7 +239,8 @@
                         <div class="social-links">
                             <a href="https://github.com/8xbit"><img src="../../image/icons-github.png" alt="github"
                                     class="social-icon"></a>
-                            <a href=""><img src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                            <a href="https://github.com/8xbit"><img src="../../image/icons-linkedin.png" alt="fa-linkedin"
+                                    class="social-icon"></a>
                         </div>
                     </div>
 

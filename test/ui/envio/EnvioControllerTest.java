@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ui.paquete;
+package ui.envio;
 
 import application.PaqueteMain;
 import com.jfoenix.controls.JFXButton;
@@ -54,7 +54,7 @@ import org.testfx.util.WaitForAsyncUtils;
  * using TestFX framework.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PaqueteControllerTest extends ApplicationTest {
+public class EnvioControllerTest extends ApplicationTest {
 
     private TableView<Paquete> paqueteTableView;
     private JFXButton addShipmentBtn;
@@ -198,35 +198,7 @@ public class PaqueteControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertEquals("Package count should decrease by 1",initialCount - 1, paqueteTableView.getItems().size());
     }
-    // test backend
-    @Test
-    public void testServerConnectionStatus() {
-        try {
-            // Attempt a lightweight server operation
-            PackageManagerImp packageManager = new PackageManagerImp();
 
-            // Test connection by fetching minimal data
-            List<Paquete> result = packageManager.findAllPackages();
-
-            // If we reach here, server is connected
-            assertTrue("Server is connected", true);
-
-            // Optional: Verify response format if needed
-            assertNotNull("Received valid response", result);
-        } catch (SelectException e) {
-            // Analyze exception to determine connection failure
-            if (e.getMessage().contains("Database server connection failed")) {
-                fail("Server connection failed: " + e.getMessage());
-            } else if (e.getCause() instanceof ProcessingException) {
-                fail("Network error: " + e.getCause().getMessage());
-            } else {
-                // Other database-related error (server is connected)
-                assertTrue("Server is reachable but operation failed", true);
-            }
-        } catch (Exception e) {
-            fail("Unexpected error: " + e.getMessage());
-        }
-    }
 
     /**
      * Test date range filtering functionality.

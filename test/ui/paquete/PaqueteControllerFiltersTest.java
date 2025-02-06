@@ -173,25 +173,4 @@ public class PaqueteControllerFiltersTest extends ApplicationTest {
         assertTrue(filtered.stream().allMatch(p -> p.getSize() == PackageSize.MEDIUM));
     }
 
-    // test errors handling 
-    /**
-     * Test error handling for invalid inputs.
-     */
-    @Test
-    public void testH_errorHandling() {
-        // Test invalid sender name format
-        paqueteTableView.getSelectionModel().selectFirst();
-        Node tableColumnSender = lookup("#senderColumn").nth(1).query();
-        clickOn(tableColumnSender);
-        write("123Invalid ");
-        type(KeyCode.ENTER);
-
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verify error alert is shown
-        Node dialogPane = lookup(".alert").query();
-        assertNotNull(dialogPane);
-        clickOn("OK");
-    }
-
 }

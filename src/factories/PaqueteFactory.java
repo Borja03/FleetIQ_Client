@@ -1,26 +1,45 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package factories;
 
-import logicimplementation.PackageManagerImp;
+import java.util.ResourceBundle;
 import logicInterface.PaqueteManager;
-
+import logicimplementation.PackageManagerImp;
+import service.PackageRESTClient;
 
 /**
+ * Factory class for creating and managing a singleton instance of
+ * {@link PaqueteManager}. This ensures that only one instance of
+ * {@link PackageManagerImp} is created and reused.
+ * <p>
+ * Note: The variable {@code packageManager} has been renamed to avoid conflict
+ * with the Java keyword {@code package}.
+ * </p>
  *
  * @author Omar
  */
 public class PaqueteFactory {
-    // Rename the variable to avoid conflict with the Java keyword `package`
-    private static PaqueteManager packageManager;
+     /**
+     * Singleton instance of {@link PaqueteManager}.
+     */
+    private static PaqueteManager instance;
 
+    /**
+     * Returns the singleton instance of {@link PaqueteManager}. If the instance
+     * does not exist, it is created and returned.
+     *
+     * @return the singleton instance of {@link PaqueteManager}.
+     */
     public static PaqueteManager getPackageInstance() {
-        if (packageManager == null) {
-            packageManager = new PackageManagerImp();
+        if (instance == null) {
+            // Default to the original implementation with config URI
+            instance = new PackageManagerImp(new PackageRESTClient(
+                            ResourceBundle.getBundle("config/config").getString("RESTful.baseURI")
+            ));
         }
-        return packageManager;
+        return instance;
+    }
+
+    // For testing purposes
+    public static void setPackageInstance(PaqueteManager testInstance) {
+        instance = testInstance;
     }
 }

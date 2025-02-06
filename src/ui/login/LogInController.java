@@ -150,6 +150,7 @@ public class LogInController {
         stage.centerOnScreen();
         visiblePasswordField.setVisible(false);
         initializeContextMenu();
+        stage.getIcons().add(new Image("/image/fleet_icon.png")); // Set the window icon
 
         borderPane.setOnContextMenuRequested(this::showContextMenu);
 
@@ -291,77 +292,50 @@ public class LogInController {
      */
     @FXML
     private void handleLogInButtonAction() throws IOException {
-        // try {
-        //utils.validateEmail(emailTextField.getText());
-
         String email = emailTextField.getText();
         String password = isPasswordVisible ? visiblePasswordField.getText() : passwordField.getText();
-
         User user = new User();
         user.setEmail(email);
 
-        // user.setEmail("multitartanga@gmail.com");
-
-        //user.setPassword("12345");
-
-        // user.setEmail("multitartanga@gmail.com");
-        //user.setPassword("12345");
-        // Call ClientSideEncryption to encrypt the message
-        String encryptedPaasowrd = null;
+        // Encrypt password for database authentication
+        String encryptedPassword = null;
         try {
-            //  User user = new User(email, password, name, isActive, street, city, zip);
-            // Call ClientSideEncryption to encrypt the message
-            LOGGER.log(Level.INFO, "Password before encrypting : " + password);
-            encryptedPaasowrd = ClientSideEncryption.encrypt(password);
-            LOGGER.log(Level.INFO, "Password after encrypting : " + encryptedPaasowrd);
-            user.setPassword(encryptedPaasowrd);
-
+            LOGGER.log(Level.INFO, "Password before encrypting: " + password);
+            encryptedPassword = ClientSideEncryption.encrypt(password);
+            LOGGER.log(Level.INFO, "Password after encrypting: " + encryptedPassword);
+            user.setPassword(encryptedPassword);
         } catch (Exception ex) {
-            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, "Error encrypting password", ex);
         }
 
-        User loggedInUser;
         try {
+            // First try normal database authentication
             userSession = (User) SignableFactory.getSignable().signIn(user, User.class);
-            System.out.println(userSession.toString());
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
-            Parent root = null;
-            try {
-                root = loader.load();
-            } catch (IOException ex) {
-                Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            PaqueteController controller = loader.getController();
-            Stage newStage = new Stage();
-            controller.setStage(newStage);
-            controller.initStage(root);
-            stage.close();
-
-        } catch (SelectException ex) {
-            Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
-            if ((user.getEmail().equals("admin")) && (user.getPassword().equals("12345"))) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
-                Parent root = null;
-                root = loader.load();
-
-                Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, null, ex);
-
-                PaqueteController controller = loader.getController();
-                Stage newStage = new Stage();
-                controller.setStage(newStage);
-                controller.initStage(root);
-                stage.close();
+            navigateToPaquete();
+        } catch (Exception ex) {
+            // If database authentication fails, check for admin credentials
+            System.out.println("--------------------- here -------");
+            if (email.equals("admin") && password.equals("admin")) {
+                LOGGER.log(Level.INFO, "Logging in with admin credentials");
+                navigateToPaquete();
+            } else {
+                // If neither authentication method works, log the error
+                Logger.getLogger(LogInController.class.getName()).log(Level.SEVERE, "Authentication failed", ex);
+                // Here you might want to show an error message to the user
+                // utils.showAlert("Error", "Invalid credentials");
             }
         }
+    }
 
-//        } catch (InvalidEmailFormatException e) {
-//            utils.showAlert("Formato de email inválido", e.getMessage());
-//            logger.severe("Error inesperado");
-//        } catch (Exception ex) {
-//            utils.showAlert("Error", "Ocurrió un error inesperado.");
-//            logger.severe("Error inesperado");
-//        }
+    // methode to open window paquete
+    private void navigateToPaquete() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));
+        Parent root = loader.load();
+        PaqueteController controller = loader.getController();
+        Stage newStage = new Stage();
+        controller.setStage(newStage);
+        controller.initStage(root);
+        stage.close();
     }
 
     /**
