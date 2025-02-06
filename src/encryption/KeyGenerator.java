@@ -32,9 +32,6 @@ public class KeyGenerator {
     	// Save Private Key
     	saveKeyToFile(privateKeyFile, keyPair.getPrivate().getEncoded());
 
-    	System.out.println("Keys generated and saved to files:");
-    	System.out.println("Public Key File: " + publicKeyFile);
-    	System.out.println("Private Key File: " + privateKeyFile);
 	}
 
 	private static void saveKeyToFile(String fileName, byte[] keyBytes) throws IOException {

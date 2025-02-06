@@ -54,7 +54,7 @@ import org.testfx.util.WaitForAsyncUtils;
  * using TestFX framework.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PaqueteControllerTest extends ApplicationTest {
+public class EnvioControllerTest extends ApplicationTest {
 
     private TableView<Paquete> paqueteTableView;
     private JFXButton addShipmentBtn;
