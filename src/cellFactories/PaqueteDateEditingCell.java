@@ -1,14 +1,5 @@
 package cellFactories;
 
-//public class PaqueteDateEditingCell extends TableCell<Paquete,Date> {
-//    private DatePicker datePicker;
-//    private DateTimeFormatter dateFormatter;
-//
-//    public PaqueteDateEditingCell() {
-//        dateFormat = ResourceBundle.getBundle("config/config")
-//                        .getString("date.format");
-//        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-//    }
 import com.jfoenix.controls.JFXDatePicker;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -21,11 +12,19 @@ import javafx.scene.control.TableCell;
 import javafx.scene.input.KeyCode;
 import models.Paquete;
 
+/**
+ * Custom TableCell implementation for editing Date values in a TableView using JFXDatePicker.
+ * This class disables weekends (Saturdays and Sundays) in the date picker and allows the user to 
+ */
 public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
 
     private JFXDatePicker datePicker = new JFXDatePicker();
     private String mDateFormat;
 
+    /**
+     * Constructor that initializes the date format from a resource bundle
+     * and configures the JFXDatePicker for date selection.
+     */
     public PaqueteDateEditingCell() {
         // Load date format from resource bundle
         mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
@@ -35,12 +34,16 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
     }
 
     /**
-     * Configures the JFXDatePicker with event handling and style.
+     * Configures the JFXDatePicker with event handling and styles.
+     * The weekends (Saturdays and Sundays) are disabled in the date picker.
+     * The selected date is committed when the user selects a date.
+     * The ESC key cancels the editing.
      */
     private void configureDatePicker() {
 
         datePicker = new JFXDatePicker();
         datePicker.setShowWeekNumbers(false);
+        
         // Disable weekends (Saturdays and Sundays)
         datePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
@@ -54,6 +57,7 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
                 }
             }
         });
+        
         // Handle date selection
         datePicker.setOnAction(e -> {
             if (datePicker.getValue() != null) {
@@ -74,6 +78,10 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
         datePicker.setStyle("-fx-font-size: 14px;"); // Adjust font size
     }
 
+    /**
+     * Starts the editing of the DateCell by displaying a JFXDatePicker
+     * initialized with the current value of the Date item.
+     */
     @Override
     public void startEdit() {
         super.startEdit();
@@ -93,6 +101,9 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
         }
     }
 
+    /**
+     * Cancels the edit operation and restores the cell's displayed value.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
@@ -100,6 +111,14 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
         setGraphic(null); // Hide the DatePicker when editing is canceled
     }
 
+    /**
+     * Updates the cell with the current Date item. If the cell is in editing mode,
+     * it displays the JFXDatePicker with the current Date value. Otherwise, it displays
+     * the formatted date as a string.
+     *
+     * @param item  The current Date item to be displayed.
+     * @param empty True if the cell is empty, false otherwise.
+     */
     @Override
     public void updateItem(Date item, boolean empty) {
         super.updateItem(item, empty);
@@ -125,7 +144,7 @@ public class PaqueteDateEditingCell extends TableCell<Paquete, Date> {
     }
 
     /**
-     * Converts the current Date item into a formatted string.
+     * Converts the current Date item into a formatted string based on the specified date format.
      *
      * @return The formatted date string or an empty string if no value exists.
      */

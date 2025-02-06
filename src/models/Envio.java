@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Entidad JPA que representa un Envío.
  */
 @XmlRootElement
-public class Envio implements Serializable {
+public class Envio implements Serializable, Cloneable {
 
     private Integer id;
 
@@ -115,6 +115,11 @@ public class Envio implements Serializable {
 
     public void setVehiculo(String vehiculo) {
         this.vehiculo = vehiculo;
+    }
+    
+    @Override
+    public Envio clone() throws CloneNotSupportedException{
+        return (Envio) super.clone();
     }
 
     @Override

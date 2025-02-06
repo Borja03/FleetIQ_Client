@@ -29,7 +29,7 @@ public class Main extends Application {
         // Cargar el archivo FXML
 
 
-        Parent root = FXMLLoader.load(getClass().getResource("/ui/envio/envio.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/ui/splash/splash.fxml"));
 
 
 

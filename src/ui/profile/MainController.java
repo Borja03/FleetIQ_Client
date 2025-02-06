@@ -72,8 +72,7 @@ public class MainController {
     @FXML
     private PasswordField passwordField; // The masked password input
 
-    @FXML
-    private TextField plainPasswordField; // The visible plain text input (used when the password is shown)
+   
 
     @FXML
     private Button logOutButton; // LogOut button
@@ -161,6 +160,7 @@ public class MainController {
         stage.setTitle("Main");
         stage.setResizable(false);
         // stage.getIcons().add(new Image("/Images/userIcon.png"));
+        stage.getIcons().add(new Image("/image/fleet_icon.png")); // Set the window icon
 
         // Set initial visibility of password fields
         newPassTxt.setVisible(false);
@@ -184,8 +184,8 @@ public class MainController {
         addressField.setText(address);
 
         // Set the user's password (ensure that this is a secure way of handling passwords)
-        passwordField.setText(LogInController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
-      
+//        passwordField.setText(LogInController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
+        System.out.println(LogInController.userSession.toString());
         // menu
         btn_update_password.setOnAction(event -> handleUpdatePassword());
 
@@ -257,8 +257,8 @@ public class MainController {
         contextMenu.getItems().add(copyItem);
 
         // Attach the context menu to relevant text fields
-        attachContextMenuToTextField(passwordField);
-        attachContextMenuToTextField(plainPasswordField);
+//        attachContextMenuToTextField(passwordField);
+//        attachContextMenuToTextField(plainPasswordField);
     }
 
     /**
@@ -434,9 +434,9 @@ public class MainController {
      * @param textField The text field to which the context menu will be
      * attached.
      */
-    private void attachContextMenuToTextField(TextField textField) {
-        textField.setContextMenu(contextMenu);
-    }
+//    private void attachContextMenuToTextField(TextField textField) {
+//        textField.setContextMenu(contextMenu);
+//    }
 
     //menu and theme
     /**
@@ -470,30 +470,30 @@ public class MainController {
         String selectedText = "";
 
         // Check if the password field is visible and has selected text
-        if (passwordField.isVisible() && passwordField.getSelectedText() != null) {
-            // Retrieve the selected text from the password field
-            selectedText = passwordField.getSelectedText();
+//        if (passwordField.isVisible() && passwordField.getSelectedText() != null) {
+//            // Retrieve the selected text from the password field
+//            selectedText = passwordField.getSelectedText();
         } // Check if the plain password field is visible and has selected text
-        else if (plainPasswordField.isVisible() && plainPasswordField.getSelectedText() != null) {
-            // Retrieve the selected text from the plain password field
-            selectedText = plainPasswordField.getSelectedText();
-        }
-
-        // If there is selected text, copy it to the clipboard
-        if (!selectedText.isEmpty()) {
-            // Get the system clipboard
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-
-            // Create a ClipboardContent object to hold the selected text
-            ClipboardContent content = new ClipboardContent();
-
-            // Set the string content for the clipboard
-            content.putString(selectedText);
-
-            // Set the clipboard content to the selected text
-            clipboard.setContent(content);
-        }
-    }
+//        else if (plainPasswordField.isVisible() && plainPasswordField.getSelectedText() != null) {
+//            // Retrieve the selected text from the plain password field
+//            selectedText = plainPasswordField.getSelectedText();
+//        }
+//
+//        // If there is selected text, copy it to the clipboard
+//        if (!selectedText.isEmpty()) {
+//            // Get the system clipboard
+//            Clipboard clipboard = Clipboard.getSystemClipboard();
+//
+//            // Create a ClipboardContent object to hold the selected text
+//            ClipboardContent content = new ClipboardContent();
+//
+//            // Set the string content for the clipboard
+//            content.putString(selectedText);
+//
+//            // Set the clipboard content to the selected text
+//            clipboard.setContent(content);
+//        }
+//    }
 
     /**
      * Handles the log out action and navigates to the login screen.
