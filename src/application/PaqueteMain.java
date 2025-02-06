@@ -35,7 +35,6 @@ public class PaqueteMain extends Application {
 //            userSession = (User) SignableFactory.getSignable().signIn(user, User.class);
 //
 //            // Print the signed-in user information
-//            System.out.println(userSession);
 
             // Load the FXML file for the Paquete view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/paquete/paquete.fxml"));

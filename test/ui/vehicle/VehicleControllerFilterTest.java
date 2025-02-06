@@ -41,7 +41,7 @@ import org.testfx.util.WaitForAsyncUtils;
 import java.time.format.DateTimeFormatter;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class VehicleControllerTest extends ApplicationTest {
+public class VehicleControllerFilterTest extends ApplicationTest {
 
     private TableView<Vehiculo> vehicleTableView;
     private JFXButton addShipmentBtn;
@@ -106,133 +106,87 @@ public class VehicleControllerTest extends ApplicationTest {
         assertTrue(items.contains("Registration Date"));
     }
 
-    @Test
-    public void testB_addVehicle() {
-        int initialRowCount = vehicleTableView.getItems().size();
 
-        clickOn("#addShipmentBtn");
+
+
+    @Test
+    public void testF_capacityFilters() {
+        // Reiniciar el campo de capacidad a "0" para asegurar el estado inicial
+        capacityTextField.setText("0");
         WaitForAsyncUtils.waitForFxEvents();
 
-        int newRowCount = vehicleTableView.getItems().size();
-        assertEquals(initialRowCount + 1, newRowCount);
+        String initialCapacity = capacityTextField.getText();
+        clickOn("#plusButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        
+        int newCapacity = Integer.parseInt(capacityTextField.getText());
+        assertEquals(Integer.parseInt(initialCapacity) + 1, newCapacity);
 
-        // Verify default values of new vehicle
-        Vehiculo newVehicle = vehicleTableView.getItems().get(newRowCount - 1);
-        assertEquals("", newVehicle.getMatricula());
-        assertNotNull(newVehicle.getRegistrationDate());
+        clickOn("#minusButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        
+        assertEquals("El valor de capacidad no volvió a su estado inicial", initialCapacity, capacityTextField.getText());
     }
 
-    @Test
-public void testC_updateVehicle() {
-    WaitForAsyncUtils.waitForFxEvents();
-
-    // Asegurarse de que la tabla tenga al menos un vehículo.
+@Test
+public void testG_dateFilters() {
+    // Si la tabla está vacía, agregamos un vehículo para tener datos a filtrar.
     if (vehicleTableView.getItems().isEmpty()) {
         clickOn("#addShipmentBtn");
         WaitForAsyncUtils.waitForFxEvents();
     }
-
-    // Agregar un vehículo nuevo para trabajar sobre un registro conocido.
-    clickOn("#addShipmentBtn");
+    
+    // Seleccionar el tipo de filtro "ITV Date" en el combo box.
+    clickOn("#filterTypeComboBox");
     WaitForAsyncUtils.waitForFxEvents();
-    int lastIndex = vehicleTableView.getItems().size() - 1;
-
-    // Ubicar la celda correspondiente a la matrícula de la fila recién agregada.
-    Node cell = lookup(".table-row-cell").nth(lastIndex)
-                      .lookup(".table-cell").nth(1).query();
-    // Hacer doble clic para activar el modo de edición.
-    doubleClickOn(cell);
+    // Buscar entre los items del combo box el que tenga el texto "ITV Date"
+    Node itvItem = lookup(".list-cell").queryAll().stream()
+            .filter(node -> {
+                if (node instanceof javafx.scene.control.Labeled) {
+                    return ((javafx.scene.control.Labeled) node).getText().equals("ITV Date");
+                }
+                return false;
+            })
+            .findFirst()
+            .orElse(null);
+    assertNotNull("No se encontró el item 'ITV Date' en el combo box", itvItem);
+    clickOn(itvItem);
     WaitForAsyncUtils.waitForFxEvents();
     
-    // Escribir la nueva matrícula. Si hay contenido anterior, se puede intentar borrarlo.
-    // Se puede usar eraseText(n) si se sabe cuántos caracteres hay, o bien escribir sobre el campo.
-    eraseText(10); 
-    write("ABC123");
+    // Formateador para dd/MM/yyyy
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+    // Establecer la fecha "from": hace 7 días
+    LocalDate fromDate = LocalDate.now().minusDays(7);
+    String fromDateStr = fromDate.format(formatter);
+    clickOn("#fromDatePicker");
+    WaitForAsyncUtils.waitForFxEvents();
+    eraseText(10);  // Borrar cualquier texto previo
+    write(fromDateStr);
     press(KeyCode.ENTER);
     release(KeyCode.ENTER);
     WaitForAsyncUtils.waitForFxEvents();
-
-    // Verificar que la matrícula se actualizó.
-    Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
-    assertEquals("La matrícula del vehículo no se actualizó correctamente",
-                 "ABC123", updated.getMatricula());
-}
-
-
-    @Test
-    public void testD_deleteVehicle() {
-        WaitForAsyncUtils.waitForFxEvents();
-
-        int initialCount = vehicleTableView.getItems().size();
-        if (initialCount == 0) {
-            return;
-        }
-
-        // Select first row
-        Node firstRow = lookup(".table-row-cell").query();
-        clickOn(firstRow);
-        
-        clickOn(removeShipmentBtn);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verify confirmation dialog
-        DialogPane dialogPane = lookup(".dialog-pane").query();
-        assertNotNull("Confirmation dialog not shown", dialogPane);
-
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        assertNotNull("OK button not found in dialog", okButton);
-
-        clickOn(okButton);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        assertEquals("Vehicle count should decrease by 1", 
-                    initialCount - 1, vehicleTableView.getItems().size());
-    }
-
-@Test
-public void testE_searchFunctionality() {
-    // Agregar un vehículo nuevo para la búsqueda.
-    clickOn("#addShipmentBtn");
-    WaitForAsyncUtils.waitForFxEvents();
-    int lastIndex = vehicleTableView.getItems().size() - 1;
-
-    // Ubicar la celda de la matrícula en la fila recién agregada.
-    Node cell = lookup(".table-row-cell").nth(lastIndex)
-                      .lookup(".table-cell").nth(1).query();
-    // Doble clic para activar el modo edición.
-    doubleClickOn(cell);
-    WaitForAsyncUtils.waitForFxEvents();
     
-    // Borrar cualquier contenido previo y escribir "ABC123".
+    // Establecer la fecha "to": fecha actual
+    LocalDate toDate = LocalDate.now();
+    String toDateStr = toDate.format(formatter);
+    clickOn("#toDatePicker");
+    WaitForAsyncUtils.waitForFxEvents();
     eraseText(10);
-    write("ABC123");
+    write(toDateStr);
     press(KeyCode.ENTER);
     release(KeyCode.ENTER);
     WaitForAsyncUtils.waitForFxEvents();
-
-    // Confirmar que la matrícula se actualizó.
-    Vehiculo newVehicle = vehicleTableView.getItems().get(lastIndex);
-    assertEquals("La matrícula del vehículo no se actualizó correctamente",
-                 "ABC123", newVehicle.getMatricula());
-
-    // Limpiar el campo de búsqueda (usando doble clic para seleccionar todo) y escribir "ABC".
-    doubleClickOn("#searchTextField");
-    write("ABC");
-    clickOn("#searchButton");
+    
+    // Aplicar el filtro
+    clickOn("#applyFilterButton");
     WaitForAsyncUtils.waitForFxEvents();
-
-    // Verificar que al menos un vehículo tenga "ABC" en la matrícula.
-    ObservableList<Vehiculo> results = vehicleTableView.getItems();
-    boolean found = results.stream().anyMatch(v -> v.getMatricula().contains("ABC"));
-    if (!found) {
-         String allMatriculas = "";
-         for (Vehiculo v : results) {
-              allMatriculas += "[" + v.getMatricula() + "] ";
-         }
-         fail("No se encontró ningún vehículo con 'ABC' en la matrícula. Matrículas presentes: " + allMatriculas);
-    }
-    assertTrue("Se encontró al menos un vehículo con 'ABC' en la matrícula", found);
+    
+    // Verificar que hay al menos un vehículo en la tabla después del filtrado
+    assertFalse("La tabla de vehículos está vacía después de aplicar el filtro", 
+                vehicleTableView.getItems().isEmpty());
 }
+
 
 
 

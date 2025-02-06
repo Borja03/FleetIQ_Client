@@ -102,6 +102,7 @@ public class MenuController {
             LOGGER.info("Paquete window opened");
             // Close the current stage (the one with the menu)
             Stage currentStage = (Stage) menuBar.getScene().getWindow();
+            
             currentStage.close();
         } catch (IOException ex) {
             LOGGER.severe("Error loading paquete window: " + ex);
