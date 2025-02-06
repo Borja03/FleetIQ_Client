@@ -45,75 +45,199 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 import utils.ThemeManager;
 
+/**
+ * Controlador para la gestión de envíos en la aplicación. Proporciona
+ * funcionalidades para filtrar, agregar, eliminar y visualizar envíos, así como
+ * generar reportes.
+ */
 public class EnvioController {
 
+    /**
+     * Logger para registrar eventos y errores.
+     */
     private static final Logger LOGGER = Logger.getLogger(EnvioController.class.getName());
 
+    /**
+     * Selector de fecha de inicio para el filtro.
+     */
     @FXML
     private JFXDatePicker fromDatePicker;
 
+    /**
+     * Selector de fecha de fin para el filtro.
+     */
     @FXML
     private JFXDatePicker toDatePicker;
 
+    /**
+     * ComboBox para filtrar envíos por estado.
+     */
     @FXML
     private JFXComboBox<String> estadoFilterComboBox;
 
+    /**
+     * Campo de texto para filtrar envíos por número de paquetes.
+     */
     @FXML
     private JFXTextField numeroPaquetesTextField;
 
+    /**
+     * Tabla de envíos.
+     */
     @FXML
     private TableView<Envio> table;
 
+    /**
+     * Columna de ID del envío.
+     */
     @FXML
     private TableColumn<Envio, Integer> idColumn;
 
+    /**
+     * Columna de fecha de envío.
+     */
     @FXML
     private TableColumn<Envio, Date> fechaEnvioColumn;
 
+    /**
+     * Columna de fecha de entrega.
+     */
     @FXML
     private TableColumn<Envio, Date> fechaEntregaColumn;
 
+    /**
+     * Columna de estado del envío.
+     */
     @FXML
     private TableColumn<Envio, Estado> estadoColumn;
 
+    /**
+     * Columna de número de paquetes en el envío.
+     */
     @FXML
     private TableColumn<Envio, Integer> numPaquetesColumn;
 
+    /**
+     * Columna con el nombre del creador del envío.
+     */
     @FXML
     private TableColumn<Envio, String> creadorEnvioColumn;
 
+    /**
+     * Columna con la ruta del envío.
+     */
     @FXML
     private TableColumn<Envio, String> rutaColumn;
 
+    /**
+     * Columna con el vehículo asignado al envío.
+     */
     @FXML
     private TableColumn<Envio, String> vehiculoColumn;
 
+    /**
+     * Botón para aplicar el filtro por fecha.
+     */
     @FXML
     private JFXButton applyDateFilterButton, applyEstadoFilterButton, applyNumPaquetesFilterButton;
 
+    /**
+     * Botón para agregar un nuevo envío.
+     */
     @FXML
-    private JFXButton addShipmentBtn, removeShipmentBtn, printReportBtn;
+    private JFXButton addShipmentBtn;
 
+    /**
+     * Botón para eliminar un envío seleccionado.
+     */
+    @FXML
+    private JFXButton removeShipmentBtn;
+
+    /**
+     * Botón para imprimir un reporte de envíos.
+     */
+    @FXML
+    private JFXButton printReportBtn;
+
+    /**
+     * Servicio para la gestión de envíos.
+     */
     private EnvioManager envioService;
+
+    /**
+     * Servicio para la gestión de paquetes.
+     */
     private PaqueteManager paqueteService;
+
+    /**
+     * Servicio para la gestión de usuarios.
+     */
     private UserManager userService;
+
+    /**
+     * Servicio para la gestión de vehículos.
+     */
     private VehicleManager vehicleService;
+
+    /**
+     * Servicio para la gestión de rutas de envíos con vehículos.
+     */
     private EnvioRutaVehiculoManager envioRutaVehiculoService;
+
+    /**
+     * Lista observable de envíos.
+     */
     private ObservableList<Envio> envioList;
+
+    /**
+     * Lista de paquetes.
+     */
     private ArrayList<Paquete> paqueteList;
+
+    /**
+     * Lista de usuarios.
+     */
     private ArrayList<User> userList = new ArrayList<>();
+
+    /**
+     * Lista de vehículos.
+     */
     private List<Vehiculo> vehiculoList = new ArrayList<>();
+
+    /**
+     * Lista de rutas de envíos con vehículos.
+     */
     private List<EnvioRutaVehiculo> envioRutaVehiculoList = new ArrayList<>();
 
+    /**
+     * Lista de nombres de usuarios.
+     */
     private List<String> userNamesList = new ArrayList<>();
+
+    /**
+     * Lista de matrículas de vehículos.
+     */
     private List<String> vehiculoMatriculaList = new ArrayList<>();
 
+    /**
+     * Ventana principal de la aplicación.
+     */
     private Stage stage;
 
+    /**
+     * Establece la ventana principal de la aplicación.
+     *
+     * @param stage La ventana principal.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Inicializa la ventana de gestión de envíos.
+     *
+     * @param root El nodo raíz de la interfaz gráfica.
+     */
     public void initStage(Parent root) {
         LOGGER.info("Initialising Envio window.");
         Scene scene = new Scene(root);
@@ -149,21 +273,37 @@ public class EnvioController {
         stage.show();
     }
 
+    /**
+     * Configura el menú contextual de la tabla de envíos.
+     */
     private void setUpContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        // First menu item
+
         MenuItem addItem = new MenuItem("Add New Envio");
         addItem.setOnAction(this::addEnvio);
-        // Second menu item
+
         MenuItem deleteItem = new MenuItem("Delete Envio");
         deleteItem.setOnAction(this::removeEnvio);
+
         MenuItem printItem = new MenuItem("Print Report");
         printItem.setOnAction(this::printReport);
-        // Add menu items to the context menu
+
         contextMenu.getItems().addAll(addItem, deleteItem, printItem);
         table.setContextMenu(contextMenu);
     }
 
+    /**
+     * Configura las columnas de la tabla en la interfaz de usuario.
+     * <p>
+     * Este método establece los valores de las celdas, define editores
+     * personalizados y maneja los eventos de edición para las columnas de la
+     * tabla. Además, realiza validaciones y actualizaciones en la base de datos
+     * cuando se editan ciertos campos.
+     * </p>
+     *
+     * @throws SelectException si ocurre un error al recuperar información de la
+     * base de datos.
+     */
     private void setUpTableColumns() {
         try {
             idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -425,6 +565,17 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Aplica un filtro de fechas a la lista de envíos.
+     * <p>
+     * Este método obtiene las fechas seleccionadas en los selectores de fecha y
+     * filtra los envíos en función del rango especificado. Si no se proporciona
+     * ninguna fecha, se lanza una excepción. Los resultados filtrados se
+     * actualizan en la lista de envíos mostrada en la interfaz.
+     * </p>
+     *
+     * @param event Evento de acción que activa el filtro.
+     */
     @FXML
     private void applyEstadoFilter(ActionEvent event) {
         try {
@@ -443,6 +594,17 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Aplica un filtro por número de paquetes a la lista de envíos.
+     * <p>
+     * Obtiene el valor ingresado en el campo de texto y filtra los envíos que
+     * coincidan con ese número de paquetes. Si el campo está vacío, se carga la
+     * lista inicial. Si el valor ingresado es menor o igual a 0, se muestra una
+     * alerta de error.
+     * </p>
+     *
+     * @param event Evento de acción que activa el filtro.
+     */
     @FXML
     private void applyNumPaquetesFilter(ActionEvent event) {
         try {
@@ -467,6 +629,16 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Añade un nuevo envío a la lista y lo guarda en la base de datos.
+     * <p>
+     * Crea un nuevo objeto {@code Envio}, lo añade a la lista y lo envía al
+     * servicio para su almacenamiento. Luego, recarga los datos iniciales y
+     * actualiza la tabla. En caso de error, se muestra una alerta.
+     * </p>
+     *
+     * @param event Evento de acción que activa la adición del envío.
+     */
     @FXML
     private void addEnvio(ActionEvent event) {
         try {
@@ -481,6 +653,16 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Elimina los envíos seleccionados de la lista y de la base de datos.
+     * <p>
+     * Verifica si los envíos seleccionados están vinculados a un vehículo o una
+     * ruta antes de eliminarlos. Si el vehículo estaba activo, se desactiva
+     * antes de la eliminación. Se refresca la tabla tras la operación.
+     * </p>
+     *
+     * @param event Evento de acción que activa la eliminación del envío.
+     */
     @FXML
     private void removeEnvio(ActionEvent event) {
         try {
@@ -516,6 +698,15 @@ public class EnvioController {
         }
     }
 
+    /**
+     * Configura el botón de eliminación para habilitarse o deshabilitarse
+     * dinámicamente.
+     * <p>
+     * Escucha cambios en la selección de la tabla de envíos y activa o
+     * desactiva el botón de eliminación dependiendo de si hay elementos
+     * seleccionados.
+     * </p>
+     */
     private void configureRemoveButton() {
         ObservableList<Envio> selectedItems = table.getSelectionModel().getSelectedItems();
 
@@ -526,6 +717,17 @@ public class EnvioController {
         removeShipmentBtn.setDisable(true);
     }
 
+    /**
+     * Genera e imprime un reporte de los envíos actuales utilizando
+     * JasperReports.
+     * <p>
+     * Compila y llena un reporte con los datos actuales de la tabla de envíos,
+     * luego lo muestra en una ventana de visualización. En caso de error, se
+     * muestra una alerta con el mensaje correspondiente.
+     * </p>
+     *
+     * @param event Evento de acción que activa la impresión del reporte.
+     */
     @FXML
     private void printReport(ActionEvent event) {
         try {
