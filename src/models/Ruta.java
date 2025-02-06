@@ -194,7 +194,7 @@ public class Ruta implements Serializable, Cloneable {
     /**
      * Sets the list of vehicles associated with the route.
      *
-     * @param envioRutaVehiculos the list of vehicles to set
+     * EnvioRutaVehiculo the list of vehicles to set
      */
     public void setRutaVehiculos(List<EnvioRutaVehiculo> rutaVehiculos) {
         this.envioRutaVehiculos = rutaVehiculos;

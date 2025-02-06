@@ -13,7 +13,7 @@ import logicimplementation.UserManagerImp;
  * 
  * <p>
  * Esta clase sigue el patrón Singleton para garantizar que solo exista una instancia de
- * {@link Signable}, creando el objeto {@link SignerClient} solo cuando es necesario.
+ * {@link Signable}
  * </p>
  * <p>
  * Es especialmente útil para mantener una única instancia de un cliente de autenticación en
@@ -22,7 +22,6 @@ import logicimplementation.UserManagerImp;
  * 
  * @author Alder
  * @see Signable
- * @see SignerClient
  */
 public class SignableFactory {
 
@@ -32,8 +31,7 @@ public class SignableFactory {
     private static UserManagerImp signable;
 
     /**
-     * Método que retorna una instancia única de {@link Signable}, creando una
-     * instancia de {@link SignerClient} solo si es necesario.
+     * Método que retorna una instancia única de {@link Signable}
      *
      * @return Una instancia de un objeto {@link Signable}.
      * @author Alder
