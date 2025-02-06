@@ -4,7 +4,11 @@ import logicInterface.RutaManager;
 import service.RutaRESTClient;
 
 /**
- * Factory class to manage the creation of RutaManager instances.
+ * Factory class to manage the creation of {@link RutaManager} instances.
+ * <p>
+ * This class ensures that only one instance of {@link RutaManager} exists (singleton pattern) and provides
+ * a global point of access to that instance.
+ * @author Borja
  */
 public class RutaManagerFactory {
 
@@ -12,8 +16,9 @@ public class RutaManagerFactory {
     private static RutaManager rutaManager;
 
     /**
-     * Returns an instance of RutaManager.
-     * If the instance doesn't exist, it creates one.
+     * Returns an instance of {@link RutaManager}.
+     * <p>
+     * If the instance doesn't exist, it creates one using the {@link RutaRESTClient}.
      *
      * @return RutaManager instance
      */

@@ -1,14 +1,5 @@
 package cellFactories;
 
-//public class PaqueteDateEditingCell extends TableCell<Paquete,Date> {
-//    private DatePicker datePicker;
-//    private DateTimeFormatter dateFormatter;
-//
-//    public PaqueteDateEditingCell() {
-//        dateFormat = ResourceBundle.getBundle("config/config")
-//                        .getString("date.format");
-//        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
-//    }
 import com.jfoenix.controls.JFXDatePicker;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -22,11 +13,31 @@ import javafx.scene.input.KeyCode;
 import models.Paquete;
 import models.Ruta;
 
+/**
+ * Una celda de edición personalizada para una tabla que permite seleccionar y modificar fechas en un {@link TableCell}.
+ * <p>
+ * Utiliza {@link JFXDatePicker} para proporcionar una interfaz moderna para la selección de fechas.
+ * Evita la selección de fines de semana y admite la configuración dinámica del formato de fecha.
+ * @author Borja
+ */
+
 public class RutaDateEditingCell extends TableCell<Ruta, Date> {
 
+    /**
+     * Componente de selección de fecha utilizado para la edición en la celda.
+     */
     private JFXDatePicker datePicker = new JFXDatePicker();
+    
+     /**
+     * Formato de fecha utilizado para mostrar y almacenar fechas.
+     */
     private String mDateFormat;
 
+     /**
+     * Constructor de la celda de edición de fechas.
+     * <p>
+     * Carga el formato de fecha desde el archivo de configuración y configura el {@link JFXDatePicker}.
+     */
     public RutaDateEditingCell() {
         // Load date format from resource bundle
         mDateFormat = ResourceBundle.getBundle("config/config").getString("date.format");
@@ -35,8 +46,10 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
         configureDatePicker();
     }
 
-    /**
-     * Configures the JFXDatePicker with event handling and style.
+      /**
+     * Configura el {@link JFXDatePicker} con estilo y eventos.
+     * <p>
+     * Deshabilita la selección de fines de semana y maneja la confirmación de selección de fecha.
      */
     private void configureDatePicker() {
 
@@ -75,6 +88,9 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
         datePicker.setStyle("-fx-font-size: 14px;"); // Adjust font size
     }
 
+     /**
+     * Inicia la edición de la celda, mostrando el {@link JFXDatePicker}.
+     */
     @Override
     public void startEdit() {
         super.startEdit();
@@ -94,6 +110,9 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
         }
     }
 
+     /**
+     * Cancela la edición de la celda, restaurando el texto original.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
@@ -101,6 +120,12 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
         setGraphic(null); // Hide the DatePicker when editing is canceled
     }
 
+    /**
+     * Actualiza el contenido de la celda con la fecha proporcionada.
+     *
+     * @param item  La fecha a mostrar en la celda.
+     * @param empty Indica si la celda debe estar vacía.
+     */
     @Override
     public void updateItem(Date item, boolean empty) {
         super.updateItem(item, empty);
@@ -125,10 +150,10 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
         }
     }
 
-    /**
-     * Converts the current Date item into a formatted string.
+     /**
+     * Convierte el valor actual de la celda en una cadena formateada.
      *
-     * @return The formatted date string or an empty string if no value exists.
+     * @return La fecha formateada como texto o una cadena vacía si no hay valor.
      */
     private String getDateAsString() {
         if (getItem() == null) {
@@ -143,9 +168,9 @@ public class RutaDateEditingCell extends TableCell<Ruta, Date> {
     }
 
     /**
-     * Dynamically updates the date format used for displaying values.
+     * Actualiza dinámicamente el formato de fecha utilizado para mostrar valores.
      *
-     * @param newFormat The new date format string.
+     * @param newFormat El nuevo formato de fecha.
      */
     public void setDateFormat(String newFormat) {
         this.mDateFormat = newFormat;

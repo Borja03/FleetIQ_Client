@@ -151,7 +151,6 @@ public class MainController {
      * data.
      *
      * @param root The root element of the scene.
-     * @param user The user object containing the user's details.
      */
     public void initStage(Parent root) {
         LOGGER.info("Initializing MainController stage.");

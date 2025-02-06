@@ -64,6 +64,36 @@ import utils.ThemeManager;
 import service.EnvioRutaVehiculoRESTClient;
 import utils.UtilsMethods;
 
+/**
+ * Controller class responsible for managing the user interface of the "Ruta"
+ * view.
+ * <p>
+ * This controller initializes and configures various JavaFX components such as
+ * date pickers, buttons, combo boxes, text fields, and a table view that
+ * displays route information. It sets up event handlers for filtering routes by
+ * date, searching by identifier, adding or removing shipments, printing
+ * reports, and managing context menus and editable table columns.
+ * </p>
+ * <p>
+ * The class interacts with several managers:
+ * <ul>
+ * <li>{@code RutaManager} - Handles the retrieval and management of route
+ * data.</li>
+ * <li>{@code VehicleManager} - Manages vehicle-related operations.</li>
+ * <li>{@code EnvioRutaVehiculoManager} - Oversees the assignment of shipments
+ * to routes and vehicles.</li>
+ * <li>{@code ThemeManager} - Applies a visual theme to the user interface.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * The controller is integrated with FXML, and its UI components are injected
+ * via the {@code @FXML} annotation. The stage is configured with a fixed size,
+ * centered on the screen, and decorated with an icon.
+ * </p>
+ *
+ * @author Borja
+ * @version 1.0
+ */
 public class RutaController {
 
     private static final Logger logger = Logger.getLogger(RutaController.class.getName());
@@ -97,14 +127,36 @@ public class RutaController {
 
     private Stage stage;
 
+    /**
+     * Retrieves the current {@link Stage} associated with this controller.
+     *
+     * @return the stage used by this controller
+     */
     public Stage getStage() {
         return stage;
     }
 
+    /**
+     * Sets the {@link Stage} for this controller.
+     *
+     * @param stage the stage to be used by this controller
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Initializes the controller with the provided root node.
+     * <p>
+     * This method sets up the scene, configures the stage properties (such as
+     * title, icon, and position), and registers event handlers for various UI
+     * components including buttons, combo boxes, and table views. It also
+     * prepares the table for editing, loads the initial route data, and applies
+     * the current UI theme.
+     * </p>
+     *
+     * @param root the root node of the scene graph to be displayed in the stage
+     */
     @FXML
     public void initialize(Parent root) {
         rutaManager = RutaManagerFactory.getRutaManager();
@@ -121,7 +173,7 @@ public class RutaController {
 
         applyFilterButton.setOnAction(event -> filterByDates());
 
-        sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filter by Time", "Filter by Distance"));
+        sizeFilterComboBox.setItems(FXCollections.observableArrayList("Filtro por Tiempo", "Filtro por Distancia"));
         sizeFilterComboBox1.setItems(FXCollections.observableArrayList(">", "<", "="));
 
         sizeFilterComboBox.setOnAction(event -> updateUnitLabel());
@@ -147,6 +199,13 @@ public class RutaController {
         stage.show();
     }
 
+    /**
+     * Loads the route data into the table view.
+     * <p>
+     * This method retrieves the route data from the {@code RutaManager} and
+     * populates the table view, ensuring that the displayed data is current.
+     * </p>
+     */
     private void loadRutaData() {
         try {
             List<Ruta> rutas = RutaManagerFactory.getRutaManager().findAll_XML(new GenericType<List<Ruta>>() {
@@ -186,6 +245,14 @@ public class RutaController {
         }
     }
 
+    /**
+     * Actualiza el texto del campo de filtro secundario según la selección del
+     * filtro principal.
+     * <p>
+     * Si el usuario elige "Filter by Time", se muestra "Horas". Si selecciona
+     * "Filter by Distance", se muestra "Km". En otros casos, se establece
+     * "Unit" como valor predeterminado.
+     */
     private void updateUnitLabel() {
         String selectedFilter = sizeFilterComboBox.getValue();
         if ("Filter by Time".equals(selectedFilter)) {
@@ -197,6 +264,14 @@ public class RutaController {
         }
     }
 
+    /**
+     * Actualiza el texto del campo de filtro secundario según la selección del
+     * filtro principal.
+     * <p>
+     * Si el usuario elige "Filter by Time", se muestra "Horas". Si selecciona
+     * "Filter by Distance", se muestra "Km". En otros casos, se establece
+     * "Unit" como valor predeterminado.
+     */
     @FXML
     private void filterByDates() {
         if (fromDatePicker.getValue() == null || toDatePicker.getValue() == null) {
@@ -224,6 +299,15 @@ public class RutaController {
         }
     }
 
+    /**
+     * Aplica un filtro según el tipo seleccionado (tiempo o distancia) y un
+     * operador de comparación.
+     * <p>
+     * Valida que el valor ingresado sea un número positivo y que se haya
+     * seleccionado un operador de comparación. Luego, aplica el filtro
+     * correspondiente y actualiza la tabla con los resultados. En caso de
+     * error, muestra un mensaje al usuario y registra la excepción.
+     */
     private void applyFilterButtonAction() {
         String filterType = sizeFilterComboBox.getValue();
         String comparisonOperator = sizeFilterComboBox1.getValue();
@@ -263,6 +347,19 @@ public class RutaController {
         }
     }
 
+    /**
+     * Aplica un filtro de tiempo a la lista de rutas basado en un operador de
+     * comparación.
+     * <p>
+     * Dependiendo del operador seleccionado (> , < , =), consulta el servicio
+     * REST para obtener las rutas que cumplen con la condición y actualiza la
+     * tabla con los resultados. Si el operador no es válido, se registra una
+     * advertencia en los logs.
+     *
+     * @param comparisonOperator El operador de comparación (">", "<" o "=").
+     * @p
+     * aram filterValue El valor de tiempo a filtrar.
+     */
     private void applyTimeFilter(String comparisonOperator, String filterValue) {
         switch (comparisonOperator) {
             case ">":
@@ -287,6 +384,19 @@ public class RutaController {
         rutaTable.setItems(rutaData);
     }
 
+    /**
+     * Aplica un filtro de distancia a la lista de rutas basado en un operador
+     * de comparación.
+     * <p>
+     * Dependiendo del operador seleccionado (> , < , =), consulta el servicio
+     * REST para obtener las rutas que cumplen con la condición y actualiza la
+     * tabla con los resultados. Si el operador no es válido, se registra una
+     * advertencia en los logs.
+     *
+     * @param comparisonOperator El operador de comparación (">", "<" o "=").
+     * @p
+     * aram filterValue El valor de distancia a filtrar.
+     */
     private void applyDistanceFilter(String comparisonOperator, String filterValue) {
         switch (comparisonOperator) {
             case ">":
@@ -311,6 +421,12 @@ public class RutaController {
         rutaTable.setItems(rutaData);
     }
 
+    /**
+     * Muestra una alerta emergente con un mensaje de error.
+     *
+     * @param title Título de la alerta.
+     * @param content Mensaje a mostrar en el cuerpo de la alerta.
+     */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -319,6 +435,14 @@ public class RutaController {
         alert.showAndWait();
     }
 
+    /**
+     * Busca una ruta por su localizador y actualiza la tabla con el resultado.
+     * <p>
+     * Convierte el texto ingresado en un número entero y realiza la búsqueda en
+     * el servicio REST. Si no se encuentra ninguna ruta con el localizador
+     * ingresado, se muestra una alerta. Si el formato del texto no es válido,
+     * también se informa al usuario.
+     */
     private void searchByLocalizador() {
         String searchText = searchTextField.getText().trim();
         if (searchText.isEmpty()) {
@@ -350,6 +474,14 @@ public class RutaController {
         }
     }
 
+    /**
+     * Añade una nueva ruta vacía con valores predeterminados.
+     * <p>
+     * Crea una nueva instancia de {@code Ruta} con valores por defecto y la
+     * envía al servicio REST para su almacenamiento. Luego, actualiza la tabla
+     * de rutas con los datos más recientes. En caso de error, se muestra una
+     * alerta con la información correspondiente.
+     */
     private void addShipment() {
         try {
             Ruta nuevaRuta = new Ruta();
@@ -374,6 +506,15 @@ public class RutaController {
         }
     }
 
+    /**
+     * Elimina las rutas seleccionadas de la tabla y del sistema.
+     * <p>
+     * Verifica que al menos una ruta haya sido seleccionada antes de proceder.
+     * Muestra un cuadro de confirmación para validar la acción del usuario. Si
+     * el usuario confirma, intenta eliminar cada ruta del sistema a través del
+     * servicio REST y actualiza la tabla eliminando las rutas seleccionadas. Si
+     * ocurre un error, se muestra una alerta y se registra la excepción.
+     */
     private void removeShipment() {
         List<Ruta> selectedRutas = rutaTable.getSelectionModel().getSelectedItems();
 
@@ -409,6 +550,14 @@ public class RutaController {
         });
     }
 
+    /**
+     * Genera e imprime un informe de las rutas mostradas en la tabla.
+     * <p>
+     * Compila y carga un informe JasperReport desde un archivo de diseño
+     * (.jrxml). Luego, llena el informe con los datos de las rutas actuales en
+     * la tabla y lo muestra en una ventana de vista previa. Si ocurre un error
+     * durante el proceso, se muestra una alerta y se registra la excepción.
+     */
     private void printReport() {
         logger.info("Print Report clicked");
         try {
@@ -434,6 +583,18 @@ public class RutaController {
         }
     }
 
+    /**
+     * Configura las columnas de la tabla como editables y define la lógica de
+     * actualización de datos.
+     * <p>
+     * Permite la edición en línea de los campos: origen, destino, distancia,
+     * tiempo y fecha de creación. Al editar una celda, se clona la ruta, se
+     * actualiza el valor correspondiente y se envía al servidor. Si la
+     * actualización es exitosa, el valor modificado se refleja en la tabla. En
+     * caso de error, se muestra una alerta y se restaura el valor original. Se
+     * incluyen validaciones para evitar valores nulos o negativos en distancia
+     * y tiempo.
+     */
     private void configureEditableColumns() {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(event -> {
@@ -596,6 +757,13 @@ public class RutaController {
         });
     }
 
+    /**
+     * Configura el menú contextual de la tabla de rutas.
+     * <p>
+     * Agrega una opción de "Añadir Vehículo" que permite asignar vehículos a
+     * una ruta seleccionada. Al hacer clic en la opción, se abre un diálogo de
+     * selección de vehículos disponibles.
+     */
     private void setupContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem addVehicleMenuItem = new MenuItem("Añadir Vehículo");
@@ -612,131 +780,143 @@ public class RutaController {
         rutaTable.setContextMenu(contextMenu);
     }
 
-  private void showVehicleSelectionDialog(Ruta ruta) {
-    Stage vehicleStage = new Stage();
-    vehicleStage.setTitle("Seleccionar Vehículos");
-    JFXListView<String> vehicleListView = new JFXListView<>();
-    ObservableList<String> selectedMatriculas = FXCollections.observableArrayList();
-    ObservableList<String> matriculas = FXCollections.observableArrayList();
+    /**
+     * Muestra un cuadro de diálogo para seleccionar y asignar vehículos a la
+     * ruta especificada.
+     * <p>
+     * Carga dinámicamente los vehículos disponibles, excluyendo los ya
+     * asignados a la misma ruta. Los usuarios pueden seleccionar múltiples
+     * vehículos y confirmar la asignación. Si la asignación es exitosa, se
+     * actualiza el número de vehículos en la ruta y se sincroniza con el
+     * servidor.
+     *
+     * @param ruta La ruta a la que se asignarán los vehículos.
+     */
+    private void showVehicleSelectionDialog(Ruta ruta) {
+        Stage vehicleStage = new Stage();
+        vehicleStage.setTitle("Seleccionar Vehículos");
+        JFXListView<String> vehicleListView = new JFXListView<>();
+        ObservableList<String> selectedMatriculas = FXCollections.observableArrayList();
+        ObservableList<String> matriculas = FXCollections.observableArrayList();
 
-    Runnable loadAvailableVehicles = () -> {
-        try {
-            matriculas.clear();
-            // Forzar recarga sin caché
-            List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
+        Runnable loadAvailableVehicles = () -> {
+            try {
+                matriculas.clear();
+                // Forzar recarga sin caché
+                List<Vehiculo> vehiculos = vehicleManager.findAllVehiculos();
 
-            for (Vehiculo vehiculo : vehiculos) {
-                try {
-                    List<Ruta> rutasAsignadas = ervManager.getRutaId(
-                        new GenericType<List<Ruta>>() {}, 
-                        String.valueOf(vehiculo.getId())
-                    );
-                    
-                    boolean vehiculoAsignadoARutaActual = false;
-                    
-                    if (rutasAsignadas != null) {
-                        for (Ruta rutaAsignada : rutasAsignadas) {
-                            // Usar .equals() para comparar
-                            if (rutaAsignada.getLocalizador().equals(ruta.getLocalizador())) {
-                                vehiculoAsignadoARutaActual = true;
-                                break;
+                for (Vehiculo vehiculo : vehiculos) {
+                    try {
+                        List<Ruta> rutasAsignadas = ervManager.getRutaId(
+                                new GenericType<List<Ruta>>() {
+                        },
+                                String.valueOf(vehiculo.getId())
+                        );
+
+                        boolean vehiculoAsignadoARutaActual = false;
+
+                        if (rutasAsignadas != null) {
+                            for (Ruta rutaAsignada : rutasAsignadas) {
+                                // Usar .equals() para comparar
+                                if (rutaAsignada.getLocalizador().equals(ruta.getLocalizador())) {
+                                    vehiculoAsignadoARutaActual = true;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if (!vehiculoAsignadoARutaActual) {
-                        matriculas.add(vehiculo.getMatricula());
-                        logger.info("Vehículo disponible: " + vehiculo.getMatricula());
-                    }
-                } catch (ClientErrorException ex) {
-                    logger.log(Level.WARNING, "Error al verificar asignación del vehículo " + 
-                        vehiculo.getMatricula(), ex);
-                }
-            }
-        } catch (SelectException ex) {
-            logger.log(Level.SEVERE, "Error al cargar los vehículos", ex);
-            showAlert("Error", "No se pudieron cargar los vehículos");
-        }
-    };
-
-    try {
-        loadAvailableVehicles.run();
-        vehicleListView.setItems(matriculas);
-
-        vehicleListView.setCellFactory(lv -> new JFXListCell<String>() {
-            @Override
-            protected void updateItem(String matricula, boolean empty) {
-                super.updateItem(matricula, empty);
-
-                if (empty || matricula == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(matricula);
-                    if (selectedMatriculas.contains(matricula)) {
-                        setStyle("-fx-background-color: lightblue;");
-                    } else {
-                        setStyle("");
-                    }
-                }
-
-                setOnMouseClicked(event -> {
-                    if (!isEmpty() && matricula != null) {
-                        if (selectedMatriculas.contains(matricula)) {
-                            selectedMatriculas.remove(matricula);
-                        } else {
-                            selectedMatriculas.add(matricula);
+                        if (!vehiculoAsignadoARutaActual) {
+                            matriculas.add(vehiculo.getMatricula());
+                            logger.info("Vehículo disponible: " + vehiculo.getMatricula());
                         }
-                        updateItem(matricula, false);
+                    } catch (ClientErrorException ex) {
+                        logger.log(Level.WARNING, "Error al verificar asignación del vehículo "
+                                + vehiculo.getMatricula(), ex);
                     }
-                });
-            }
-        });
-
-        JFXButton confirmButton = new JFXButton("Confirmar");
-        confirmButton.setOnAction(e -> {
-            if (!selectedMatriculas.isEmpty()) {
-                try {
-                    for (String matricula : selectedMatriculas) {
-                        List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
-                        EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
-                        envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
-                        envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
-                        envioRutaVehiculo.setFechaAsignacion(new Date());
-                        ervManager.create_XML(envioRutaVehiculo);
-                        logger.info("Vehículo asignado: " + matricula);
-                    }
-
-                    ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
-                    rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
-
-                    selectedMatriculas.clear();
-                    vehicleStage.close();
-                    loadRutaData();
-
-
-                } catch (Exception ex) {
-                    logger.log(Level.SEVERE, "Error al añadir vehículos a la ruta", ex);
-                    showAlert("Error", "No se pudieron añadir los vehículos a la ruta");
                 }
+            } catch (SelectException ex) {
+                logger.log(Level.SEVERE, "Error al cargar los vehículos", ex);
+                showAlert("Error", "No se pudieron cargar los vehículos");
             }
-        });
+        };
 
-        VBox layout = new VBox(10);
-        layout.getStyleClass().add("jfx-popup-container");
-        layout.setPadding(new Insets(10));
-        layout.getChildren().addAll(vehicleListView, confirmButton);
+        try {
+            loadAvailableVehicles.run();
+            vehicleListView.setItems(matriculas);
 
-        Scene scene = new Scene(layout);
-        vehicleStage.setScene(scene);
-        vehicleStage.setWidth(300);
-        vehicleStage.setHeight(300);
-        vehicleStage.show();
+            vehicleListView.setCellFactory(lv -> new JFXListCell<String>() {
+                @Override
+                protected void updateItem(String matricula, boolean empty) {
+                    super.updateItem(matricula, empty);
 
-    } catch (Exception ex) {
-        logger.log(Level.SEVERE, "Error al inicializar el diálogo", ex);
-        showAlert("Error", "No se pudo abrir el diálogo de selección");
+                    if (empty || matricula == null) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(matricula);
+                        if (selectedMatriculas.contains(matricula)) {
+                            setStyle("-fx-background-color: lightblue;");
+                        } else {
+                            setStyle("");
+                        }
+                    }
+
+                    setOnMouseClicked(event -> {
+                        if (!isEmpty() && matricula != null) {
+                            if (selectedMatriculas.contains(matricula)) {
+                                selectedMatriculas.remove(matricula);
+                            } else {
+                                selectedMatriculas.add(matricula);
+                            }
+                            updateItem(matricula, false);
+                        }
+                    });
+                }
+            });
+
+            JFXButton confirmButton = new JFXButton("Confirmar");
+            confirmButton.setOnAction(e -> {
+                if (!selectedMatriculas.isEmpty()) {
+                    try {
+                        for (String matricula : selectedMatriculas) {
+                            List<Vehiculo> vehiculo = vehicleManager.findAllVehiculosByPlate(matricula);
+                            EnvioRutaVehiculo envioRutaVehiculo = new EnvioRutaVehiculo();
+                            envioRutaVehiculo.setRutaLocalizador(ruta.getLocalizador());
+                            envioRutaVehiculo.setVehiculoID(vehiculo.get(0).getId());
+                            envioRutaVehiculo.setFechaAsignacion(new Date());
+                            ervManager.create_XML(envioRutaVehiculo);
+                            logger.info("Vehículo asignado: " + matricula);
+                        }
+
+                        ruta.setNumVehiculos(ruta.getNumVehiculos() + selectedMatriculas.size());
+                        rutaManager.edit_XML(ruta, String.valueOf(ruta.getLocalizador()));
+
+                        selectedMatriculas.clear();
+                        vehicleStage.close();
+                        loadRutaData();
+
+                    } catch (Exception ex) {
+                        logger.log(Level.SEVERE, "Error al añadir vehículos a la ruta", ex);
+                        showAlert("Error", "No se pudieron añadir los vehículos a la ruta");
+                    }
+                }
+            });
+
+            VBox layout = new VBox(10);
+            layout.getStyleClass().add("jfx-popup-container");
+            layout.setPadding(new Insets(10));
+            layout.getChildren().addAll(vehicleListView, confirmButton);
+
+            Scene scene = new Scene(layout);
+            vehicleStage.setScene(scene);
+            vehicleStage.setWidth(300);
+            vehicleStage.setHeight(300);
+            vehicleStage.show();
+
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error al inicializar el diálogo", ex);
+            showAlert("Error", "No se pudo abrir el diálogo de selección");
+        }
     }
-}
 
 }
