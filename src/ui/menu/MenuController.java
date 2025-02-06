@@ -21,6 +21,7 @@ import ui.paquete.PaqueteController;
 import ui.paquete.PaqueteHelpController;
 import ui.profile.MainController;
 import ui.ruta.RutaController;
+import ui.ruta.RutaHelpController;
 import ui.vehicle.VehicleController;
 import ui.vehicle.VehicleHelpController;
 import utils.ThemeManager;
@@ -199,7 +200,7 @@ public class MenuController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/ruta/rutaHelp.fxml"));
             Parent root = loader.load();
-            PaqueteHelpController controller = loader.getController();
+            RutaHelpController controller = loader.getController();
             controller.initAndShowStage(root);
             LOGGER.info("Help window opened");
         } catch (IOException ex) {
