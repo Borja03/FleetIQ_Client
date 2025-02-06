@@ -1,5 +1,4 @@
-/*
- * Este paquete almacena las vistas, es decir, los fxml juntos con sus controladores
+/**
+ * This package handles the reset password functionality.
  */
-
 package ui.resetpassword;

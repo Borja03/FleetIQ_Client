@@ -26,53 +26,148 @@ import models.User;
 import ui.login.LogInController;
 import ui.signup.SignUpController;
 
+/**
+ * Controller class for handling password reset functionality. This class
+ * manages the password reset process including email verification, code
+ * verification, and password update operations.
+ */
 public class ResetPasswordController {
 
+    /**
+     * Logger for this class
+     */
     private static final Logger LOGGER = Logger.getLogger(ResetPasswordController.class.getName());
+
+    /**
+     * The primary stage for the password reset window
+     */
     private Stage stage;
 
+    /**
+     * Container for password-related input fields
+     */
     @FXML
     private VBox passwordSection;
+
+    /**
+     * Field for entering email address
+     */
     @FXML
     private JFXTextField emailField;
+
+    /**
+     * Field for entering verification code
+     */
     @FXML
     private JFXTextField verificationCodeField;
+
+    /**
+     * Field for entering new password (hidden)
+     */
     @FXML
     private JFXPasswordField newPasswordField;
+
+    /**
+     * Field for repeating new password (hidden)
+     */
     @FXML
     private JFXPasswordField repeatPasswordField;
+
+    /**
+     * Button to trigger verification code sending
+     */
     @FXML
     private JFXButton sendCodeBtn;
+
+    /**
+     * Button to verify entered code
+     */
     @FXML
     private JFXButton verifyCodeBtn;
+
+    /**
+     * Button to toggle password visibility
+     */
     @FXML
     private JFXButton showPasswordBtn;
+
+    /**
+     * Button to toggle repeated password visibility
+     */
     @FXML
     private JFXButton showRepeatedPasswordBtn;
+
+    /**
+     * Button to confirm password update
+     */
     @FXML
     private JFXButton updatePasswordBtn;
 
+    /**
+     * Field for showing password in plain text
+     */
     @FXML
     private JFXTextField newPassTxt;
 
+    /**
+     * Field for showing repeated password in plain text
+     */
     @FXML
     private JFXTextField newPassTxtRepeat;
 
+    /**
+     * Icon for repeated password visibility toggle
+     */
     @FXML
     private ImageView repeatEyeImageView;
+
+    /**
+     * Icon for password visibility toggle
+     */
     @FXML
     private ImageView eyeImageView;
 
+    /**
+     * User object for password reset operation
+     */
     private User resetUserPass;
-    private boolean isPasswordVisible = false; // Flag to check if the password is visible
+
+    /**
+     * Flag indicating if password is visible
+     */
+    private boolean isPasswordVisible = false;
+
+    /**
+     * Flag indicating if repeated password is visible
+     */
     private boolean isPasswordVisibleR = false;
+
+    /**
+     * Image for closed eye icon
+     */
     private final Image eyeClosed = new Image(getClass().getResourceAsStream("/image/eye-solid.png"));
+
+    /**
+     * Image for open eye icon
+     */
     private final Image eyeOpen = new Image(getClass().getResourceAsStream("/image/eye-slash-solid.png"));
 
+    /**
+     * Sets the stage for this controller.
+     *
+     * @param stage JavaFX stage to be used for this window
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Initializes the reset password window and sets up all necessary event
+     * handlers. This method configures the window properties, initializes UI
+     * components, and sets up event handling for all interactive elements.
+     *
+     * @param root The root node of the scene graph
+     */
     public void initStage(Parent root) {
         LOGGER.info("Initialising Reset Password window.");
         Scene scene = new Scene(root);
@@ -85,7 +180,7 @@ public class ResetPasswordController {
         stage.getIcons().add(new Image("/image/fleet_icon.png"));
         stage.initModality(Modality.APPLICATION_MODAL);
         sendCodeBtn.setOnAction(event -> handleSendCode());
-        System.out.println("Controller initialized successfully.");
+      LOGGER.info("Controller initialized successfully.");
         // Verify Button Event
         verifyCodeBtn.setOnAction(event -> handleVerifyCode());
 
@@ -99,6 +194,12 @@ public class ResetPasswordController {
         stage.show();
     }
 
+    /**
+     * Handles the show/hide password functionality for the new password field.
+     * Toggles between showing the password as plain text or hidden characters.
+     *
+     * @param event The action event triggered by the show/hide password button
+     */
     private void handlePasswordBtnShowHideAction(ActionEvent event) {
         isPasswordVisible = !isPasswordVisible;
         if (isPasswordVisible) {
@@ -114,6 +215,13 @@ public class ResetPasswordController {
         }
     }
 
+    /**
+     * Handles the show/hide password functionality for the repeated password
+     * field. Toggles between showing the password as plain text or hidden
+     * characters.
+     *
+     * @param event The action event triggered by the show/hide password button
+     */
     private void handlePasswordBtnRepeatShowHideAction(ActionEvent event) {
         isPasswordVisibleR = !isPasswordVisibleR;
         if (isPasswordVisibleR) {
@@ -129,6 +237,11 @@ public class ResetPasswordController {
         }
     }
 
+    /**
+     * Handles the process of sending a verification code to the user's email.
+     * Validates the email format and existence in the system before sending the
+     * code.
+     */
     private void handleSendCode() {
         String email = emailField.getText().trim();
         if (email.isEmpty() || !email.contains("@")) {
@@ -156,6 +269,10 @@ public class ResetPasswordController {
         }
     }
 
+    /**
+     * Handles the verification of the code entered by the user. Encrypts the
+     * verification code and validates it against the server.
+     */
     private void handleVerifyCode() {
         String codeVerification = verificationCodeField.getText().trim();
 
@@ -172,9 +289,9 @@ public class ResetPasswordController {
             Logger.getLogger(SignUpController.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
-            System.out.println(resetUserPass.toString());
+            LOGGER.info(resetUserPass.toString());
             User userIsCorrectCode = SignableFactory.getSignable().verifyCode(resetUserPass, User.class);
-            System.out.println("-------------------------" + userIsCorrectCode.isActivo());
+             LOGGER.info("-------------------------" + userIsCorrectCode.isActivo());
             if (userIsCorrectCode.isActivo()) {
                 LOGGER.info("Verification successful.");
                 passwordSection.setVisible(true);
@@ -189,6 +306,10 @@ public class ResetPasswordController {
         }
     }
 
+    /**
+     * Handles the password update process. Validates password matching,
+     * encrypts the new password, and updates it in the system.
+     */
     private void handleUpdatePassword() {
         // Extract passwords only from visible fields
         String newPassword = newPasswordField.isVisible() ? newPasswordField.getText() : repeatPasswordField.getText();
@@ -236,6 +357,13 @@ public class ResetPasswordController {
         stage.close();
     }
 
+    /**
+     * Utility method to show alert dialogs to the user.
+     *
+     * @param type The type of alert to show (ERROR, INFORMATION, etc.)
+     * @param title The title of the alert dialog
+     * @param message The main message to display in the alert
+     */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

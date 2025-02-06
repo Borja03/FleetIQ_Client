@@ -185,7 +185,7 @@ public class MainController {
 
         // Set the user's password (ensure that this is a secure way of handling passwords)
 //        passwordField.setText(LogInController.userSession.getPassword()); // Asegúrate de que tengas acceso a la contraseña aquí
-        System.out.println(LogInController.userSession.toString());
+        LOGGER.info(LogInController.userSession.toString());
         // menu
         btn_update_password.setOnAction(event -> handleUpdatePassword());
 
