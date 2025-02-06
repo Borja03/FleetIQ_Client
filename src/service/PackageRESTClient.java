@@ -33,23 +33,21 @@ public class PackageRESTClient {
     private WebTarget webTarget;
     private Client client;
 
-    private static  String base_uri = ResourceBundle.getBundle("config/config")
-                    .getString("RESTful.baseURI");
+//    private static final String base_uri = ResourceBundle.getBundle("config/config")
+//                    .getString("RESTful.baseURI");
+//
+//    public PackageRESTClient() {
+//        client = javax.ws.rs.client.ClientBuilder.newClient();
+//        webTarget = client.target(base_uri).path("paquete");
+//    }
+//    
+//        private WebTarget webTarget;
+//    private Client client;
 
-    public PackageRESTClient() {
+    public PackageRESTClient(String baseUri) {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(base_uri).path("paquete");
+        webTarget = client.target(baseUri).path("paquete");
     }
-
-    public static String getBASE_URI() {
-        return base_uri;
-    }
-
-    public static void setBASE_URI(String BASE_URI) {
-        PackageRESTClient.base_uri = BASE_URI;
-    }
-    
-    
 
     public List<Paquete> findPackagesByName(GenericType<List<Paquete>> responseType, String name) throws WebApplicationException {
         WebTarget resource = webTarget;

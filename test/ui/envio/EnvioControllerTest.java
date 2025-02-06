@@ -117,6 +117,11 @@ public class EnvioControllerTest extends ApplicationTest {
         verifyThat("#removeShipmentBtn", isEnabled());
     }
 
+
+    /**
+     * Test date range filtering functionality.
+     */
+
     @Test
     public void testI_validation() {
         Node numPaquetesColumn = lookup(".table-cell").nth(4).query();
