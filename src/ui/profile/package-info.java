@@ -1,4 +1,2 @@
-/*
- * Este paquete almacena las vistas, es decir, los fxml juntos con sus controladores
- */
+/** This package stores the views, i.e., the FXML files along with their controllers. */
 package ui.profile;

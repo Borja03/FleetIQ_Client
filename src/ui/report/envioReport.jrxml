@@ -59,10 +59,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="0" y="0" width="117" height="100" uuid="e39ec109-eeb8-4c9c-9578-227189b1af46"/>
-				<imageExpression><![CDATA["image/logo3.png"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="442" y="60" width="113" height="16" uuid="f3ee5e3d-c9b4-4bb4-bcb4-3c50664ac221"/>
 				<textElement>

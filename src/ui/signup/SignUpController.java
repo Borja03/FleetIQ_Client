@@ -580,11 +580,9 @@ public class SignUpController {
      * @param email the email address of the user.
      * @param password the password entered by the user.
      * @param name the name of the user.
-     * @param companyID the company ID associated with the user.
      * @param street the street address of the user.
      * @param city the city of the user.
      * @param zip the zip code of the user.
-     * @param isActive the active status of the user.
      */
     private void performSignUp(String email, String password, String name, String street, String city, int zip) {
         String encryptedPaasowrd = null;

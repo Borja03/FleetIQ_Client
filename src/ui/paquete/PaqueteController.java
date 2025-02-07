@@ -475,8 +475,8 @@ public class PaqueteController {
      * attempt is made to update the sender value in the database. In case of an
      * error, the original value is restored, and an alert is shown to the user.
      *
-     * @throws InvalidNameFormatException if the new sender value is invalid.
-     * @throws UpdateException if the database update fails.
+     * 
+     * 
      */
     private void validateAndUpdateSenderColumn() {
         senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -529,10 +529,8 @@ public class PaqueteController {
      * database. In case of an error, the original value is restored, and an
      * alert is shown to the user.
      *
-     * @throws CloneNotSupportedException if the Paquete object cannot be
-     * cloned.
-     * @throws InvalidNameFormatException if the new receiver value is invalid.
-     * @throws UpdateException if the database update fails.
+     * 
+     * 
      */
     private void validateAndUpdateReceiverColumn() {
         receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -662,8 +660,6 @@ public class PaqueteController {
      * restores the original size value and displays an error message.
      *
      *
-     * @throws CloneNotSupportedException if the package object cannot be cloned
-     * @throws UpdateException if there is an issue while updating the package
      * in the database
      */
     private void validateAndUpdateSizeColumn() {
@@ -712,8 +708,6 @@ public class PaqueteController {
      * restores the original date value and displays an error message.
      *
      *
-     * @throws CloneNotSupportedException if the package object cannot be cloned
-     * @throws UpdateException if there is an issue while updating the package
      * in the database
      */
     private void validateAndUpdateDateColumn() {
@@ -776,9 +770,6 @@ public class PaqueteController {
      * change is applied. - If the update fails, an error alert is shown, the
      * original fragile status is restored, and the TableView is refreshed.
      *
-     * @throws CloneNotSupportedException If cloning the `Paquete` instance
-     * fails.
-     * @throws UpdateException If updating the package in the database fails.
      */
     private void validateAndUpdateFragileColumn() {
         fragileColumn.setCellFactory(column -> new PaqueteFragileEditingCell());

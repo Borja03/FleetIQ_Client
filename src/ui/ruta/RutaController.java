@@ -74,7 +74,6 @@ import utils.UtilsMethods;
  * date, searching by identifier, adding or removing shipments, printing
  * reports, and managing context menus and editable table columns.
  * </p>
- * <p>
  * The class interacts with several managers:
  * <ul>
  * <li>{@code RutaManager} - Handles the retrieval and management of route
@@ -84,7 +83,7 @@ import utils.UtilsMethods;
  * to routes and vehicles.</li>
  * <li>{@code ThemeManager} - Applies a visual theme to the user interface.</li>
  * </ul>
- * </p>
+
  * <p>
  * The controller is integrated with FXML, and its UI components are injected
  * via the {@code @FXML} annotation. The stage is configured with a fixed size,
@@ -351,13 +350,12 @@ public class RutaController {
      * Aplica un filtro de tiempo a la lista de rutas basado en un operador de
      * comparación.
      * <p>
-     * Dependiendo del operador seleccionado (> , < , =), consulta el servicio
+     * Dependiendo del operador seleccionado  consulta el servicio
      * REST para obtener las rutas que cumplen con la condición y actualiza la
      * tabla con los resultados. Si el operador no es válido, se registra una
      * advertencia en los logs.
      *
-     * @param comparisonOperator El operador de comparación (">", "<" o "=").
-     * @p
+     * @param comparisonOperator El operador de comparación 
      * aram filterValue El valor de tiempo a filtrar.
      */
     private void applyTimeFilter(String comparisonOperator, String filterValue) {
@@ -388,13 +386,12 @@ public class RutaController {
      * Aplica un filtro de distancia a la lista de rutas basado en un operador
      * de comparación.
      * <p>
-     * Dependiendo del operador seleccionado (> , < , =), consulta el servicio
+     * Dependiendo del operador seleccionado  consulta el servicio
      * REST para obtener las rutas que cumplen con la condición y actualiza la
      * tabla con los resultados. Si el operador no es válido, se registra una
      * advertencia en los logs.
      *
-     * @param comparisonOperator El operador de comparación (">", "<" o "=").
-     * @p
+     * @param comparisonOperator El operador de comparación 
      * aram filterValue El valor de distancia a filtrar.
      */
     private void applyDistanceFilter(String comparisonOperator, String filterValue) {

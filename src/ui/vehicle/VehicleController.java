@@ -714,8 +714,6 @@ public class VehicleController {
  * @param fromDate The starting date of the registration period (inclusive).
  * @param toDate   The ending date of the registration period (inclusive).
  *
- * @throws SelectException If there is an error retrieving the filtered vehicle data.
- * @throws Exception If an unexpected error occurs during filtering.
  */
     private void filterVehiclesBetweenDatesRegistration(String fromDate, String toDate) {
 
@@ -747,8 +745,6 @@ public class VehicleController {
  *
  * @param fromDate The date in string format used as the filter criterion.
  *
- * @throws SelectException If there is an error retrieving the filtered vehicle data.
- * @throws Exception If an unexpected error occurs during filtering.
  */
     private void filterVehiclesAfterDateITV(String fromDate) {
 
@@ -1078,9 +1074,6 @@ public class VehicleController {
      * @param event The action event triggered by clicking the print report
      * button.
      *
-     * @throws JRException If an error occurs while compiling or filling the
-     * report.
-     * @throws Exception If an unexpected error occurs during report generation.
      */
     private void handlePrintReportAction(ActionEvent event) {
         // TODO: Implement print report logic

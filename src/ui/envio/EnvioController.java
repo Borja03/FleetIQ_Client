@@ -301,7 +301,7 @@ public class EnvioController {
      * cuando se editan ciertos campos.
      * </p>
      *
-     * @throws SelectException si ocurre un error al recuperar información de la
+     * 
      * base de datos.
      */
     private void setUpTableColumns() {
@@ -486,22 +486,17 @@ public class EnvioController {
             fechaEntregaColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 Date newDate = event.getNewValue();
-                Date oldDate = envio.getFechaEntrega();
                 try {
-                    Envio envioClone = envio.clone();
-                    if (envioClone.getFechaEnvio() == null) {
+                    if (envio.getFechaEnvio() == null) {
                         throw new IllegalArgumentException("Debes insertar la fecha de envio antes de insertar la fecha de entrega");
                     } else {
                         if (newDate.before(envio.getFechaEnvio())) {
                             throw new IllegalArgumentException("La fecha entrega debe ser posterior a la fecha envio");
                         }
                     }
-                    envioClone.setFechaEnvio(newDate);
-                    envioService.edit_XML(envio, envio.getId().toString());
                     envio.setFechaEnvio(newDate);
+                    envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
-                    envio.setFechaEnvio(oldDate);
-                    table.refresh();
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -512,15 +507,12 @@ public class EnvioController {
             fechaEnvioColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 Date newDate = event.getNewValue();
-                Date oldDate = envio.getFechaEnvio();
                 try {
                     Envio envioClone = envio.clone();
                     envioClone.setFechaEnvio(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
                     envio.setFechaEnvio(newDate);
                 } catch (Exception e) {
-                    envio.setFechaEnvio(oldDate);
-                    table.refresh();
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -752,3 +744,5 @@ public class EnvioController {
     }
 
 }
+
+

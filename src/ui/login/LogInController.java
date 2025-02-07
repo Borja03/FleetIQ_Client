@@ -288,7 +288,6 @@ public class LogInController {
      * aplicación. En caso de que las credenciales sean incorrectas o se
      * produzca algún error, muestra un mensaje de alerta correspondiente.
      *
-     * @throws InvalidEmailFormatException si el formato del email es inválido.
      */
     @FXML
     private void handleLogInButtonAction() throws IOException {

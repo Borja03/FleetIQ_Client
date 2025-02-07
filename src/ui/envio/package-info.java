@@ -1,4 +1,2 @@
-/*
- * Este paquete almacena la vista y el controlador de envio
- */
+/** This package stores the view and controller for sending. */
 package ui.envio;
