@@ -150,21 +150,22 @@ public class EnvioControllerTest extends ApplicationTest {
         assertEquals(expectedDate, table.getItems().get(0).getFechaEnvio());
     }
 
-//    @Test
-//    public void testK_testEditFechaEntrega() throws ParseException {
-//        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
-//        Node fechaEntregaColumn = lookup(".table-cell").nth(2).query();
-//        doubleClickOn(fechaEntregaColumn);
-//        press(KeyCode.CONTROL, KeyCode.A);
-//        press(KeyCode.BACK_SPACE);
-//        String newFecha = "20/11/2025";
-//        write(newFecha);
-//        press(KeyCode.ENTER);
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("d/MM/yyyy");
-//        Date expectedDate = dateFormat.parse(newFecha);
-//        WaitForAsyncUtils.waitForFxEvents();
-//        assertEquals(expectedDate, table.getItems().get(0).getFechaEntrega());
-//    }
+    @Test
+    public void testK_testEditFechaEntrega() throws ParseException {
+        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
+        Node fechaEntregaColumn = lookup(".table-cell").nth(2).query();
+        doubleClickOn(fechaEntregaColumn);
+        press(KeyCode.CONTROL, KeyCode.A);
+        press(KeyCode.BACK_SPACE);
+        String newFecha = "20/11/2025";
+        write(newFecha);
+        press(KeyCode.ENTER);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d/MM/yyyy");
+        Date expectedDate = dateFormat.parse(newFecha);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertEquals(expectedDate, table.getItems().get(0).getFechaEntrega());
+    }
+
     @Test
     public void testL_testEditEstado() {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
