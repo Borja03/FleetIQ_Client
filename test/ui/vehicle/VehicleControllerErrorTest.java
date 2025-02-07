@@ -46,7 +46,7 @@ import service.EnvioRESTClient;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class VehicleControllerErrorTest extends ApplicationTest {
 
-  private TableView<Vehiculo> vehicleTableView;
+    private TableView<Vehiculo> vehicleTableView;
     private JFXButton addShipmentBtn;
     private JFXButton removeShipmentBtn;
     private JFXButton printReportBtn;
@@ -59,29 +59,28 @@ public class VehicleControllerErrorTest extends ApplicationTest {
     private JFXComboBox<String> filterTypeComboBox;
     private JFXButton minusButton;
     private JFXButton plusButton;
-    int initialCount=0;
+    int initialCount ;
 
     @Override
     public void start(Stage stage) throws Exception {
         new VehiculoMain().start(stage);
 
         // Obtener referencias a los componentes de la UI
-        vehicleTableView = lookup("#rutaTable").query();
+        vehicleTableView = lookup("#vehicleTableView").query();
         removeShipmentBtn = lookup("#removeShipmentBtn").query();
-        searchButton =  lookup("#searchButton").query();
+        searchButton = lookup("#searchButton").query();
         addShipmentBtn = lookup("#addShipmentBtn").query();
         fromDatePicker = lookup("#fromDatePicker").query();
         toDatePicker = lookup("#toDatePicker").query();
         searchTextField = lookup("#searchTextField").query();
         applyFilterButton = (JFXButton) lookup("#applyFilterButton").queryButton();
+        initialCount=vehicleTableView.getItems().size();
     }
 
-
     @Test
-    public void testA_addVehicle_InvalidPath() throws InterruptedException {
+    public void testA_addEnvio_InvalidPath() throws InterruptedException {
         Thread.sleep(5000);
         // Contar el número de envíos antes de añadir uno nuevo
-        int initialCount = vehicleTableView.getItems().size();
         // Hacer clic en el botón "Añadir"
         clickOn(addShipmentBtn);
         WaitForAsyncUtils.waitForFxEvents();
@@ -96,34 +95,33 @@ public class VehicleControllerErrorTest extends ApplicationTest {
     }
 
     @Test
-    public void testB_deleteVehicle_InvalidPath() throws InterruptedException {
-        Thread.sleep(5000);
-            int initialCount = vehicleTableView.getItems().size();
-        // Contar el número de envíos antes de eliminar
-        assertFalse("No hay vehiculos disponibles para eliminar", initialCount == 0);
+public void testB_deleteVehicle_InvalidPath() throws InterruptedException {
+    Thread.sleep(5000);
+    
+    // Contar el número de envíos antes de eliminar
+    assertFalse("No hay vehículos disponibles para eliminar", initialCount == 0);
 
-        // Seleccionar la primera fila en la tabla
-        TableRow<Vehiculo> row = lookup(".table-row-cell").nth(0).query();
-        clickOn(row);
+    // Seleccionar la primera fila en la tabla
+    TableRow<Vehiculo> row = lookup(".table-row-cell").nth(0).query();
+    clickOn(row);
 
-        // Hacer clic en el botón "Eliminar"
-        clickOn("#removeShipmentBtn");
-        WaitForAsyncUtils.waitForFxEvents();
-        Button alertOkButton = lookup(".dialog-pane .button").queryButton();
-        clickOn(alertOkButton);
-        WaitForAsyncUtils.waitForFxEvents();
+    // Hacer clic en el botón "Eliminar"
+    clickOn("#removeShipmentBtn");
+    WaitForAsyncUtils.waitForFxEvents();
 
-        // Confirm the deletion dialog
-        DialogPane confirmationDialog = lookup(".dialog-pane").query();
+    // Encontrar y hacer clic en el segundo botón del cuadro de diálogo
+    Button alertOkButton = lookup(".dialog-pane .button").nth(1).queryButton();
+    clickOn(alertOkButton);
+    WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("An unexpected error occurred while deleting vehicles and their associated data.", isVisible());
-        // Encontrar y hacer clic en el botón "OK" de la alerta
-        alertOkButton = lookup(".dialog-pane .button").queryButton();
-        clickOn(alertOkButton);
-        WaitForAsyncUtils.waitForFxEvents();
+    // Confirmar el cuadro de diálogo de eliminación
+    DialogPane confirmationDialog = lookup(".dialog-pane").query();
+    
+    verifyThat("An unexpected error occurred while deleting vehicles and their associated data.", isVisible());
+    
+   
+}
 
-        // Confirmar el cuadro de diálogo de eliminación
-    }
 
     @Test
     public void testC_editMatricula() throws InterruptedException {
@@ -144,7 +142,7 @@ public class VehicleControllerErrorTest extends ApplicationTest {
         press(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
-        verifyThat("No se pudo actualizar la matrícula.", isVisible());
+        verifyThat("Inténtalo de nuevo más tarde.", isVisible());
     }
 
     @Test
@@ -157,12 +155,10 @@ public class VehicleControllerErrorTest extends ApplicationTest {
             searchTextField.setText("PAU");
         });
 
-        
         // Simular el clic en el botón que dispara la búsqueda.
         // Se asume que dicho botón tiene fx:id "searchButton" y está correctamente referenciado.
         clickOn(searchButton);
         WaitForAsyncUtils.waitForFxEvents();
-        
 
         // Verificar que se muestre la alerta con el mensaje esperado.
         // Dado que en el bloque 'catch (Exception e)' se llama a:
