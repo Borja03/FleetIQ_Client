@@ -12,7 +12,9 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -47,7 +49,7 @@ public class RutaControllerTest extends ApplicationTest {
     private JFXDatePicker toDatePicker;
     private JFXComboBox<String> filterTypeComboBox;
     private JFXComboBox<String> operatorComboBox;
-    
+
     @Override
     public void start(Stage stage) throws Exception {
         new RutaMain().start(stage);
@@ -118,7 +120,6 @@ public class RutaControllerTest extends ApplicationTest {
 //                )
 //        );
 //    }
-
     @Test
     public void testH_tableSelection() {
         Node row = lookup(".table-row-cell").nth(0).query();
@@ -157,6 +158,30 @@ public class RutaControllerTest extends ApplicationTest {
         // Verify update
         Ruta updated = rutaTable.getItems().get(0); // Cambiado a 0 para la primera fila
         assertEquals("NewOrigen", updated.getOrigen());
+    }
+
+    @Test
+    public void testSearchByLocalizador_success() throws InterruptedException {
+        // Ingresar el valor "2" en el campo de búsqueda
+        interact(() -> {
+            searchTextField.setText("3");
+        });
+
+        // Simular el clic en el botón que dispara la búsqueda.
+        // Se asume que dicho botón tiene fx:id "searchButton" y está correctamente referenciado.
+        clickOn(searchButton);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verificar que la tabla se haya actualizado con la ruta correspondiente.
+        // Se espera que la tabla contenga exactamente un elemento.
+        ObservableList<Ruta> items = rutaTable.getItems();
+        assertNotNull("La lista de rutas no debe ser null", items);
+        assertEquals("Debe haber exactamente un elemento en la tabla", 1, items.size());
+
+        // Verificar que el objeto Ruta presente tenga el valor 2 en el campo de localizador
+        Ruta ruta = items.get(0);
+        assertEquals("El localizador de la ruta debe ser 3", Integer.valueOf(3), ruta.getLocalizador());
+
     }
 
     // SERVER ERROR TESTS

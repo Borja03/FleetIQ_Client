@@ -454,10 +454,6 @@ public class RutaController {
             Integer localizador = Integer.parseInt(searchText);
             Ruta ruta = rutaManager.findByLocalizadorInteger_XML(Ruta.class, localizador);
 
-            if (ruta == null) {
-                throw new Exception("No se encontró ninguna ruta con ese localizador.");
-            }
-
             rutaData.clear();
             rutaData.add(ruta);
             rutaTable.setItems(rutaData);
