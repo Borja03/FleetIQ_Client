@@ -489,7 +489,7 @@ public class EnvioController {
                             throw new IllegalArgumentException("La fecha entrega debe ser posterior a la fecha envio");
                         }
                     }
-                    envio.setFechaEnvio(newDate);
+                    envio.setFechaEntrega(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
