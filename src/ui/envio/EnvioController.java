@@ -489,7 +489,7 @@ public class EnvioController {
                             throw new IllegalArgumentException("La fecha entrega debe ser posterior a la fecha envio");
                         }
                     }
-                    envio.setFechaEnvio(newDate);
+                    envio.setFechaEntrega(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
@@ -503,8 +503,8 @@ public class EnvioController {
                 Envio envio = event.getRowValue();
                 Date newDate = event.getNewValue();
                 try {
-                    envioService.edit_XML(envio, envio.getId().toString());
                     envio.setFechaEnvio(newDate);
+                    envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
                     LOGGER.severe("Error al actualizar el estado del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());

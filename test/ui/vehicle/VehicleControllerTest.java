@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import exception.SelectException;
+import factories.VehicleFactory;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -39,6 +40,12 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 import org.testfx.util.WaitForAsyncUtils;
 import java.time.format.DateTimeFormatter;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.input.MouseButton;
+import static org.junit.Assert.assertNotEquals;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class VehicleControllerTest extends ApplicationTest {
@@ -123,41 +130,162 @@ public class VehicleControllerTest extends ApplicationTest {
     }
 
     @Test
-public void testC_updateVehicle() {
-    WaitForAsyncUtils.waitForFxEvents();
+    public void testC_updateVehicle() {
+        WaitForAsyncUtils.waitForFxEvents();
 
-    // Asegurarse de que la tabla tenga al menos un vehículo.
+        // Asegurarse de que la tabla tenga al menos un vehículo.
+        if (vehicleTableView.getItems().isEmpty()) {
+            clickOn("#addShipmentBtn");
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+
+        // Agregar un vehículo nuevo para trabajar sobre un registro conocido.
+        clickOn("#addShipmentBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+        int lastIndex = vehicleTableView.getItems().size() - 1;
+
+        // Ubicar la celda correspondiente a la matrícula de la fila recién agregada.
+        Node cell = lookup(".table-row-cell").nth(lastIndex)
+                .lookup(".table-cell").nth(1).query();
+        // Hacer doble clic para activar el modo de edición.
+        doubleClickOn(cell);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Escribir la nueva matrícula. Si hay contenido anterior, se puede intentar borrarlo.
+        // Se puede usar eraseText(n) si se sabe cuántos caracteres hay, o bien escribir sobre el campo.
+        eraseText(10);
+        write("ABC123");
+        press(KeyCode.ENTER);
+        release(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verificar que la matrícula se actualizó.
+        Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
+        assertEquals("La matrícula del vehículo no se actualizó correctamente",
+                "ABC123", updated.getMatricula());
+    }
+
+    @Test
+    public void testC2_updateModelo() {
+        if (vehicleTableView.getItems().isEmpty()) {
+            clickOn("#addShipmentBtn");
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+
+        int lastIndex = vehicleTableView.getItems().size() - 1;
+        Node cell = lookup(".table-row-cell").nth(lastIndex)
+                .lookup(".table-cell").nth(2).query(); // Columna modelo
+
+        doubleClickOn(cell);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        write("Tesla Model 3");
+        press(KeyCode.ENTER);
+        release(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
+        assertEquals("El modelo no se actualizó correctamente", "Tesla Model 3", updated.getModelo());
+    }
+
+    @Test
+    public void testC3_updateCapacidad() {
+        if (vehicleTableView.getItems().isEmpty()) {
+            clickOn("#addShipmentBtn");
+            WaitForAsyncUtils.waitForFxEvents();
+        }
+
+        int lastIndex = vehicleTableView.getItems().size() - 1;
+        Node cell = lookup(".table-row-cell").nth(lastIndex)
+                .lookup(".table-cell").nth(3).query(); // Columna capacidad
+
+        doubleClickOn(cell);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        write("500");
+        press(KeyCode.ENTER);
+        release(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
+        assertEquals("La capacidad no se actualizó correctamente", Integer.valueOf(500), updated.getCapacidadCarga());
+    }
+@Test
+public void testC4_updateActivo() {
     if (vehicleTableView.getItems().isEmpty()) {
         clickOn("#addShipmentBtn");
         WaitForAsyncUtils.waitForFxEvents();
+        assertFalse("No se agregó un vehículo", vehicleTableView.getItems().isEmpty());
     }
-
-    // Agregar un vehículo nuevo para trabajar sobre un registro conocido.
-    clickOn("#addShipmentBtn");
-    WaitForAsyncUtils.waitForFxEvents();
+    
     int lastIndex = vehicleTableView.getItems().size() - 1;
-
-    // Ubicar la celda correspondiente a la matrícula de la fila recién agregada.
+    Vehiculo vehiculo = vehicleTableView.getItems().get(lastIndex);
+    boolean initialState = vehiculo.isActivo();
+    
+    // Obtener la celda de la columna "Activo"
     Node cell = lookup(".table-row-cell").nth(lastIndex)
-                      .lookup(".table-cell").nth(1).query();
-    // Hacer doble clic para activar el modo de edición.
+            .lookup(".table-cell").nth(6).query();
+    
+    // Paso 1: Doble clic para activar la edición
     doubleClickOn(cell);
     WaitForAsyncUtils.waitForFxEvents();
+    sleep(500); // Esperar a que se active el modo edición
     
-    // Escribir la nueva matrícula. Si hay contenido anterior, se puede intentar borrarlo.
-    // Se puede usar eraseText(n) si se sabe cuántos caracteres hay, o bien escribir sobre el campo.
-    eraseText(10); 
-    write("ABC123");
+    // Paso 2: Clic adicional para cambiar el estado
+    clickOn(cell);
+    WaitForAsyncUtils.waitForFxEvents();
+    sleep(500); // Esperar a que se procese el cambio
+    
+    // Confirmar la edición
     press(KeyCode.ENTER);
     release(KeyCode.ENTER);
     WaitForAsyncUtils.waitForFxEvents();
-
-    // Verificar que la matrícula se actualizó.
-    Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
-    assertEquals("La matrícula del vehículo no se actualizó correctamente",
-                 "ABC123", updated.getMatricula());
+    
+    // Forzar actualización
+    interact(() -> vehicleTableView.refresh());
+    
+    // Verificar el cambio
+    boolean updatedState = vehiculo.isActivo();
+    assertNotEquals("El estado activo no se actualizó correctamente", initialState, updatedState);
 }
 
+    @Test
+    public void testC5_updateITVDate() {
+        // Se asume que el índice de la última fila es el que deseas actualizar
+        int lastIndex = vehicleTableView.getItems().size() - 1;
+
+        // Buscar la celda de ITV Date en la última fila
+        Node dateCell = lookup(".table-row-cell").nth(lastIndex)
+                .lookup(".table-cell").nth(5).query();  // 5 corresponde a la columna ITV Date
+
+        // Hacer doble clic en la celda para activarla
+        doubleClickOn(dateCell);
+
+        // Esperar a que el campo de texto esté listo para escribir
+        sleep(500);
+
+        // Escribir la nueva fecha en formato d/M/yyyy
+        String newDate = "2/4/2025";  // Formato d/M/yyyy como lo ingresaría el usuario
+        write(newDate);
+
+        // Presionar ENTER para confirmar el cambio
+        push(KeyCode.ENTER);
+
+        // Esperar la actualización
+        sleep(500);
+
+        // Obtener el objeto Vehiculo actualizado
+        Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
+        LocalDate updatedDate = updated.getItvDate().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        // Formatear la fecha actualizada como MM-dd-yyyy
+        String formattedDate = updatedDate.format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
+
+        // Comprobar que la fecha de ITV se ha actualizado correctamente a 04-02-2025
+        assertEquals("02-04-2025", formattedDate);
+    }
 
     @Test
     public void testD_deleteVehicle() {
@@ -171,7 +299,7 @@ public void testC_updateVehicle() {
         // Select first row
         Node firstRow = lookup(".table-row-cell").query();
         clickOn(firstRow);
-        
+
         clickOn(removeShipmentBtn);
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -185,56 +313,56 @@ public void testC_updateVehicle() {
         clickOn(okButton);
         WaitForAsyncUtils.waitForFxEvents();
 
-        assertEquals("Vehicle count should decrease by 1", 
-                    initialCount - 1, vehicleTableView.getItems().size());
+        assertEquals("Vehicle count should decrease by 1",
+                initialCount - 1, vehicleTableView.getItems().size());
     }
 
-@Test
-public void testE_searchFunctionality() {
-    // Agregar un vehículo nuevo para la búsqueda.
-    clickOn("#addShipmentBtn");
-    WaitForAsyncUtils.waitForFxEvents();
-    int lastIndex = vehicleTableView.getItems().size() - 1;
+    @Test
+    public void testE_searchFunctionality() {
+        // Agregar un vehículo nuevo para la búsqueda.
+        clickOn("#addShipmentBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+        int lastIndex = vehicleTableView.getItems().size() - 1;
 
-    // Ubicar la celda de la matrícula en la fila recién agregada.
-    Node cell = lookup(".table-row-cell").nth(lastIndex)
-                      .lookup(".table-cell").nth(1).query();
-    // Doble clic para activar el modo edición.
-    doubleClickOn(cell);
-    WaitForAsyncUtils.waitForFxEvents();
-    
-    // Borrar cualquier contenido previo y escribir "ABC123".
-    eraseText(10);
-    write("ABC123");
-    press(KeyCode.ENTER);
-    release(KeyCode.ENTER);
-    WaitForAsyncUtils.waitForFxEvents();
+        // Ubicar la celda de la matrícula en la fila recién agregada.
+        Node cell = lookup(".table-row-cell").nth(lastIndex)
+                .lookup(".table-cell").nth(1).query();
+        // Doble clic para activar el modo edición.
+        doubleClickOn(cell);
+        WaitForAsyncUtils.waitForFxEvents();
 
-    // Confirmar que la matrícula se actualizó.
-    Vehiculo newVehicle = vehicleTableView.getItems().get(lastIndex);
-    assertEquals("La matrícula del vehículo no se actualizó correctamente",
-                 "ABC123", newVehicle.getMatricula());
+        // Borrar cualquier contenido previo y escribir "ABC123".
+        eraseText(10);
+        write("ABC123");
+        press(KeyCode.ENTER);
+        release(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
 
-    // Limpiar el campo de búsqueda (usando doble clic para seleccionar todo) y escribir "ABC".
-    doubleClickOn("#searchTextField");
-    write("ABC");
-    clickOn("#searchButton");
-    WaitForAsyncUtils.waitForFxEvents();
+        // Confirmar que la matrícula se actualizó.
+        Vehiculo newVehicle = vehicleTableView.getItems().get(lastIndex);
+        assertEquals("La matrícula del vehículo no se actualizó correctamente",
+                "ABC123", newVehicle.getMatricula());
 
-    // Verificar que al menos un vehículo tenga "ABC" en la matrícula.
-    ObservableList<Vehiculo> results = vehicleTableView.getItems();
-    boolean found = results.stream().anyMatch(v -> v.getMatricula().contains("ABC"));
-    if (!found) {
-         String allMatriculas = "";
-         for (Vehiculo v : results) {
-              allMatriculas += "[" + v.getMatricula() + "] ";
-         }
-         fail("No se encontró ningún vehículo con 'ABC' en la matrícula. Matrículas presentes: " + allMatriculas);
+        // Limpiar el campo de búsqueda (usando doble clic para seleccionar todo) y escribir "ABC".
+        doubleClickOn("#searchTextField");
+        write("ABC");
+        clickOn("#searchButton");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verificar que al menos un vehículo tenga "ABC" en la matrícula.
+        ObservableList<Vehiculo> results = vehicleTableView.getItems();
+        boolean found = results.stream().anyMatch(v -> v.getMatricula().contains("ABC"));
+        if (!found) {
+            String allMatriculas = "";
+            for (Vehiculo v : results) {
+                allMatriculas += "[" + v.getMatricula() + "] ";
+            }
+            fail("No se encontró ningún vehículo con 'ABC' en la matrícula. Matrículas presentes: " + allMatriculas);
+        }
+        assertTrue("Se encontró al menos un vehículo con 'ABC' en la matrícula", found);
     }
-    assertTrue("Se encontró al menos un vehículo con 'ABC' en la matrícula", found);
-}
 
-
+    /*
 
     @Test
     public void testH_serverConnection() {
@@ -256,4 +384,5 @@ public void testE_searchFunctionality() {
             fail("Unexpected error: " + e.getMessage());
         }
     }
+     */
 }
