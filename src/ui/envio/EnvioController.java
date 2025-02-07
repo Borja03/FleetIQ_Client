@@ -385,13 +385,10 @@ public class EnvioController {
             creadorEnvioColumn.setOnEditCommit(event -> {
                 Envio envio = event.getRowValue();
                 String nombre = event.getNewValue();
-                String nombreAntiguo = envio.getCreadorEnvio();
                 try {
-                    envioService.edit_XML(envio, envio.getId().toString());
                     envio.setCreadorEnvio(nombre);
+                    envioService.edit_XML(envio, envio.getId().toString());
                 } catch (Exception e) {
-                    envio.setCreadorEnvio(nombreAntiguo);
-                    table.refresh();
                     LOGGER.severe("Error al actualizar el creador del envío: " + e.getMessage());
                     new UtilsMethods().showAlert("Error al actualizar estado", e.getMessage());
                 }
@@ -740,5 +737,3 @@ public class EnvioController {
     }
 
 }
-
-
