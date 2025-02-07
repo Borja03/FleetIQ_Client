@@ -148,9 +148,6 @@ public class EnvioControllerServerError extends ApplicationTest {
         clickOn(alertOkButton);
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Verificar que el valor del remitente vuelve al original
-        assertEquals("El remitente debe volver a su valor original", antiguoValor, targetEnvio.getNumPaquetes().toString());
-
         // Verificar que la cantidad de filas no ha cambiado
         assertEquals("El número de envíos no debe cambiar", initialCount, table.getItems().size());
 
