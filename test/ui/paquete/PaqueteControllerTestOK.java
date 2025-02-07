@@ -186,6 +186,7 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         String originalReceiver = packageSelected.getReceiver();
         double originalWeight = packageSelected.getWeight();
         PackageSize originalSize = packageSelected.getSize();
+        Date originalDate = targetPackage.getCreationDate();
         boolean originalFragile = packageSelected.isFragile();
 
         // Ensure updated values are different from the original ones
@@ -221,7 +222,13 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         } else {
             push(KeyCode.DOWN);
         }
-
+        
+        doubleClickOn(dateCell);
+        press(KeyCode.CONTROL).press(KeyCode.A).release(KeyCode.A).release(KeyCode.CONTROL);
+        press(KeyCode.BACK_SPACE);
+        //Enter invalid future date
+        write("15/12/2025");
+        press(KeyCode.ENTER);
         // Update Fragile status
         Node tableColumnFragile = lookup("#fragileColumn").nth(tableRow + 1).query();
         clickOn(tableColumnFragile);
@@ -235,6 +242,7 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         assertNotEquals("Receiver should be updated", originalReceiver, updatedPackage.getReceiver());
         assertNotEquals("Weight should be updated", originalWeight, updatedPackage.getWeight());
         assertNotEquals("Size should be updated", originalSize, updatedPackage.getSize());
+          assertEquals("Creation date should revert to original value", originalDate, targetPackage.getCreationDate());
         assertNotEquals("Fragile status should be updated", originalFragile, updatedPackage.isFragile());
     }
 
