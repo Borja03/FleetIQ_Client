@@ -16,11 +16,14 @@ import static org.junit.Assert.*;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDatePicker;
 import factories.EnvioFactory;
+import factories.PaqueteFactory;
 import java.time.LocalDate;
+import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.control.TableRow;
 import javafx.scene.input.KeyCode;
 import logicInterface.EnvioManager;
+import logicInterface.PaqueteManager;
 import models.Envio;
 import org.junit.After;
 import org.junit.Before;
@@ -32,9 +35,10 @@ import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import org.testfx.matcher.base.WindowMatchers;
 import service.EnvioRESTClient;
+import service.EnvioRESTClient;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class EnvioControllerUpdateServerError extends ApplicationTest {
+public class EnvioControllerServerError extends ApplicationTest {
 
     private TableView<Envio> table;
     private JFXButton removeShipmentBtn;
@@ -42,7 +46,6 @@ public class EnvioControllerUpdateServerError extends ApplicationTest {
     private JFXDatePicker fromDatePicker;
     private JFXDatePicker toDatePicker;
     private JFXButton applyDateFilterButton;
-    private static final String INVALID_API_PATH = "http://localhost:9090/api/wrong_path";
     int initialCount;
 
     @Override
@@ -57,21 +60,75 @@ public class EnvioControllerUpdateServerError extends ApplicationTest {
         toDatePicker = lookup("#toDatePicker").query();
         applyDateFilterButton = (JFXButton) lookup("#applyDateFilterButton").queryButton();
         initialCount = table.getItems().size();
+    }
+
+    //Seleccionar el test a ejecutar con right click y seleccionando run focused test method
+    @Test
+    public void testA_addEnvio_InvalidPath() throws InterruptedException {
+        Thread.sleep(5000);
+        // Contar el número de envíos antes de añadir uno nuevo
+        int initialCount = table.getItems().size();
+        // Hacer clic en el botón "Añadir"
+        clickOn(addShipmentBtn);
+        WaitForAsyncUtils.waitForFxEvents();
+        // Verificar que se muestra la alerta de error del servidor
+        verifyThat("Already connected", isVisible());
+
+        // Encontrar y hacer clic en el botón "OK" de la alerta
+        Button alertOkButton = lookup(".dialog-pane .button").queryButton();
+        clickOn(alertOkButton);
+        WaitForAsyncUtils.waitForFxEvents();
 
     }
 
     @Test
-    public void testA_initialState() throws InterruptedException {
-        verifyThat("#table", isVisible());
-        verifyThat("#addShipmentBtn", isEnabled());
-        verifyThat("#removeShipmentBtn", isDisabled());
-        verifyThat("#applyDateFilterButton", isEnabled());
-        assertNull(fromDatePicker.getValue());
-        assertNull(toDatePicker.getValue());
+    public void testB_deleteEnvio_InvalidPath() throws InterruptedException {
+        Thread.sleep(5000);
+        // Contar el número de envíos antes de eliminar
+        assertFalse("No hay envíos disponibles para eliminar", initialCount == 0);
+
+        // Seleccionar la primera fila en la tabla
+        TableRow<Envio> row = lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+
+        // Hacer clic en el botón "Eliminar"
+        clickOn("#removeShipmentBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verifyThat("java.net.ConnectException: Connection refused: connect", isVisible());
+
+        // Confirmar el cuadro de diálogo de eliminación
+        Button alertOkButton = lookup(".dialog-pane .button").queryButton();
+        clickOn(alertOkButton);
+        WaitForAsyncUtils.waitForFxEvents();
+
     }
 
     @Test
-    public void testB_updateSenderColumn_InvalidPath() throws InterruptedException {
+    public void testC_filterByDateRange_invalidPath() throws InterruptedException {
+        Thread.sleep(5000);
+        int initialCount = table.getItems().size();
+        interact(() -> {
+            fromDatePicker.setValue(LocalDate.of(2024, 1, 1));
+            toDatePicker.setValue(LocalDate.of(2024, 12, 31));
+        });
+        clickOn(applyDateFilterButton);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verifyThat("java.net.ConnectException: Connection refused: connect", isVisible());
+
+        Button alertOkButton = lookup(".dialog-pane .button").queryButton();
+        clickOn(alertOkButton);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertEquals("El número de envíos no debe cambiar", initialCount, table.getItems().size());
+
+        // Verificar que la tabla sigue mostrando datos
+        assertNotNull("Los datos de la tabla deben persistir", table.getItems());
+    }
+
+    @Test
+    public void testD_updateSenderColumn_InvalidPath() throws InterruptedException {
         Thread.sleep(5000);
         Envio targetEnvio = table.getItems().get(0);
         int antiguoValor = targetEnvio.getNumPaquetes();
@@ -85,8 +142,7 @@ public class EnvioControllerUpdateServerError extends ApplicationTest {
         press(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
-        FxAssert.verifyThat(window("Error al actualizar estado"), WindowMatchers.isShowing());
-
+        verifyThat("Already connected", isVisible());
         // Encontrar y hacer clic en el botón "OK" de la alerta
         Button alertOkButton = lookup(".dialog-pane .button").queryButton();
         clickOn(alertOkButton);
@@ -101,4 +157,5 @@ public class EnvioControllerUpdateServerError extends ApplicationTest {
         // Verificar que la tabla sigue mostrando datos
         assertNotNull("Los datos de la tabla deben persistir", table.getItems());
     }
+
 }
