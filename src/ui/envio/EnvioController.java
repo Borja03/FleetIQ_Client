@@ -387,8 +387,6 @@ public class EnvioController {
                 String nombre = event.getNewValue();
                 String nombreAntiguo = envio.getCreadorEnvio();
                 try {
-                    Envio envioClone = envio.clone();
-                    envioClone.setCreadorEnvio(nombre);
                     envioService.edit_XML(envio, envio.getId().toString());
                     envio.setCreadorEnvio(nombre);
                 } catch (Exception e) {
@@ -508,8 +506,6 @@ public class EnvioController {
                 Envio envio = event.getRowValue();
                 Date newDate = event.getNewValue();
                 try {
-                    Envio envioClone = envio.clone();
-                    envioClone.setFechaEnvio(newDate);
                     envioService.edit_XML(envio, envio.getId().toString());
                     envio.setFechaEnvio(newDate);
                 } catch (Exception e) {
