@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RouteTrackingReport" pageWidth="595" pageHeight="842" columnWidth="552" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="67cf281b-90c2-47c1-ac0f-4faa18017d64">
+	<property name="ireport.zoom" value="1.4641000000000033"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Table_Header" mode="Opaque" forecolor="#FFFFFF" backcolor="#2C3E50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#1B2631"/>
+			<topPen lineWidth="0.5" lineColor="#1B2631"/>
+			<leftPen lineWidth="0.5" lineColor="#1B2631"/>
+			<bottomPen lineWidth="0.5" lineColor="#1B2631"/>
+			<rightPen lineWidth="0.5" lineColor="#1B2631"/>
+		</box>
+	</style>
+	<style name="Table_Row" mode="Opaque" forecolor="#2C3E50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#E8E8E8"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#FFFFFF"/>
+		</conditionalStyle>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 1]]></conditionExpression>
+			<style mode="Opaque" backcolor="#F8FAFB"/>
+		</conditionalStyle>
+	</style>
+	<style name="HeaderStyle" mode="Opaque" forecolor="#2C3E50" fontSize="22"/>
+	<parameter name="LOGO_PATH" class="java.lang.String"/>
+	<field name="localizador" class="java.lang.Integer"/>
+	<field name="origen" class="java.lang.String"/>
+	<field name="destino" class="java.lang.String"/>
+	<field name="distancia" class="java.lang.Float"/>
+	<field name="tiempo" class="java.lang.Integer"/>
+	<field name="fechaCreacion" class="java.util.Date"/>
+	<field name="numVehiculos" class="java.lang.Integer"/>
+	<title>
+		<band height="100" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Opaque" x="-18" y="0" width="594" height="100" backcolor="#FFFFFF" uuid="c9f7f76d-6680-4b78-9e45-a3566931d623"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement style="HeaderStyle" x="131" y="20" width="280" height="40" uuid="e022cf48-c98d-4018-a0ab-815f80d97f32"/>
+				<textElement textAlignment="Center">
+					<font size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Route Tracking Report]]></text>
+			</staticText>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement style="HeaderStyle" x="378" y="0" width="150" height="20" uuid="2208bff0-c209-4e15-afaf-5c2fa7b970b9"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="117" height="100" uuid="e39ec109-eeb8-4c9c-9578-227189b1af46"/>
+				<imageExpression><![CDATA[$P{LOGO_PATH}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="428" y="60" width="65" height="16" uuid="f3ee5e3d-c9b4-4bb4-bcb4-3c50664ac221"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Dirección:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="428" y="40" width="100" height="20" uuid="aeee5150-323d-43a8-87ec-0dfb3a290e83"/>
+				<text><![CDATA[Tel: +34 636 094 358]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="428" y="20" width="100" height="20" uuid="d1a3f11d-8262-4a80-87cf-bd046691b179"/>
+				<text><![CDATA[Fleet IQ Inc]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="428" y="76" width="100" height="20" uuid="f292dd3a-bc56-42b9-80c7-d4910fb611d2"/>
+				<text><![CDATA[C. Tartanga 48950]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement style="Table_Header" x="0" y="0" width="66" height="30" uuid="dab83e04-b2a0-491e-bdd2-0ae8c8499594"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Localizador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="66" y="0" width="110" height="30" uuid="78e76674-7d8f-4dc7-bb0d-5d7ba7227cf9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Origen]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="176" y="0" width="107" height="30" uuid="e8831b5d-a488-4445-ae6c-942ffe0d12c1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Destino]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="283" y="0" width="84" height="30" uuid="a5613093-3627-45fb-b5bc-12b1450f3359"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Distancia (km)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="367" y="0" width="91" height="30" uuid="ef50d148-7d24-464f-8c80-f39e35bcfc23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tiempo (min)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Table_Header" x="458" y="0" width="97" height="30" uuid="7d72ac0f-b6d8-4eb7-b4e4-e601f209786b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número Vehículos]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="25" splitType="Stretch">
+			<textField>
+				<reportElement style="Table_Row" x="0" y="0" width="66" height="25" uuid="aebb1284-8703-4809-9d89-e38670035656"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{localizador}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Table_Row" x="66" y="0" width="110" height="25" uuid="9a0bc8d5-ea12-4f6f-81fb-2b2f36680ffc"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{origen}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Table_Row" x="176" y="0" width="107" height="25" uuid="f5dd71df-3edd-42c8-b5e8-c90979fa2581"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{destino}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement style="Table_Row" x="283" y="0" width="84" height="25" uuid="dc4a626c-d880-463b-9a69-669da882e044"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{distancia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Table_Row" x="367" y="0" width="91" height="25" uuid="08abcfa6-131a-4116-b809-4156d0b02ae7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tiempo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Table_Row" x="458" y="0" width="97" height="25" uuid="9031221b-867f-49d2-9bc0-799c0edfda60"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{numVehiculos}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="40" splitType="Stretch">
+			<rectangle>
+				<reportElement mode="Opaque" x="0" y="0" width="555" height="40" backcolor="#F8F9F9" uuid="f1794122-9453-47d0-9c40-5794f0e05067"/>
+			</rectangle>
+			<textField>
+				<reportElement x="323" y="10" width="100" height="20" uuid="bc57ac34-c70b-413d-a7a5-e815894a2d27"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="423" y="10" width="40" height="20" uuid="c9b884aa-a238-41fd-9fed-d092ca0aad99"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="10" width="180" height="20" forecolor="#2C3E50" uuid="f3a26c76-2b8d-4af4-9c42-66f0278f73b8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FleetIQ Route Tracking System]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

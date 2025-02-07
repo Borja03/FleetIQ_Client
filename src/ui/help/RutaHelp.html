@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../style/HelpStyle.css">
+    <style>
+        .help-gif {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+    </style>
+    <title>Gestión de Rutas</title>
+</head>
+
+    <body>
+        <header>
+            <div class="header-logo">
+                <img src="../../image/logo3.png" alt="Logo">
+            </div>
+            <h1>Gestión de Rutas</h1>
+        </header>
+
+        <div class="container">
+            <nav class="navigation">
+                <ul>
+                    <li><a href="#overview">Descripción General</a></li>
+                    <li><a href="#menu">Menú</a></li>
+                    <li><a href="#filters">Filtros</a></li>
+                    <li><a href="#table">Tabla</a></li>
+                    <li><a href="#buttons">Botones</a></li>
+                </ul>
+            </nav>
+
+            <div class="content">
+                <section id="overview" class="section">
+                    <h2>Descripción General</h2>
+                    <p>La ventana de gestión de rutas permite visualizar, filtrar y modificar los registros de rutas dentro del sistema. 
+                        Se compone de cuatro secciones principales: el menú de navegación, la sección de filtros, la tabla de datos y los botones de acción.
+                        A continuación, se detallará cada sección para facilitar su uso.</p>
+                </section>
+
+                <section id="menu" class="section">
+                    <h2>Menú</h2>
+                    <p>El menú principal de la aplicación está compuesto por cuatro pestañas, cada una con una función específica:</p>
+                    <ul>
+                        <li><strong>Go To:</strong> Permite moverte entre las distintas ventanas de gestión de la aplicación de manera rápida y eficiente.</li>
+                        <li><strong>View:</strong> Se usa para alternar entre los modos de visualización oscuro y claro. La elección del tema se aplicará a toda la aplicación.</li>
+                        <li><strong>Help:</strong> Muestra ventanas de ayuda para proporcionar información detallada sobre el uso de cada sección de la aplicación.</li>
+                    </ul>
+                          <img src="../../image/rutaMenu.gif" alt="Demostración uso del menú" class="help-gif">
+                </section>
+
+                <section id="filters" class="section">
+                    <h2>Filtros</h2>
+                    <p>Los filtros permiten refinar la búsqueda de rutas dentro de la tabla para mejorar la gestión de la información:</p>
+                    <ul>
+                        <li><strong>Filtrado de fecha:</strong> Permite visualizar las rutas según la fecha de creación. Se debe ingresar un rango de fechas válido ("From" debe ser anterior a "To").</li>
+                        <li><strong>Filtrado de distancia o tiempo:</strong> Primero, seleccione el tipo de filtro: Distancia (km) o Tiempo (h). Luego, elija el criterio de comparación: mayor que (>), menor que (<) o igual a (=). Ingrese el valor a filtrar y, finalmente, haga clic en el botón "Buscar". Si el campo está vacío, se eliminan los filtros aplicados.</li>
+                        <li><strong>Filtrado por localizador:</strong> Permite visualizar solo la ruta con el localizador deseado. Si el campo está vacío, se eliminan los filtros aplicados.</li>
+                    </ul>
+                      <img src="../../image/rutaFilter.gif" alt="Demostración aplicación de filtros" class="help-gif">
+                </section>
+
+                <section id="table" class="section">
+                    <h2>Tabla</h2>
+                    <p>La tabla de rutas muestra los registros almacenados en el sistema y permite modificar ciertos datos directamente:</p>
+                    <ul>
+                        <li><strong>Origen:</strong> Puede escribirse cualquier origen.</li>
+                        <li><strong>Destino:</strong> Puede escribirse cualquier origen.</li>
+                        <li><strong>Distancia:</strong>Únicamente se podrá escribir un valor numérico positivo, no hace falta que sea un número entero.</li>
+                        <li><strong>Tiempo:</strong> Únicamente se podrá escribir un valor numérico positivo, tiene que ser un número entero.</li>
+                        <li><strong>Fecha Creación:</strong> Puede seleccionar cualquier fecha en el selector. En caso de escribirla manualmente, deberá ingresarse en el formato dd/mm/yyyy.</li>
+                        <li><strong>Número Vehiculos:</strong> Se actualizará automáticamente al añadir uno o más vehículos a la ruta seleccionada.</li>
+
+                    </ul>
+                    <p>Al hacer clic derecho sobre una ruta, se desplegará un menú contextual con una opción para añadir vehículos. Si la selecciona, se mostrará un diálogo con todos los vehículos disponibles</p>
+                </section>
+
+                <section id="buttons" class="section">
+                    <h2>Botones</h2>
+                    <p>Los botones ubicados en la parte inferior de la ventana permiten gestionar los registros de la tabla:</p>
+                    <ul>
+                        <li><strong>Botón verde:</strong> Permite añadir una nueva ruta al sistema.</li>
+                        <li><strong>Botón rojo:</strong> Elimina la o las rutas seleccionadas de la tabla.</li>
+                        <li><strong>Botón naranja:</strong> Genera un reporte detallado de las rutas de la tabla.</li>
+                    </ul>
+                     <img src="../../image/rutaCrud.gif" alt="Demostración funcionamiento de botones" class="help-gif">
+                </section>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sections = document.querySelectorAll(".section");
+                const navLinks = document.querySelectorAll(".navigation a");
+
+                // Function to update the active menu item
+                function updateActiveMenu() {
+                    let current = "";
+
+                    sections.forEach((section) => {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.clientHeight;
+                        if (window.scrollY >= sectionTop - sectionHeight / 3) {
+                            current = section.getAttribute("id");
+                        }
+                    });
+
+                    navLinks.forEach((link) => {
+                        link.classList.remove("active");
+                        if (link.getAttribute("href").includes(current)) {
+                            link.classList.add("active");
+                        }
+                    });
+
+                    // Handle the case when the user is at the top of the page
+                    if (window.scrollY === 0) {
+                        navLinks.forEach((link) => link.classList.remove("active"));
+                        navLinks[0].classList.add("active"); // Highlight the first menu item
+                    }
+                }
+
+                // Update active menu on scroll
+                window.addEventListener("scroll", updateActiveMenu);
+
+                // Update active menu when a menu item is clicked
+                navLinks.forEach((link) => {
+                    link.addEventListener("click", (event) => {
+                        // Remove active class from all links
+                        navLinks.forEach((link) => link.classList.remove("active"));
+                        // Add active class to the clicked link
+                        event.target.classList.add("active");
+                    });
+                });
+
+                // Trigger the scroll event once on page load to set the initial active state
+                window.dispatchEvent(new Event("scroll"));
+            });
+        </script>
+    </body>
+</html>

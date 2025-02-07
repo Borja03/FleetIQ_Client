@@ -1,0 +1,160 @@
+/* General Styles */
+.root {
+    -fx-font-family: "Arial";
+    -fx-background-color: #1a1a1a;
+}
+
+.filter-container {
+    -fx-spacing: 10; 
+    -fx-padding: 15; 
+    -fx-background-color: #1a1a1a;
+}
+
+.filter-section {
+    -fx-spacing: 5; 
+    -fx-padding: 10; 
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #0078d7;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+/* Labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #e0e0e0;
+}
+
+.filter-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 5 0;
+}
+
+/* TextField */
+.text-field {
+    -fx-background-color: #3d3d3d;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #555555;
+    -fx-border-radius: 3;
+    -fx-padding: 5;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5 10;
+    -fx-border-radius: 3;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #1a8fff;
+}
+
+.button:pressed {
+    -fx-background-color: #005fa3;
+}
+
+/* Tooltip */
+.tooltip {
+    -fx-background-color: #4d4d4d;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-padding: 5;
+    -fx-border-radius: 3;
+}
+
+.image-view {
+    -fx-fit-height: 20px;
+    -fx-fit-width: 20px;
+}
+
+/* TableView */
+.table-view {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #0078d7;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #3d3d3d;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #e0e0e0;
+}
+
+.table-row-cell {
+    -fx-background-color: #2d2d2d;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #333333;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #0078d7;
+}
+
+/* Custom Buttons */
+#addShipmentBtn {
+    -fx-background-color: #2d5a3e;
+}
+
+#addShipmentBtn:hover {
+    -fx-background-color: #367049;
+}
+
+#removeShipmentBtn {
+    -fx-background-color: #8b2e38;
+}
+
+#removeShipmentBtn:hover {
+    -fx-background-color: #a13541;
+}
+
+#printReportBtn {
+    -fx-background-color: #8b7355;
+}
+
+#printReportBtn:hover {
+    -fx-background-color: #9c815f;
+}
+
+.section-box {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #404040;
+    -fx-border-radius: 10;
+    -fx-padding: 20;
+    -fx-border-width: 1;
+}
+
+.section-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e0e0e0;
+    -fx-padding: 5 0 10 0;
+}
+
+.table-view .table-column {
+    -fx-alignment: CENTER;
+}
+
+.table-view .column-header {
+    -fx-alignment: CENTER;
+}
+
+.table-view .jfx-date-picker {
+    -fx-font-size: 12px;
+    -jfx-focus-color: #4CAF50;
+    -jfx-unfocus-color: #666666;
+    -jfx-default-color: #0078d7;
+}

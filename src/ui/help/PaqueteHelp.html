@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../../style/HelpStyle.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetIQ App User Guide</title>
+</head>
+
+<body>
+    <header>
+        <!-- Logo Zone -->
+        <div class="header-logo">
+            <img src="../../image/logo3.png" alt="Logo">
+        </div>
+        <h1>FleetIQ User Guide</h1>
+    </header>
+
+    <div class="container">
+        <nav class="navigation">
+            <ul>
+                <li><a href="#getting-started">Getting Started</a></li>
+                <li><a href="#top-menu">Top Menu</a></li>
+                <li><a href="#filters">Filters</a></li>
+                <li><a href="#table-view">Table View</a></li>
+                <li><a href="#bottom-buttons">Bottom Buttons</a></li>
+                <li><a href="#context-menu">Context Menu</a></li>
+                <li><a href="#contact-us">Contact Us</a></li>
+            </ul>
+        </nav>
+
+        <div class="content" class="section">
+            <section id="getting-started" class="section">
+                <h2>Getting Started</h2>
+                <p>Welcome to our desktop application! This guide will help you navigate and make the most of our
+                    software.</p>
+                <div class="tip">
+                    <strong>Tip:</strong> Familiarize yourself with the different sections of the application to
+                    optimize your workflow.
+                </div>
+            </section>
+
+            <section id="top-menu" class="section">
+                <h2>Top Menu</h2>
+                <p>The top menu provides quick access to primary functions of the application.</p>
+                <h3>Menu Options</h3>
+
+                <h3>Go to</h3>
+                <ul>
+                    <li><strong>Paquete:</strong> Navigate to the package management section.</li>
+                    <li><strong>Envio:</strong> Access the shipment management interface.</li>
+                    <li><strong>Ruta:</strong> View and manage delivery routes.</li>
+                    <li><strong>Vehiculo:</strong> Manage vehicle-related information.</li>
+                </ul>
+
+                <h3>View</h3>
+                <ul>
+                    <li><strong>Dark mode:</strong> Switch the application to dark mode for a better low-light
+                        experience.</li>
+                    <li><strong>Light mode:</strong> Switch the application back to light mode for standard visibility.
+                    </li>
+                </ul>
+
+                <h3>Help</h3>
+                <ul>
+                    <li><strong>About Paquete:</strong> Learn more about the package management module.</li>
+                    <li><strong>About Ruta:</strong> Get information regarding the route management functionality.</li>
+                    <li><strong>About Envio:</strong> Read details about the shipment system.</li>
+                    <li><strong>About Vehiculo:</strong> Understand vehicle-related features.</li>
+                </ul>
+
+                <h3>User Options</h3>
+                <ul>
+                    <li><strong>Profile:</strong> Access and manage your profile settings and password changing.</li>
+                    <li><strong>Logout:</strong> Log out of the application securely.</li>
+                </ul>
+
+
+                <img src="../../image/paquete menu.gif" alt="Top Menu Screenshot" class="screenshot">
+
+            </section>
+
+            <section id="filters" class="section">
+                <h2>Filters</h2>
+                <ul>
+                    <p>Use filters to refine and customize your view of the data.</p>
+
+                    <li><strong>Filter By Dates </strong></li>
+                    <p>How to use and apply this filter:</p>
+                    <ul>
+                        <li>You can select a date range using two date pickers: <strong>From</strong> and
+                            <strong>To</strong>.
+                        </li>
+                        <li>If only the <strong>From</strong> date is selected and the user clicks
+                            <strong>Apply</strong>, all packages created after the selected date will be displayed.
+                        </li>
+                        <li>If only the <strong>To</strong> date is selected and the user clicks <strong>Apply</strong>,
+                            all packages created before the selected date will be displayed.</li>
+                        <li>If both <strong>From</strong> and <strong>To</strong> dates are selected and the user clicks
+                            <strong>Apply</strong>, all packages created between the two dates will be displayed.
+                        </li>
+                    </ul>
+
+
+                    <img src="../../image/paquete filter date.gif" alt="Filters Screenshot" class="screenshot">
+
+                    <li><strong>Filter By Size:</strong> You can filter packages based on size categories:</li>
+                    <ul>
+                        <li><strong>SMALL:</strong> Displays only small packages.</li>
+                        <li><strong>MEDIUM:</strong> Displays only medium-sized packages.</li>
+                        <li><strong>LARGE:</strong> Displays only large packages.</li>
+                        <li><strong>EXTRA_LARGE:</strong> Displays only extra-large packages.</li>
+                    </ul>
+                    <img src="../../image/paquete size filter.gif" alt="Filters Screenshot" class="screenshot">
+
+                    <li><strong>Filter By Name(Sender/Reciver):</strong>As you type the name of the sender or receiver, the table will automatically update to display all matching names that contain the characters you have entered.
+                        <!-- Add more filters as needed --></li>
+                    <img src="../../image/paquete search filter.gif" alt="Filters Screenshot" class="screenshot">
+                </ul>
+            </section>
+
+            <section id="table-view" class="section">
+                <h2>Editable Table View</h2>
+
+                <p>Interact with and modify data directly in the table view.</p>
+
+                <h3>Editing Instructions</h3>
+                <ul>
+                    <li><strong>How to edit cells:</strong> Double-click on a cell to enter edit mode. Once the cell is
+                        active, modify its content.</li>
+                    <li><strong>Saving changes:</strong> Press <strong>Enter</strong> to confirm and save changes.
+                        Clicking outside the cell or pressing <strong>Escape</strong> will cancel the modification.</li>
+                </ul>
+
+
+                <img src="../../image/paquete  update next.gif" alt="Update Screenshot" class="screenshot">
+
+            </section>
+
+            <section id="bottom-buttons" class="section">
+                <h2>Bottom Buttons</h2>
+                <p>Quick actions available at the bottom of the application.</p>
+                <h3>Button Functions</h3>
+                <ul>
+                    <li><strong>Add new Package :</strong> Adds a new package with default data that can be modified
+                        after. </li>
+                    <img src="../../image/paquete add.gif" alt="Bottom Buttons Screenshot" class="screenshot">
+                    <li><strong>Delete Package :</strong>When a row(s) is/are selected, clicking delete will prompt the
+                        user for confirmation before removing the package(s).</li>
+                    <img src="../../image/paquete  delte.gif" alt="Bottom Buttons Screenshot" class="screenshot">
+                    <li><strong>Print Report:</strong> Generates a report that can either be saved as a PDF or printed
+                        directly.</li>
+                    <img src="../../image/paquete  print.gif" alt="Bottom Buttons Screenshot" class="screenshot">
+                    <!-- Add more buttons as needed -->
+                </ul>
+            </section>
+
+            <section id="context-menu" class="section">
+                <h2>Context Menu</h2>
+                <p>Right-click options for advanced interactions.</p>
+
+                <h3>Context Menu Options</h3>
+                <ul>
+                    <li><strong>Add Package:</strong> Adds a new package with default data that can be modified after.
+                    </li>
+                    <li><strong>Delete Package:</strong> When a row(s) is/are selected, clicking delete will prompt the
+                        user for confirmation before removing the package(s).</li>
+                    <li><strong>Print Report:</strong> Generates a report that can either be saved as a PDF or printed
+                        directly.</li>
+                </ul>
+                <img src="../../image/paquete context meun.gif" alt="Context Menu Screenshot" class="screenshot">
+
+            </section>
+
+            <section id="contact-us" class="section">
+                <h2>Contact Support</h2>
+
+                <!-- stat of profil cards -->
+
+                <div class="card-profile-container">
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Adrian</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@adrian</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/AdrianGarciaCaballero"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="https://github.com/AdrianGarciaCaballero"><img
+                                    src="../../image/icons-linkedin.png" alt="fa-linkedin" class="social-icon"></a>
+                        </div>
+                    </div>
+                    
+
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Alder</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@alder</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/Alderoto16"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="https://github.com/Alderoto16"><img src="../../image/icons-linkedin.png" alt="fa-linkedin"
+                                    class="social-icon"></a>
+                        </div>
+                    </div>
+
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Borja</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@Borja</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/Borja03/"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="https://github.com/Borja03/"><img src="../../image/icons-linkedin.png" alt="fa-linkedin"
+                                    class="social-icon"></a>
+                        </div>
+                    </div>
+
+                    <div class="card-profile">
+                        <div class="card-header">
+                            <p class="name">Omar</p>
+                        </div>
+                        <div class="card-body">
+                            <p class="job">Developer</p>
+                            <a href="#" class="mail">@Omar</a>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/8xbit"><img src="../../image/icons-github.png" alt="github"
+                                    class="social-icon"></a>
+                            <a href="https://github.com/8xbit"><img src="../../image/icons-linkedin.png" alt="fa-linkedin"
+                                    class="social-icon"></a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- end of profile cards -->
+                <p>If you need additional help, please contact our support team:</p>
+                <ul>
+                    <li>Email: fleetiqg5@gmail.com</li>
+                    <li>Phone: +34 123456789</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sections = document.querySelectorAll(".section");
+            const navLinks = document.querySelectorAll(".navigation a");
+
+            // Function to update the active menu item
+            function updateActiveMenu() {
+                let current = "";
+
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.scrollY >= sectionTop - sectionHeight / 3) {
+                        current = section.getAttribute("id");
+                    }
+                });
+
+                navLinks.forEach((link) => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("href").includes(current)) {
+                        link.classList.add("active");
+                    }
+                });
+
+                // Handle the case when the user is at the top of the page
+                if (window.scrollY === 0) {
+                    navLinks.forEach((link) => link.classList.remove("active"));
+                    navLinks[0].classList.add("active"); // Highlight the first menu item
+                }
+            }
+
+            // Update active menu on scroll
+            window.addEventListener("scroll", updateActiveMenu);
+
+            // Update active menu when a menu item is clicked
+            navLinks.forEach((link) => {
+                link.addEventListener("click", (event) => {
+                    // Remove active class from all links
+                    navLinks.forEach((link) => link.classList.remove("active"));
+                    // Add active class to the clicked link
+                    event.target.classList.add("active");
+                });
+            });
+
+            // Trigger the scroll event once on page load to set the initial active state
+            window.dispatchEvent(new Event("scroll"));
+        });
+    </script>
+    </script>
+</body>
+
+</html>
