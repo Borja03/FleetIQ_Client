@@ -9,8 +9,12 @@ import application.RutaMain;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -32,6 +36,9 @@ import static org.testfx.matcher.base.NodeMatchers.isEnabled;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 import org.testfx.util.WaitForAsyncUtils;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RutaControllerTest extends ApplicationTest {
@@ -159,6 +166,151 @@ public class RutaControllerTest extends ApplicationTest {
         Ruta updated = rutaTable.getItems().get(0); // Cambiado a 0 para la primera fila
         assertEquals("NewOrigen", updated.getOrigen());
     }
+
+    @Test
+    public void testC_editDestino() {
+        // Wait for data to load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify table has data
+        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
+        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query(); // Primera fila
+        TableColumn<Ruta, ?> destinoColumn = rutaTable.getColumns().get(2); // Asegúrate de que el índice sea correcto para la columna "destino"
+
+        interact(() -> {
+            doubleClickOn(row.getChildrenUnmodifiable().get(2)); // Cambiado para editar la columna correcta
+        });
+
+        // Enter new value
+        write("NewDestino");
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify update
+        Ruta updated = rutaTable.getItems().get(0); // Primera fila
+        assertEquals("NewDestino", updated.getDestino()); // Ahora verifica el destino en lugar del origen
+    }
+
+    @Test
+    public void testC_editDistancia() {
+        // Wait for data to load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify table has data
+        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
+        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query(); // Primera fila
+        TableColumn<Ruta, ?> distanciaColumn = rutaTable.getColumns().get(3); // Asegúrate de que el índice sea el correcto para la columna "distancia"
+
+        interact(() -> {
+            doubleClickOn(row.getChildrenUnmodifiable().get(3)); // Cambiado para editar la columna correcta
+        });
+
+        // Enter new value
+        String newDistancia = "12.5"; // Un valor Float válido
+        write(newDistancia);
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify update
+        Ruta updated = rutaTable.getItems().get(0); // Primera fila
+        assertEquals(Float.parseFloat(newDistancia), updated.getDistancia(), 0.01); // Verifica con un margen de error pequeño
+    }
+
+    @Test
+    public void testC_editTiempo() {
+        // Wait for data to load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify table has data
+        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
+        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query(); // Primera fila
+        TableColumn<Ruta, ?> tiempoColumn = rutaTable.getColumns().get(4); // Asegúrate de que el índice sea el correcto para la columna "tiempo"
+
+        interact(() -> {
+            doubleClickOn(row.getChildrenUnmodifiable().get(4)); // Editar la columna correcta
+        });
+
+        // Enter new value
+        String newTiempo = "45"; // Un valor Integer válido
+        write(newTiempo);
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify update
+        Ruta updated = rutaTable.getItems().get(0); // Primera fila
+        assertEquals(Integer.valueOf(newTiempo), updated.getTiempo()); // Se usa Integer.valueOf() para evitar ambigüedad
+    }
+
+    @Test
+    public void testC_editFecha() throws ParseException {
+        // Wait for data to load
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify table has data
+        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
+        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query(); // Primera fila
+        TableColumn<Ruta, ?> fechaColumn = rutaTable.getColumns().get(5); // Asegúrate de que el índice sea el correcto para la columna "fecha"
+
+        interact(() -> {
+            doubleClickOn(row.getChildrenUnmodifiable().get(5)); // Editar la columna correcta
+        });
+
+        // Borrar contenido previo
+        push(KeyCode.CONTROL, KeyCode.A); // Selecciona todo
+        push(KeyCode.BACK_SPACE); // Borra el contenido
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Enter new value
+        String newFecha = "4/01/2024"; // Fecha en formato día/mes/año
+        write(newFecha);
+        press(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Convertir la cadena de fecha a tipo Date
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d/MM/yyyy"); // Formato compatible con la entrada
+        Date expectedDate = dateFormat.parse(newFecha);
+
+        // Verify update
+        Ruta updated = rutaTable.getItems().get(0); // Primera fila
+        assertEquals(expectedDate, updated.getFechaCreacion()); // Verifica que la fecha se haya actualizado correctamente
+    }
+
+//    @Test
+//    public void testD_addVehicle() {
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
+//        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query();
+//
+//        // Adjust the column index if necessary (e.g., 2 for the third column)
+//        TableColumn<Ruta, ?> numVehiculosColumn = rutaTable.getColumns().get(6);
+//
+//        // Get the cell text scoped to the row and correct column index
+//        String initialCountText = from(row).lookup(".table-cell").nth(6).queryText().getText();
+//        int initialCountFromTable = Integer.parseInt(initialCountText);
+//
+//        Ruta selectedRuta = rutaTable.getItems().get(0);
+//        int initialCount = selectedRuta.getNumVehiculos();
+//        assertEquals(initialCount, initialCountFromTable);
+//
+//        interact(() -> rightClickOn(row));
+//        clickOn("Añadir Vehículo");
+//
+//        WaitForAsyncUtils.waitForFxEvents();
+//        JFXListView<String> vehicleListView = lookup(".jfx-list-view").query();
+//        interact(() -> vehicleListView.getSelectionModel().select(0));
+//
+//        clickOn("Confirmar");
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        // Check updated count similarly, scoped to the row
+//        String updatedCountText = from(row).lookup(".table-cell").nth(3).queryText().getText();
+//        int updatedCountFromTable = Integer.parseInt(updatedCountText);
+//        int updatedCount = selectedRuta.getNumVehiculos();
+//
+//        assertEquals(initialCount + 1, updatedCount);
+//        assertEquals(updatedCount, updatedCountFromTable);
+//    }
 
     @Test
     public void testSearchByLocalizador_success() throws InterruptedException {
