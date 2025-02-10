@@ -142,6 +142,7 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         // Get initial state
         int initialRowCount = paqueteTableView.getItems().size();
         Paquete lastPackage = paqueteTableView.getItems().get(initialRowCount - 1);
+        Paquete p = new Paquete();
         // Click the "Add Shipment" button
         clickOn("#addShipmentBtn");
         WaitForAsyncUtils.waitForFxEvents();
@@ -162,9 +163,13 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         assertNotNull("New package should not be null", newPackage);
 
         assertNotEquals("New package a different ID ", lastPackage.getId(), newPackage.getId());
-        // Verify default values of the new package
+        
+               // Verify default values of the new package
         assertTrue("New package should new value",
-                paqueteTableView.getItems().stream().anyMatch(pkg -> pkg.getId().equals(newPackage.getId())));
+                paqueteTableView.getItems().contains(newPackage));
+//        // Verify default values of the new package
+//        assertTrue("New package should new value",
+//                paqueteTableView.getItems().stream().anyMatch(pkg -> pkg.getId().equals(newPackage.getId())));
     }
 
     /**
