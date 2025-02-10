@@ -145,32 +145,26 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         // Click the "Add Shipment" button
         clickOn("#addShipmentBtn");
         WaitForAsyncUtils.waitForFxEvents();
-
         // Check if dialog appears
         DialogPane dialogPane = lookup(".dialog-pane").query();
         assertNotNull("Dialog not shown after adding a package", dialogPane);
-
         // Click "OK" to confirm the addition
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         assertNotNull("OK button not found in dialog", okButton);
         clickOn(okButton);
         WaitForAsyncUtils.waitForFxEvents();
-
         // Verify row count increased
         int newRowCount = paqueteTableView.getItems().size();
         assertEquals("Package count should increase by 1", initialRowCount + 1, newRowCount);
-
-        // Get the newly added package (last row)
+        // Get last row package
         Paquete newPackage = paqueteTableView.getItems().get(newRowCount - 1);
-        ObservableList<Paquete> results = paqueteTableView.getItems();
-        // Verify default values
+        // Verify the new package is not null
         assertNotNull("New package should not be null", newPackage);
-        assertNotEquals("ids should  ", lastPackage.getId(), newPackage.getId(), 0);
-        
-//        assertEquals("Sender name  should be empty  ", lastPackage.getSender(),"");
-//        assertEquals("Receiver should be empty ", lastPackage.getReceiver(),"");
-//        assertEquals("Weight should be 0.0 ", lastPackage.getWeight(),0.0,0.001);
 
+        assertEquals("New package a different ID ", lastPackage.getId(), newPackage.getId());
+        // Verify default values of the new package
+        assertTrue("New package should new value",
+                paqueteTableView.getItems().stream().anyMatch(pkg -> pkg.getId().equals(newPackage.getId())));
     }
 
     /**
@@ -266,32 +260,41 @@ public class PaqueteControllerTestOK extends ApplicationTest {
      */
     @Test
     public void testD_deletePackage() {
-        WaitForAsyncUtils.waitForFxEvents(); // Ensure UI updates
-
+        // Ensure UI updates before starting
+        WaitForAsyncUtils.waitForFxEvents();
+        // Get initial row count and verify there is at least one package
         int initialCount = paqueteTableView.getItems().size();
         assertFalse("No package available to delete", initialCount == 0);
-
-        TableRow<Paquete> row = lookup(".table-row-cell").nth(0).query(); // Always delete the first row
+        // Select the first package in the table
+        Paquete selectedPackage = paqueteTableView.getItems().get(0);
+        TableRow<Paquete> row = lookup(".table-row-cell").nth(0).query();
         clickOn(row);
-
+        // Click the remove button
         clickOn("#removeShipmentBtn");
-
+        // Wait for the confirmation dialog
         WaitForAsyncUtils.waitForFxEvents();
-
+        // Verify confirmation dialog appears
         DialogPane dialogPane = lookup(".dialog-pane").query();
         assertNotNull("Confirmation dialog not shown", dialogPane);
 
+        // Click "OK" to confirm deletion
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         assertNotNull("OK button not found in dialog", okButton);
-
         clickOn(okButton);
 
+        // Wait for UI updates
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Ensure UI refresh
+        // Refresh table to ensure it reflects changes
         interact(() -> paqueteTableView.refresh());
 
-        assertEquals("Package count should decrease by 1", initialCount - 1, paqueteTableView.getItems().size());
+        // Verify row decreased by 1
+        int newCount = paqueteTableView.getItems().size();
+        assertEquals("Package count should decrease by 1", initialCount - 1, newCount);
+
+        //deleted package in should not existe 
+        ObservableList<Paquete> results = paqueteTableView.getItems();
+        assertFalse("Deleted package is not be in the table", results.stream().anyMatch(p -> p.getId().equals(selectedPackage.getId())));
     }
 
 }
