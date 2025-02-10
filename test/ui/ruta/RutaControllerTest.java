@@ -11,6 +11,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
+import com.sun.javafx.stage.StageHelper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 import org.testfx.util.WaitForAsyncUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -97,20 +99,64 @@ public class RutaControllerTest extends ApplicationTest {
     @Test
     public void testB_addRuta() {
         int initialCount = rutaTable.getItems().size();
+
         clickOn(addShipmentBtn);
-        assertEquals(initialCount + 1, rutaTable.getItems().size());
+
+        WaitForAsyncUtils.waitForFxEvents();
+
+        assertEquals("No se agregó una nueva ruta a la tabla", initialCount + 1, rutaTable.getItems().size());
+
+        Ruta nuevaRuta = rutaTable.getItems().get(rutaTable.getItems().size() - 1);
+
+        assertNotNull("La nueva ruta no debería ser nula", nuevaRuta);
+
+        assertEquals("Origen por defecto incorrecto", "", nuevaRuta.getOrigen());
+        assertEquals("Destino por defecto incorrecto", "", nuevaRuta.getDestino());
+        assertEquals("Distancia por defecto incorrecta", 0.0f, nuevaRuta.getDistancia(), 0.01);
+        assertEquals("Tiempo por defecto incorrecto", 0, nuevaRuta.getTiempo().intValue());
+        assertEquals("Número de vehículos por defecto incorrecto", 0, nuevaRuta.getNumVehiculos().intValue());
+
+        assertNotNull("El localizador debería generarse automáticamente", nuevaRuta.getLocalizador());
+
+        LocalDate fechaCreacion = nuevaRuta.getFechaCreacion().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        assertEquals("Fecha de creación por defecto incorrecta", LocalDate.now(), fechaCreacion);
     }
 
     @Test
     public void testJ_removeRuta() {
         int initialCount = rutaTable.getItems().size();
+        Ruta routeToRemove = rutaTable.getItems().get(0);
+
         Node row = lookup(".table-row-cell").nth(0).query();
         clickOn(row);
         verifyThat("#removeShipmentBtn", isEnabled());
+
         clickOn(removeShipmentBtn);
         verifyThat(".dialog-pane", Node::isVisible);
         clickOn("Aceptar");
-        assertEquals(initialCount - 1, rutaTable.getItems().size());
+
+        assertEquals("La cuenta de filas no se actualizó correctamente",
+                initialCount - 1, rutaTable.getItems().size());
+
+        assertFalse("La ruta seleccionada para borrar aún se encuentra en la tabla",
+                rutaTable.getItems().contains(routeToRemove));
+    }
+
+    @Test
+    public void testReadAll() {
+        WaitForAsyncUtils.waitForFxEvents();
+
+        verifyThat("#rutaTable", isVisible());
+        assertNotNull("La tabla de rutas no debe ser null", rutaTable);
+
+        ObservableList<Ruta> rutas = rutaTable.getItems();
+
+        assertFalse("La tabla de rutas está vacía", rutas.isEmpty());
+
+        for (Object item : rutas) {
+            assertTrue("El item en la tabla no es de tipo Ruta", item instanceof Ruta);
+        }
     }
 
 //    @Test
@@ -275,42 +321,57 @@ public class RutaControllerTest extends ApplicationTest {
         assertEquals(expectedDate, updated.getFechaCreacion()); // Verifica que la fecha se haya actualizado correctamente
     }
 
-//    @Test
-//    public void testD_addVehicle() {
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        assertFalse("Table empty - no routes found", rutaTable.getItems().isEmpty());
-//        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query();
-//
-//        // Adjust the column index if necessary (e.g., 2 for the third column)
-//        TableColumn<Ruta, ?> numVehiculosColumn = rutaTable.getColumns().get(6);
-//
-//        // Get the cell text scoped to the row and correct column index
-//        String initialCountText = from(row).lookup(".table-cell").nth(6).queryText().getText();
-//        int initialCountFromTable = Integer.parseInt(initialCountText);
-//
-//        Ruta selectedRuta = rutaTable.getItems().get(0);
-//        int initialCount = selectedRuta.getNumVehiculos();
-//        assertEquals(initialCount, initialCountFromTable);
-//
-//        interact(() -> rightClickOn(row));
-//        clickOn("Añadir Vehículo");
-//
-//        WaitForAsyncUtils.waitForFxEvents();
-//        JFXListView<String> vehicleListView = lookup(".jfx-list-view").query();
-//        interact(() -> vehicleListView.getSelectionModel().select(0));
-//
-//        clickOn("Confirmar");
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        // Check updated count similarly, scoped to the row
-//        String updatedCountText = from(row).lookup(".table-cell").nth(3).queryText().getText();
-//        int updatedCountFromTable = Integer.parseInt(updatedCountText);
-//        int updatedCount = selectedRuta.getNumVehiculos();
-//
-//        assertEquals(initialCount + 1, updatedCount);
-//        assertEquals(updatedCount, updatedCountFromTable);
-//    }
+    @Test
+    public void testD_addVehiculo() {
+        // Espera a que se carguen los datos
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verifica que la tabla tenga rutas
+        assertFalse("Tabla vacía - no se encontraron rutas", rutaTable.getItems().isEmpty());
+
+        // Selecciona la primera ruta y guarda el número inicial de vehículos
+        Ruta ruta = rutaTable.getItems().get(0);
+        int initialVehicleCount = ruta.getNumVehiculos();
+
+        // Simula un click derecho sobre la primera fila de la tabla para que aparezca el menú contextual
+        TableRow<Ruta> row = lookup(".table-row-cell").nth(0).query();
+        rightClickOn(row);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Selecciona el item "Añadir Vehículo" del menú contextual
+        clickOn("Añadir Vehículo");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Recupera el Stage del diálogo buscando por título ("Seleccionar Vehículos")
+        Stage vehicleStage = StageHelper.getStages().stream()
+                .filter(stage -> stage.getTitle().equals("Seleccionar Vehículos"))
+                .findFirst()
+                .orElse(null);
+        assertNotNull("El diálogo de selección de vehículos no se abrió", vehicleStage);
+
+        // Busca la lista de vehículos (JFXListView) en el diálogo
+        JFXListView<String> vehicleListView = lookup(".jfx-list-view").query();
+        assertNotNull("No se encontró la lista de vehículos", vehicleListView);
+
+        // Verifica que la lista tenga al menos un vehículo disponible
+        assertFalse("No hay vehículos disponibles en la lista", vehicleListView.getItems().isEmpty());
+
+        // Selecciona el primer vehículo (por su matrícula) de la lista
+        String selectedPlate = vehicleListView.getItems().get(0);
+        clickOn(selectedPlate);
+
+        // Pulsa el botón "Confirmar" para asignar el vehículo
+        clickOn("Confirmar");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Comprueba que el diálogo se ha cerrado
+        assertFalse("El diálogo de selección de vehículos no se cerró", vehicleStage.isShowing());
+
+        // Verifica que el número de vehículos en la ruta se haya incrementado en 1
+        Ruta updatedRuta = rutaTable.getItems().get(0);
+        assertEquals("El número de vehículos no se actualizó correctamente",
+                Integer.valueOf(initialVehicleCount + 1), updatedRuta.getNumVehiculos());
+    }
 
     @Test
     public void testSearchByLocalizador_success() throws InterruptedException {
