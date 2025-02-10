@@ -236,7 +236,7 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         } else {
             push(KeyCode.DOWN);
         }
-
+      
         doubleClickOn(dateCell);
         press(KeyCode.CONTROL).press(KeyCode.A).release(KeyCode.A).release(KeyCode.CONTROL);
         press(KeyCode.BACK_SPACE);

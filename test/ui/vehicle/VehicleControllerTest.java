@@ -174,7 +174,6 @@ public class VehicleControllerTest extends ApplicationTest {
             clickOn("#addShipmentBtn");
             WaitForAsyncUtils.waitForFxEvents();
         }
-
         // Agregar un vehículo nuevo para trabajar sobre un registro conocido.
         clickOn("#addShipmentBtn");
         WaitForAsyncUtils.waitForFxEvents();
@@ -183,7 +182,6 @@ public class VehicleControllerTest extends ApplicationTest {
         // Ir al vehiculo añadido
         Node cell = lookup(".table-row-cell").nth(lastIndex)
                 .lookup(".table-cell").nth(1).query();
-        
         // Hacer doble clic para activar el modo de edición.
         doubleClickOn(cell);
         WaitForAsyncUtils.waitForFxEvents();
@@ -359,4 +357,3 @@ public class VehicleControllerTest extends ApplicationTest {
         assertFalse("Deleted vehicle should not exist in table", vehicleStillExists);
     }
 
-}
