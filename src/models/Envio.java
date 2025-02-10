@@ -5,6 +5,7 @@ import models.Estado;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -116,10 +117,27 @@ public class Envio implements Serializable, Cloneable {
     public void setVehiculo(String vehiculo) {
         this.vehiculo = vehiculo;
     }
-    
+
     @Override
-    public Envio clone() throws CloneNotSupportedException{
+    public Envio clone() throws CloneNotSupportedException {
         return (Envio) super.clone();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Envio envio = (Envio) obj;
+        return id == envio.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
