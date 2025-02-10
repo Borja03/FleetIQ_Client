@@ -36,7 +36,7 @@ import org.testfx.util.WaitForAsyncUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class EnvioControllerTest extends ApplicationTest {
-
+    
     private TableView<Envio> table;
     private JFXButton addShipmentBtn;
     private JFXButton removeShipmentBtn;
@@ -47,11 +47,11 @@ public class EnvioControllerTest extends ApplicationTest {
     private JFXTextField numeroPaquetesTextField;
     private JFXDatePicker fromDatePicker;
     private JFXDatePicker toDatePicker;
-
+    
     @Override
     public void start(Stage stage) throws Exception {
         new EnvioMain().start(stage);
-
+        
         table = lookup("#table").queryTableView();
         addShipmentBtn = (JFXButton) lookup("#addShipmentBtn").queryButton();
         removeShipmentBtn = (JFXButton) lookup("#removeShipmentBtn").queryButton();
@@ -62,14 +62,14 @@ public class EnvioControllerTest extends ApplicationTest {
         numeroPaquetesTextField = lookup("#numeroPaquetesTextField").query();
         fromDatePicker = lookup("#fromDatePicker").query();
         toDatePicker = lookup("#toDatePicker").query();
-
+        
         assertNotNull("table no encontrada", table);
         assertNotNull("addShipmentBtn no encontrado", addShipmentBtn);
         assertNotNull("removeShipmentBtn no encontrado", removeShipmentBtn);
         assertNotNull("applyNumPaquetesFilterButton no encontrado", applyNumPaquetesFilterButton);
         assertNotNull("applyDateFilterButton no encontrado", applyDateFilterButton);
     }
-
+    
     @Test
     public void testA_initialState() {
         verifyThat("#table", isVisible());
@@ -80,25 +80,34 @@ public class EnvioControllerTest extends ApplicationTest {
         verifyThat("#applyDateFilterButton", isEnabled());
         assertNull(fromDatePicker.getValue());
         assertNull(toDatePicker.getValue());
+        assertTrue(table.getItems().get(0) instanceof Envio);
     }
-
+    
     @Test
     public void testB_addEnvio() {
         int initialCount = table.getItems().size();
         clickOn(addShipmentBtn);
+        Envio envio = new Envio();
+        int id = table.getItems().get(initialCount).getId();
+        envio.setId(id);
+        assertTrue(table.getItems().contains(envio));
         assertEquals(initialCount + 1, table.getItems().size());
     }
-
+    
     @Test
     public void testC_removeEnvio() {
         int initialCount = table.getItems().size();
         Node row = lookup(".table-row-cell").nth(0).query();
         clickOn(row);
+        Envio envio = new Envio();
+        int id = table.getItems().get(0).getId();
+        envio.setId(id);
         verifyThat("#removeShipmentBtn", isEnabled());
         clickOn(removeShipmentBtn);
+        assertFalse(table.getItems().contains(envio));
         assertEquals(initialCount - 1, table.getItems().size());
     }
-
+    
     @Test
     public void testF_filterByDateRange() {
         interact(() -> {
@@ -113,7 +122,7 @@ public class EnvioControllerTest extends ApplicationTest {
                 )
         );
     }
-
+    
     @Test
     public void testH_tableSelection() {
         Node row = lookup(".table-row-cell").nth(0).query();
@@ -133,7 +142,7 @@ public class EnvioControllerTest extends ApplicationTest {
         verifyThat("En numero de paquetes debe ser mayor o igual a cero", isVisible());
         clickOn("Aceptar");
     }
-
+    
     @Test
     public void testJ_testEditFechaEnvio() throws ParseException {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
@@ -149,7 +158,7 @@ public class EnvioControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertEquals(expectedDate, table.getItems().get(0).getFechaEnvio());
     }
-
+    
     @Test
     public void testK_testEditFechaEntrega() throws ParseException {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
@@ -165,7 +174,7 @@ public class EnvioControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertEquals(expectedDate, table.getItems().get(0).getFechaEntrega());
     }
-
+    
     @Test
     public void testL_testEditEstado() {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
@@ -178,7 +187,7 @@ public class EnvioControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertNotNull(table.getItems().get(0).getEstado());
     }
-
+    
     @Test
     public void testM_testEditNumPaquetes() {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
@@ -190,7 +199,7 @@ public class EnvioControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertEquals("5", table.getItems().get(0).getNumPaquetes().toString());
     }
-
+    
     @Test
     public void testN_testEditCreador() {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
@@ -203,7 +212,7 @@ public class EnvioControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertNotNull(table.getItems().get(0).getCreadorEnvio());
     }
-
+    
     @Test
     public void testO_testEditVehiculo() {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
@@ -216,5 +225,5 @@ public class EnvioControllerTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertNotNull(table.getItems().get(0).getVehiculo());
     }
-
+    
 }
