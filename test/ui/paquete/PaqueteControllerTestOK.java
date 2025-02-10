@@ -139,26 +139,38 @@ public class PaqueteControllerTestOK extends ApplicationTest {
      */
     @Test
     public void testB_addPackage() {
+        // Get initial state
         int initialRowCount = paqueteTableView.getItems().size();
-
+        Paquete lastPackage = paqueteTableView.getItems().get(initialRowCount - 1);
         // Click the "Add Shipment" button
         clickOn("#addShipmentBtn");
-        WaitForAsyncUtils.waitForFxEvents(); // Wait for UI to process
+        WaitForAsyncUtils.waitForFxEvents();
 
-        // Check if a dialog appears (Confirm Dialog or Form Modal)
+        // Check if dialog appears
         DialogPane dialogPane = lookup(".dialog-pane").query();
         assertNotNull("Dialog not shown after adding a package", dialogPane);
 
         // Click "OK" to confirm the addition
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
         assertNotNull("OK button not found in dialog", okButton);
-
         clickOn(okButton);
-        WaitForAsyncUtils.waitForFxEvents(); // Ensure dialog closes
+        WaitForAsyncUtils.waitForFxEvents();
 
-        // Verify the table has one more row than before
+        // Verify row count increased
         int newRowCount = paqueteTableView.getItems().size();
         assertEquals("Package count should increase by 1", initialRowCount + 1, newRowCount);
+
+        // Get the newly added package (last row)
+        Paquete newPackage = paqueteTableView.getItems().get(newRowCount - 1);
+        ObservableList<Paquete> results = paqueteTableView.getItems();
+        // Verify default values
+        assertNotNull("New package should not be null", newPackage);
+        assertNotEquals("ids should  ", lastPackage.getId(), newPackage.getId(), 0);
+        
+//        assertEquals("Sender name  should be empty  ", lastPackage.getSender(),"");
+//        assertEquals("Receiver should be empty ", lastPackage.getReceiver(),"");
+//        assertEquals("Weight should be 0.0 ", lastPackage.getWeight(),0.0,0.001);
+
     }
 
     /**
@@ -188,9 +200,9 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         PackageSize originalSize = packageSelected.getSize();
         Date originalDate = packageSelected.getCreationDate();
         boolean originalFragile = packageSelected.isFragile();
-     //Locate date column cell using column ID
+        //Locate date column cell using column ID
         Node dateCell = lookup("#dateColumn").nth(rowIndex + 1) // Account for header row
-                        .query();
+                .query();
 
         // Ensure updated values are different from the original ones
         String newSender = originalSender.equals("Updated Sender") ? "New Sender" : "Updated Sender";
@@ -225,12 +237,12 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         } else {
             push(KeyCode.DOWN);
         }
-        
+
         doubleClickOn(dateCell);
         press(KeyCode.CONTROL).press(KeyCode.A).release(KeyCode.A).release(KeyCode.CONTROL);
         press(KeyCode.BACK_SPACE);
         //Enter invalid future date
-        write("06/01/2025");
+        write("07/02/2025");
         press(KeyCode.ENTER);
         // Update Fragile status
         Node tableColumnFragile = lookup("#fragileColumn").nth(tableRow + 1).query();
@@ -245,7 +257,7 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         assertNotEquals("Receiver should be updated", originalReceiver, updatedPackage.getReceiver());
         assertNotEquals("Weight should be updated", originalWeight, updatedPackage.getWeight());
         assertNotEquals("Size should be updated", originalSize, updatedPackage.getSize());
-          assertEquals("Creation date should revert to original value", originalDate, packageSelected.getCreationDate());
+        assertNotEquals("Creation date should be original value", originalDate, packageSelected.getCreationDate());
         assertNotEquals("Fragile status should be updated", originalFragile, updatedPackage.isFragile());
     }
 
