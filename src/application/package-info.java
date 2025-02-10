@@ -1,4 +1,2 @@
-/*
- * Este paquete almacena el main para poder ejecutar la aplicacion cliente
- */
+/** This package contains the main class to run the client application. */
 package application;

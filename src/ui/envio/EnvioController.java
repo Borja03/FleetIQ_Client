@@ -301,7 +301,10 @@ public class EnvioController {
      * cuando se editan ciertos campos.
      * </p>
      *
+<<<<<<< HEAD
+=======
      * @throws SelectException si ocurre un error al recuperar información de la
+>>>>>>> af5075be2adddfd6e55c65a9202384d2f2a02de7
      * base de datos.
      */
     private void setUpTableColumns() {

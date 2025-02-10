@@ -1,5 +1,2 @@
-/*
- * Este paquete almacena todas las interfaces de logica empleadas en el cliente, junto con sus factories
- */
-
+/** This package stores all logic interfaces used in the client, along with their factories. */
 package logicInterface;

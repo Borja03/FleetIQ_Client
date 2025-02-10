@@ -1,7 +1,2 @@
-/*
- * Este paquete almacena las excepciones que se usarán el el proyecto del cliente
- */
-
-
-
+/** This package stores the exceptions used in the client project. */
 package exception;

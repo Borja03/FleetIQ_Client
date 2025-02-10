@@ -153,8 +153,7 @@ public class PaqueteControllerFiltersTest extends ApplicationTest {
 
         // Verify results contain "John"
         ObservableList<Paquete> results = paqueteTableView.getItems();
-        assertTrue(results.stream().anyMatch(p
-                        -> p.getSender().contains("John") || p.getReceiver().contains("John")
+        assertTrue(results.stream().anyMatch(p -> p.getSender().contains("John") || p.getReceiver().contains("John")
         ));
     }
 

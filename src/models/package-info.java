@@ -1,5 +1,2 @@
-/*
- * Este paquete almacena el modelo del cliente
- */
-
+/** This package stores the client model. */
 package models;

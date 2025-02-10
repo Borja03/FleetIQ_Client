@@ -77,10 +77,6 @@
 				<reportElement x="452" y="80" width="100" height="20" uuid="f292dd3a-bc56-42b9-80c7-d4910fb611d2"/>
 				<text><![CDATA[C. Tartanga 48950]]></text>
 			</staticText>
-			<image>
-				<reportElement x="2" y="-19" width="138" height="119" uuid="dd687833-0acb-40b3-a467-319c038e26b2"/>
-				<imageExpression><![CDATA["C:\\Users\\Omar\\Desktop\\08\\FleetIQ_Client\\src\\image\\logo3.png"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement style="HeaderStyle" x="230" y="64" width="80" height="36" uuid="69ae6d73-fee1-41dd-9255-cb4a91b4055e"/>
 				<textElement>

@@ -17,7 +17,6 @@ public class VehicleFactory {
      * Returns the singleton instance of VehicleManager. If no instance exists,
      * creates a new one.
      *
-     * @return The singleton instance of VehicleManager
      */
     private static VehicleManager vehicleManager;
 

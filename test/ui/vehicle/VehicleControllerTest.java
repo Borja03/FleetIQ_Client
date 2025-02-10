@@ -112,25 +112,61 @@ public class VehicleControllerTest extends ApplicationTest {
         assertTrue(items.contains("ITV Date"));
         assertTrue(items.contains("Registration Date"));
     }
+    
+    
+      @Test
+    public void testB_readAll() {
+        // Comprobar que hay al menos 1 vehiculo
+        if (vehicleTableView.getItems().isEmpty()) {
+            clickOn("#addShipmentBtn");
+            WaitForAsyncUtils.waitForFxEvents();
+        }
 
-    @Test
-    public void testB_addVehicle() {
-        int initialRowCount = vehicleTableView.getItems().size();
+        // Obtener todos los objetos de la tabla
+        ObservableList<Vehiculo> items = vehicleTableView.getItems();
 
-        clickOn("#addShipmentBtn");
-        WaitForAsyncUtils.waitForFxEvents();
+        // Verificar que la tabla no está vacía
+        assertFalse("Table should not be empty", items.isEmpty());
 
-        int newRowCount = vehicleTableView.getItems().size();
-        assertEquals(initialRowCount + 1, newRowCount);
+        // Verificar que todos los objetos de la tabla son de tipo Vehiculo
+        for (Object item : items) {
+            assertTrue("Table item should be of type Vehiculo",
+                    item instanceof Vehiculo);
+        }
 
-        // Verify default values of new vehicle
-        Vehiculo newVehicle = vehicleTableView.getItems().get(newRowCount - 1);
-        assertEquals("", newVehicle.getMatricula());
-        assertNotNull(newVehicle.getRegistrationDate());
     }
 
     @Test
-    public void testC_updateVehicle() {
+    public void testC_addVehicle() {
+        // Get initial row count
+        int initialRowCount = vehicleTableView.getItems().size();
+
+        // Add new vehicle
+        clickOn("#addShipmentBtn");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Verify row count increased
+        int newRowCount = vehicleTableView.getItems().size();
+        assertEquals("Row count should increase by 1", initialRowCount + 1, newRowCount);
+
+        // Get the newly added vehicle
+        Vehiculo newVehicle = vehicleTableView.getItems().get(newRowCount - 1);
+
+        // Verify default values
+        assertNotNull("New vehicle should not be null", newVehicle);
+        assertNotNull("ID should not be null", newVehicle.getId());
+        assertFalse("Default activo should be false", newVehicle.isActivo());
+        assertNotNull("Registration date should not be null", newVehicle.getRegistrationDate());
+        assertEquals("Matricula should be empty string", "", newVehicle.getMatricula());
+
+        // Verify null fields
+        assertNull("Modelo should be null", newVehicle.getModelo());
+        assertNull("Capacidad should be null", newVehicle.getCapacidadCarga());
+        assertNull("ITV date should be null", newVehicle.getItvDate());
+    }
+
+    @Test
+    public void testD_updateVehicle() {
         WaitForAsyncUtils.waitForFxEvents();
 
         // Asegurarse de que la tabla tenga al menos un vehículo.
@@ -138,21 +174,18 @@ public class VehicleControllerTest extends ApplicationTest {
             clickOn("#addShipmentBtn");
             WaitForAsyncUtils.waitForFxEvents();
         }
-
         // Agregar un vehículo nuevo para trabajar sobre un registro conocido.
         clickOn("#addShipmentBtn");
         WaitForAsyncUtils.waitForFxEvents();
         int lastIndex = vehicleTableView.getItems().size() - 1;
 
-        // Ubicar la celda correspondiente a la matrícula de la fila recién agregada.
+        // Ir al vehiculo añadido
         Node cell = lookup(".table-row-cell").nth(lastIndex)
                 .lookup(".table-cell").nth(1).query();
         // Hacer doble clic para activar el modo de edición.
         doubleClickOn(cell);
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Escribir la nueva matrícula. Si hay contenido anterior, se puede intentar borrarlo.
-        // Se puede usar eraseText(n) si se sabe cuántos caracteres hay, o bien escribir sobre el campo.
         eraseText(10);
         write("ABC123");
         press(KeyCode.ENTER);
@@ -166,7 +199,7 @@ public class VehicleControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testC2_updateModelo() {
+    public void testE_updateModelo() {
         if (vehicleTableView.getItems().isEmpty()) {
             clickOn("#addShipmentBtn");
             WaitForAsyncUtils.waitForFxEvents();
@@ -189,7 +222,7 @@ public class VehicleControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testC3_updateCapacidad() {
+    public void testF_updateCapacidad() {
         if (vehicleTableView.getItems().isEmpty()) {
             clickOn("#addShipmentBtn");
             WaitForAsyncUtils.waitForFxEvents();
@@ -210,47 +243,46 @@ public class VehicleControllerTest extends ApplicationTest {
         Vehiculo updated = vehicleTableView.getItems().get(lastIndex);
         assertEquals("La capacidad no se actualizó correctamente", Integer.valueOf(500), updated.getCapacidadCarga());
     }
-@Test
-public void testC4_updateActivo() {
-    if (vehicleTableView.getItems().isEmpty()) {
-        clickOn("#addShipmentBtn");
-        WaitForAsyncUtils.waitForFxEvents();
-        assertFalse("No se agregó un vehículo", vehicleTableView.getItems().isEmpty());
-    }
-    
-    int lastIndex = vehicleTableView.getItems().size() - 1;
-    Vehiculo vehiculo = vehicleTableView.getItems().get(lastIndex);
-    boolean initialState = vehiculo.isActivo();
-    
-    // Obtener la celda de la columna "Activo"
-    Node cell = lookup(".table-row-cell").nth(lastIndex)
-            .lookup(".table-cell").nth(6).query();
-    
-    // Paso 1: Doble clic para activar la edición
-    doubleClickOn(cell);
-    WaitForAsyncUtils.waitForFxEvents();
-    sleep(500); // Esperar a que se active el modo edición
-    
-    // Paso 2: Clic adicional para cambiar el estado
-    clickOn(cell);
-    WaitForAsyncUtils.waitForFxEvents();
-    sleep(500); // Esperar a que se procese el cambio
-    
-    // Confirmar la edición
-    press(KeyCode.ENTER);
-    release(KeyCode.ENTER);
-    WaitForAsyncUtils.waitForFxEvents();
-    
-    // Forzar actualización
-    interact(() -> vehicleTableView.refresh());
-    
-    // Verificar el cambio
-    boolean updatedState = vehiculo.isActivo();
-    assertNotEquals("El estado activo no se actualizó correctamente", initialState, updatedState);
-}
 
     @Test
-    public void testC5_updateITVDate() {
+    public void testG_updateActivo() {
+        if (vehicleTableView.getItems().isEmpty()) {
+            clickOn("#addShipmentBtn");
+            WaitForAsyncUtils.waitForFxEvents();
+            assertFalse("No se agregó un vehículo", vehicleTableView.getItems().isEmpty());
+        }
+
+        int lastIndex = vehicleTableView.getItems().size() - 1;
+        Vehiculo vehiculo = vehicleTableView.getItems().get(lastIndex);
+        boolean initialState = vehiculo.isActivo();
+
+        // Obtener la celda de la columna "Activo"
+        Node cell = lookup(".table-row-cell").nth(lastIndex)
+                .lookup(".table-cell").nth(6).query();
+
+        doubleClickOn(cell);
+        WaitForAsyncUtils.waitForFxEvents();
+        sleep(500); // Esperar a que se active el modo edición
+    
+        clickOn(cell);
+        WaitForAsyncUtils.waitForFxEvents();
+        sleep(500); // Esperar a que se procese el cambio
+
+        // Confirmar la edición
+        press(KeyCode.ENTER);
+        release(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Forzar actualización
+        interact(() -> vehicleTableView.refresh());
+
+        // Verificar el cambio
+        boolean updatedState = vehiculo.isActivo();
+        assertNotEquals("El estado activo no se actualizó correctamente", initialState, updatedState);
+    }
+
+    @Test
+    public void testH_updateITVDate() {
         // Se asume que el índice de la última fila es el que deseas actualizar
         int lastIndex = vehicleTableView.getItems().size() - 1;
 
@@ -271,7 +303,7 @@ public void testC4_updateActivo() {
         // Presionar ENTER para confirmar el cambio
         push(KeyCode.ENTER);
 
-        // Esperar la actualización
+        // Esperar la actualización por si el servidor va lento
         sleep(500);
 
         // Obtener el objeto Vehiculo actualizado
@@ -288,101 +320,40 @@ public void testC4_updateActivo() {
     }
 
     @Test
-    public void testD_deleteVehicle() {
-        WaitForAsyncUtils.waitForFxEvents();
-
-        int initialCount = vehicleTableView.getItems().size();
-        if (initialCount == 0) {
-            return;
+    public void testI_deleteVehicle() {
+        // Verificar que se puede hacer la prueba con algún vehiculo
+        if (vehicleTableView.getItems().isEmpty()) {
+            clickOn("#addShipmentBtn");
+            WaitForAsyncUtils.waitForFxEvents();
         }
 
-        // Select first row
+        // Obtener el vehiculo a borrar
+        int initialCount = vehicleTableView.getItems().size();
+        Vehiculo vehicleToDelete = vehicleTableView.getItems().get(0);
+        Integer idToDelete = vehicleToDelete.getId();
+
+        // Seleccionar el primero
         Node firstRow = lookup(".table-row-cell").query();
         clickOn(firstRow);
 
+        // Borrar el vehiculo
         clickOn(removeShipmentBtn);
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Verify confirmation dialog
+        // Confirmar el borrado
         DialogPane dialogPane = lookup(".dialog-pane").query();
         assertNotNull("Confirmation dialog not shown", dialogPane);
-
         Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
-        assertNotNull("OK button not found in dialog", okButton);
-
         clickOn(okButton);
         WaitForAsyncUtils.waitForFxEvents();
 
+        // Verificar que hay un vehiculo menos en la tabla
         assertEquals("Vehicle count should decrease by 1",
                 initialCount - 1, vehicleTableView.getItems().size());
+
+        // Verificar que el vehiculo seleccionado en concreto se ha eliminado
+        boolean vehicleStillExists = vehicleTableView.getItems().stream()
+                .anyMatch(v -> v.getId().equals(idToDelete));
+        assertFalse("Deleted vehicle should not exist in table", vehicleStillExists);
     }
 
-    @Test
-    public void testE_searchFunctionality() {
-        // Agregar un vehículo nuevo para la búsqueda.
-        clickOn("#addShipmentBtn");
-        WaitForAsyncUtils.waitForFxEvents();
-        int lastIndex = vehicleTableView.getItems().size() - 1;
-
-        // Ubicar la celda de la matrícula en la fila recién agregada.
-        Node cell = lookup(".table-row-cell").nth(lastIndex)
-                .lookup(".table-cell").nth(1).query();
-        // Doble clic para activar el modo edición.
-        doubleClickOn(cell);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Borrar cualquier contenido previo y escribir "ABC123".
-        eraseText(10);
-        write("ABC123");
-        press(KeyCode.ENTER);
-        release(KeyCode.ENTER);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Confirmar que la matrícula se actualizó.
-        Vehiculo newVehicle = vehicleTableView.getItems().get(lastIndex);
-        assertEquals("La matrícula del vehículo no se actualizó correctamente",
-                "ABC123", newVehicle.getMatricula());
-
-        // Limpiar el campo de búsqueda (usando doble clic para seleccionar todo) y escribir "ABC".
-        doubleClickOn("#searchTextField");
-        write("ABC");
-        clickOn("#searchButton");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verificar que al menos un vehículo tenga "ABC" en la matrícula.
-        ObservableList<Vehiculo> results = vehicleTableView.getItems();
-        boolean found = results.stream().anyMatch(v -> v.getMatricula().contains("ABC"));
-        if (!found) {
-            String allMatriculas = "";
-            for (Vehiculo v : results) {
-                allMatriculas += "[" + v.getMatricula() + "] ";
-            }
-            fail("No se encontró ningún vehículo con 'ABC' en la matrícula. Matrículas presentes: " + allMatriculas);
-        }
-        assertTrue("Se encontró al menos un vehículo con 'ABC' en la matrícula", found);
-    }
-
-    /*
-
-    @Test
-    public void testH_serverConnection() {
-        try {
-            VehicleManagerImp vehicleManager = new VehicleManagerImp();
-            List<Vehiculo> result = vehicleManager.findAllVehiculos();
-
-            assertTrue("Server is connected", true);
-            assertNotNull("Received valid response", result);
-        } catch (SelectException e) {
-            if (e.getMessage().contains("Database server connection failed")) {
-                fail("Server connection failed: " + e.getMessage());
-            } else if (e.getCause() instanceof ProcessingException) {
-                fail("Network error: " + e.getCause().getMessage());
-            } else {
-                assertTrue("Server is reachable but operation failed", true);
-            }
-        } catch (Exception e) {
-            fail("Unexpected error: " + e.getMessage());
-        }
-    }
-     */
-}

@@ -20,8 +20,11 @@ import factories.PaqueteFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -111,7 +114,7 @@ public class PaqueteControllerServerError extends ApplicationTest {
 
         // Ensure the package count remains the same
         assertEquals("Package count should NOT change", initialCount,
-                        paqueteTableView.getItems().size());
+                paqueteTableView.getItems().size());
     }
 
     @Test
@@ -181,6 +184,34 @@ public class PaqueteControllerServerError extends ApplicationTest {
 
         // Verify table refresh
         assertNotNull("Table data should persist", paqueteTableView.getItems());
+    }
+
+    @Test
+    public void testH_searchFunctionality_ServerError() {
+        // Set invalid API path to force server failure
+        PaqueteManager invalidManager = new PackageManagerImp(new PackageRESTClient(INVALID_API_PATH));
+        PaqueteFactory.setPackageInstance(invalidManager);
+
+        // Ensure the table has some data before triggering the error
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Click on search field and write "John" (this triggers a request)
+        clickOn("#searchTextField");
+        write("J");
+        WaitForAsyncUtils.waitForFxEvents();  // Wait for the UI to process request
+
+        // Verify that the "Server Error" alert appears
+        verifyThat(lookup(".dialog-pane"), isVisible());
+
+        // Click OK to close the error alert
+        DialogPane alert = lookup(".alert").query();
+        assertTrue("Missing validation message", alert.getContentText().contains("Error during search"));
+        //Cleanup alert
+        clickOn(alert.lookupButton(ButtonType.OK));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Ensure the table remains unchanged (since the request failed)
+        assertEquals("Table should not show nay data after server failure", 0, paqueteTableView.getItems().size());
     }
 
 }

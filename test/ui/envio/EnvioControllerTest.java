@@ -80,12 +80,19 @@ public class EnvioControllerTest extends ApplicationTest {
         verifyThat("#applyDateFilterButton", isEnabled());
         assertNull(fromDatePicker.getValue());
         assertNull(toDatePicker.getValue());
+        for (int i = 0; i < table.getItems().size(); i++) {
+            assertTrue(table.getItems().get(i) instanceof Envio);
+        }
     }
 
     @Test
     public void testB_addEnvio() {
         int initialCount = table.getItems().size();
         clickOn(addShipmentBtn);
+        Envio envio = new Envio();
+        int id = table.getItems().get(initialCount).getId();
+        envio.setId(id);
+        assertTrue(table.getItems().contains(envio));
         assertEquals(initialCount + 1, table.getItems().size());
     }
 
@@ -94,8 +101,12 @@ public class EnvioControllerTest extends ApplicationTest {
         int initialCount = table.getItems().size();
         Node row = lookup(".table-row-cell").nth(0).query();
         clickOn(row);
+        Envio envio = new Envio();
+        int id = table.getItems().get(0).getId();
+        envio.setId(id);
         verifyThat("#removeShipmentBtn", isEnabled());
         clickOn(removeShipmentBtn);
+        assertFalse(table.getItems().contains(envio));
         assertEquals(initialCount - 1, table.getItems().size());
     }
 
