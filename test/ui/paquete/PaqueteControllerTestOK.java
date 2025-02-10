@@ -161,7 +161,7 @@ public class PaqueteControllerTestOK extends ApplicationTest {
         // Verify the new package is not null
         assertNotNull("New package should not be null", newPackage);
 
-        assertEquals("New package a different ID ", lastPackage.getId(), newPackage.getId());
+        assertNotEquals("New package a different ID ", lastPackage.getId(), newPackage.getId());
         // Verify default values of the new package
         assertTrue("New package should new value",
                 paqueteTableView.getItems().stream().anyMatch(pkg -> pkg.getId().equals(newPackage.getId())));
