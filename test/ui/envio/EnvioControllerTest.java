@@ -10,8 +10,12 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
+import java.text.ParseException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import javafx.scene.Node;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -76,12 +80,19 @@ public class EnvioControllerTest extends ApplicationTest {
         verifyThat("#applyDateFilterButton", isEnabled());
         assertNull(fromDatePicker.getValue());
         assertNull(toDatePicker.getValue());
+        for (int i = 0; i < table.getItems().size(); i++) {
+            assertTrue(table.getItems().get(i) instanceof Envio);
+        }
     }
 
     @Test
     public void testB_addEnvio() {
         int initialCount = table.getItems().size();
         clickOn(addShipmentBtn);
+        Envio envio = new Envio();
+        int id = table.getItems().get(initialCount).getId();
+        envio.setId(id);
+        assertTrue(table.getItems().contains(envio));
         assertEquals(initialCount + 1, table.getItems().size());
     }
 
@@ -90,8 +101,12 @@ public class EnvioControllerTest extends ApplicationTest {
         int initialCount = table.getItems().size();
         Node row = lookup(".table-row-cell").nth(0).query();
         clickOn(row);
+        Envio envio = new Envio();
+        int id = table.getItems().get(0).getId();
+        envio.setId(id);
         verifyThat("#removeShipmentBtn", isEnabled());
         clickOn(removeShipmentBtn);
+        assertFalse(table.getItems().contains(envio));
         assertEquals(initialCount - 1, table.getItems().size());
     }
 
@@ -117,11 +132,9 @@ public class EnvioControllerTest extends ApplicationTest {
         verifyThat("#removeShipmentBtn", isEnabled());
     }
 
-
     /**
      * Test date range filtering functionality.
      */
-
     @Test
     public void testI_validation() {
         Node numPaquetesColumn = lookup(".table-cell").nth(4).query();
@@ -133,23 +146,86 @@ public class EnvioControllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testJ_editOrigen() {
-        // Wait for data to load
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Verify table has data
+    public void testJ_testEditFechaEnvio() throws ParseException {
         assertFalse("Table empty - no routes found", table.getItems().isEmpty());
-        TableRow<Envio> row = lookup(".table-row-cell").nth(5)
-                .query();
+        Node fechaEnvioColumn = lookup(".table-cell").nth(1).query();
+        doubleClickOn(fechaEnvioColumn);
+        press(KeyCode.CONTROL, KeyCode.A);
+        press(KeyCode.BACK_SPACE);
+        String newFecha = "20/10/2025";
+        write(newFecha);
+        press(KeyCode.ENTER);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d/MM/yyyy");
+        Date expectedDate = dateFormat.parse(newFecha);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertEquals(expectedDate, table.getItems().get(0).getFechaEnvio());
+    }
+
+    @Test
+    public void testK_testEditFechaEntrega() throws ParseException {
+        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
+        Node fechaEntregaColumn = lookup(".table-cell").nth(2).query();
+        doubleClickOn(fechaEntregaColumn);
+        press(KeyCode.CONTROL, KeyCode.A);
+        press(KeyCode.BACK_SPACE);
+        String newFecha = "20/11/2025";
+        write(newFecha);
+        press(KeyCode.ENTER);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d/MM/yyyy");
+        Date expectedDate = dateFormat.parse(newFecha);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertEquals(expectedDate, table.getItems().get(0).getFechaEntrega());
+    }
+
+    @Test
+    public void testL_testEditEstado() {
+        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
+        Node estadoColumn = lookup(".table-cell").nth(3).query();
+        doubleClickOn(estadoColumn);
+        ChoiceBox choice = from(estadoColumn).lookup(".choice-box").query();
+        clickOn(choice);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertNotNull(table.getItems().get(0).getEstado());
+    }
+
+    @Test
+    public void testM_testEditNumPaquetes() {
+        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
         Node numPaquetesColumn = lookup(".table-cell").nth(4).query();
         doubleClickOn(numPaquetesColumn);
+        eraseText(5);
         write("5");
         press(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
+        assertEquals("5", table.getItems().get(0).getNumPaquetes().toString());
+    }
 
-        // Verify update
-        Envio updated = table.getItems().get(0);
-        assertEquals("5", updated.getNumPaquetes().toString());
+    @Test
+    public void testN_testEditCreador() {
+        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
+        Node creadorColumn = lookup(".table-cell").nth(5).query();
+        doubleClickOn(creadorColumn);
+        ChoiceBox choice = from(creadorColumn).lookup(".choice-box").query();
+        clickOn(choice);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertNotNull(table.getItems().get(0).getCreadorEnvio());
+    }
+
+    @Test
+    public void testO_testEditVehiculo() {
+        assertFalse("Table empty - no routes found", table.getItems().isEmpty());
+        Node vehiculoColumn = lookup(".table-cell").nth(7).query();
+        doubleClickOn(vehiculoColumn);
+        ChoiceBox choice = from(vehiculoColumn).lookup(".choice-box").query();
+        clickOn(choice);
+        type(KeyCode.DOWN);
+        type(KeyCode.ENTER);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertNotNull(table.getItems().get(0).getVehiculo());
     }
 
 }
