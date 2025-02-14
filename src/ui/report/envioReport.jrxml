@@ -34,9 +34,6 @@
 	<field name="fechaEntrega" class="java.util.Date"/>
 	<field name="estado" class="models.Estado"/>
 	<field name="numPaquetes" class="java.lang.Integer"/>
-	<field name="creadorEnvios" class="java.lang.String"/>
-	<field name="ruta" class="java.lang.String"/>
-	<field name="vehiculos" class="java.lang.String"/>
 	<title>
 		<band height="100" splitType="Stretch">
 			<rectangle>
@@ -118,27 +115,6 @@
 				</textElement>
 				<text><![CDATA[Numero de paquetes]]></text>
 			</staticText>
-			<staticText>
-				<reportElement style="Table_Header" x="325" y="0" width="102" height="30" uuid="7d72ac0f-b6d8-4eb7-b4e4-e601f209786b"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Creador del envio]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Table_Header" x="427" y="0" width="62" height="30" uuid="339e67f4-a2cf-4b81-8df7-091ea4887bca"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Ruta]]></text>
-			</staticText>
-			<staticText>
-				<reportElement style="Table_Header" x="489" y="0" width="67" height="30" uuid="35d1a380-d61d-4fcc-9f31-f4bf01a12775"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Vehiculos]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -173,21 +149,6 @@
 			<textField isStretchWithOverflow="true">
 				<reportElement style="Table_Row" x="325" y="0" width="102" height="25" uuid="9031221b-867f-49d2-9bc0-799c0edfda60"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{creadorEnvios}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="Table_Row" x="427" y="0" width="62" height="25" uuid="339e67f4-a2cf-4b81-8df7-091ea4887bca"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{ruta}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="Table_Row" x="489" y="0" width="67" height="25" uuid="53d1a380-d16d-4fcc-9f31-f4bf01a21775"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{vehiculos}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

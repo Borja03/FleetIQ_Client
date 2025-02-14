@@ -107,7 +107,7 @@
                 </tooltip>
             </JFXButton>
 
-            <JFXButton fx:id="printReportBtn" ellipsisString="" prefWidth="30.0">
+            <JFXButton fx:id="printReportBtn" ellipsisString="" onAction="#printReport" prefWidth="30.0">
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true">
                         <image>

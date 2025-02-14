@@ -6,6 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.TableCell;
@@ -125,7 +126,7 @@ public class EnvioDateEditingCell extends TableCell<Envio, Date> {
             return "";
         }
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(mDateFormat, Locale.US);
             return dateFormat.format(getItem());
         } catch (Exception e) {
             return ""; // Fallback to an empty string if formatting fails

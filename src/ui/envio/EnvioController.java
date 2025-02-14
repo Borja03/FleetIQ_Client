@@ -2,6 +2,7 @@ package ui.envio;
 
 import cellFactories.EnvioDateEditingCell;
 import com.jfoenix.controls.*;
+import exception.DeleteException;
 import exception.SelectException;
 import exception.UpdateException;
 import factories.EnvioFactory;
@@ -358,18 +359,27 @@ public class EnvioController {
                     if (nuevosPaquetes <= 0) {
                         throw new IllegalArgumentException("En numero de paquetes debe ser mayor o igual a cero");
                     }
+                    if (nuevosPaquetes.toString().matches(".*[a-zA-Z].*")) {
+                        throw new IllegalArgumentException("No puedes introducir letras");
+                    }
+
                     envioClone.setNumPaquetes(nuevosPaquetes);
 
                     envioService.edit_XML(envioClone, envioClone.getId().toString());
                     envio.setNumPaquetes(nuevosPaquetes);
 
+                } catch (NullPointerException ex) {
+                    envio.setNumPaquetes(paquetesAntiguos);
+                    table.refresh();
+                    UtilsMethods.showAlert("Error", "Debes introducir un número");
+                    LOGGER.warning("Error al actualizar el numero de paquetes: " + nuevosPaquetes);
+                    numPaquetesColumn.getTableView().refresh();
                 } catch (Exception ex) {
                     envio.setNumPaquetes(paquetesAntiguos);
                     table.refresh();
                     UtilsMethods.showAlert("Error", ex.getMessage());
                     LOGGER.warning("Error al actualizar el numero de paquetes: " + nuevosPaquetes);
                     numPaquetesColumn.getTableView().refresh();
-
                 }
 
             });
@@ -653,22 +663,24 @@ public class EnvioController {
         try {
             ObservableList<Envio> selectedEnvios = table.getSelectionModel().getSelectedItems();
             LOGGER.info("Iniciando la eliminación de los envíos seleccionados.");
-            for (Envio envio : selectedEnvios) {
-                LOGGER.info(selectedEnvios.toString());
-                if (envio.getEnvioRutaVehiculo() != null) {
+            LOGGER.info(selectedEnvios.toString());
+            String confirmMessage = "Are you sure you want to delete selected envio? This action cannot be undone.";
+            Alert alert = UtilsMethods.showAlert("Confirm Deletion", confirmMessage, "CONFIRMATION");
+            if (alert.getResult() == ButtonType.OK) {
+                for (Envio envio : selectedEnvios) {
+                    if (envio.getEnvioRutaVehiculo() != null) {
+                        envioService.remove(envio.getId());
+                        if (envio.getVehiculo() != null) {
+                            String matriculaVAntiguo = envio.getVehiculo();
+                            List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
+                            Vehiculo vAntiguo = vComprobar.get(0);
+                            vAntiguo.setActivo(false);
+                            vehicleService.updateVehiculo(vAntiguo);
+                        }
+                    }
                     envioService.remove(envio.getId());
+                    envioList.remove(envio);
                 }
-                if (envio.getVehiculo() == null) {
-
-                } else {
-                    String matriculaVAntiguo = envio.getVehiculo();
-                    List<Vehiculo> vComprobar = vehicleService.findAllVehiculosByPlate(matriculaVAntiguo);
-                    Vehiculo vAntiguo = vComprobar.get(0);
-                    vAntiguo.setActivo(false);
-                    vehicleService.updateVehiculo(vAntiguo);
-                }
-                envioService.remove(envio.getId());
-                envioList.remove(envio);
 
             }
             table.refresh();
@@ -715,8 +727,10 @@ public class EnvioController {
      */
     @FXML
     private void printReport(ActionEvent event) {
+        LOGGER.info("Print Report clicked");
         try {
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/RutaReport.jrxml"));
+            LOGGER.info("Beginning printing action...");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/report/envioReport.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource 
             //implementation 
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Envio>) this.table.getItems());
@@ -732,8 +746,13 @@ public class EnvioController {
         } catch (JRException ex) {
             //If there is an error show message and
             //log it.
-            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage());
+            utils.UtilsMethods.showAlert("Error al imprimir: ", ex.getMessage(), "ERROR");
+            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        } catch (Exception ex) {
+            UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+            LOGGER.log(Level.SEVERE, null, ex);
         }
+
     }
 
 }
