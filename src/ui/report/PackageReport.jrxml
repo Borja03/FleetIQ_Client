@@ -84,6 +84,10 @@
 				</textElement>
 				<text><![CDATA[Report]]></text>
 			</staticText>
+			<image>
+                             <reportElement x="0" y="0" width="105" height="100" uuid="1c96e39f-311d-4516-bbdc-1bb150aff33b"/>
+                             <imageExpression><![CDATA["image/logo3.png"]]></imageExpression>
+                         </image>
 		</band>
 	</title>
 	<columnHeader>

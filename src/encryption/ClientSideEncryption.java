@@ -20,6 +20,7 @@ public class ClientSideEncryption {
     // Encrypts the message and returns Base64 encoded string
     public static String encrypt(String message) throws Exception {
         PublicKey publicKey = loadPublicKey();
+        
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC");
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         

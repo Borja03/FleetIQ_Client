@@ -15,6 +15,8 @@ import exception.SelectException;
 import exception.InvalidNameFormatException;
 import exception.UpdateException;
 import factories.PaqueteFactory;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 
@@ -286,7 +288,7 @@ public class PaqueteController {
 
         // Add listener for search text field to perform search as text changes
         searchTextField.textProperty().addListener((observable, oldValue, newValue)
-                        -> performSearch(newValue.trim().toLowerCase())
+                -> performSearch(newValue.trim().toLowerCase())
         );
 
         // Apply the selected theme to the scene
@@ -475,8 +477,8 @@ public class PaqueteController {
      * attempt is made to update the sender value in the database. In case of an
      * error, the original value is restored, and an alert is shown to the user.
      *
-     * 
-     * 
+     *
+     *
      */
     private void validateAndUpdateSenderColumn() {
         senderColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -500,21 +502,23 @@ public class PaqueteController {
                 // If database update successful, then update the object
                 paquete.setSender(newSenderValue);
                 LOGGER.info("Sender updated successfully for package with ID: " + paquete.getId());
-            } catch (InvalidNameFormatException ex) {
-                // Handle validation failure
-                UtilsMethods.showAlert("Validation Error", ex.getMessage(), "ERROR");
-                LOGGER.warning("Invalid Sender input: " + newSenderValue);
-                paquete.setSender(originalValue);
-                senderColumn.getTableView().refresh();
-            } catch (UpdateException ex) {
-                // Handle database update failure
-                LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
-                UtilsMethods.showAlert("Server Error", "Failed to update sender.Please try again later.", "ERROR");
-                paquete.setSender(originalValue);
-                senderColumn.getTableView().refresh();
+//            } catch (InvalidNameFormatException ex) {
+//                // Handle validation failure
+//                UtilsMethods.showAlert("Validation Error", ex.getMessage(), "ERROR");
+//                LOGGER.warning("Invalid Sender input: " + newSenderValue);
+//                paquete.setSender(originalValue);
+//                senderColumn.getTableView().refresh();
+//            } catch (UpdateException ex) {
+//                // Handle database update failure
+//                LOGGER.log(Level.SEVERE, "Failed to update package with ID: " + paquete.getId(), ex);
+//                UtilsMethods.showAlert("Server Error", "Failed to update sender.Please try again later.", "ERROR");
+//                paquete.setSender(originalValue);
+//                senderColumn.getTableView().refresh();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
-                UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+                paquete.setSender(originalValue);
+                senderColumn.getTableView().refresh();
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
             }
         });
     }
@@ -529,8 +533,8 @@ public class PaqueteController {
      * database. In case of an error, the original value is restored, and an
      * alert is shown to the user.
      *
-     * 
-     * 
+     *
+     *
      */
     private void validateAndUpdateReceiverColumn() {
         receiverColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -554,22 +558,25 @@ public class PaqueteController {
                 paquete.setReceiver(newReceiverValue);
                 LOGGER.info("Receiver updated successfully for package with ID: " + paquete.getId());
 
-            } catch (InvalidNameFormatException ex) {
-                // Handle validation failure
-                UtilsMethods.showAlert("Validation Error", ex.getMessage(), "ERROR");
-                LOGGER.warning("Invalid receiver input: " + newReceiverValue);
-                paquete.setReceiver(originalValue);
-                receiverColumn.getTableView().refresh();
-            } catch (UpdateException ex) {
-                // Handle all exceptions
-                UtilsMethods.showAlert("Server Error", "Failed to update receiver. Please try again later.", "ERROR");
-                LOGGER.warning("Update failed: " + ex.getMessage());
+//            } catch (InvalidNameFormatException ex) {
+//                // Handle validation failure
+//                UtilsMethods.showAlert("Validation Error", ex.getMessage(), "ERROR");
+//                LOGGER.warning("Invalid receiver input: " + newReceiverValue);
+//                paquete.setReceiver(originalValue);
+//                receiverColumn.getTableView().refresh();
+//            } catch (UpdateException ex) {
+//                // Handle all exceptions
+//                UtilsMethods.showAlert("Server Error", "Failed to update receiver. Please try again later.", "ERROR");
+//                LOGGER.warning("Update failed: " + ex.getMessage());
+//                // Restore original value
+//                paquete.setReceiver(originalValue);
+//                receiverColumn.getTableView().refresh();
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, null, ex.getMessage());
                 // Restore original value
                 paquete.setReceiver(originalValue);
                 receiverColumn.getTableView().refresh();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex.getMessage());
-                UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
 
             }
         });
@@ -577,7 +584,7 @@ public class PaqueteController {
 
     private void validateAndUpdateWeightColumn() {
         weightColumn.setCellFactory(TextFieldTableCell.forTableColumn(
-                        new StringConverter<Double>() {
+                new StringConverter<Double>() {
             @Override
             public String toString(Double object) {
                 return object != null ? object.toString() : "";
@@ -628,21 +635,23 @@ public class PaqueteController {
                 // If successful, update the original
                 paquete.setWeight(newWeightValue);
                 LOGGER.info("Weight updated successfully for package with ID: " + paquete.getId());
-            } catch (UpdateException ex) {
-                UtilsMethods.showAlert("Server Error", "Failed to update weight. Please try again later.", "ERROR");
-                LOGGER.warning("Update failed: " + ex.getMessage());
-                // Restore original value
-                paquete.setWeight(originalValue);
-                weightColumn.getTableView().refresh();
-            } catch (IllegalArgumentException ex) {
-                // Handle validation failure
-                UtilsMethods.showAlert("Validation Error", ex.getMessage(), "ERROR");
-                LOGGER.warning("Invalid weight input: " + newWeightValue);
-                paquete.setWeight(originalValue);
-                weightColumn.getTableView().refresh();
+//            } catch (UpdateException ex) {
+//                UtilsMethods.showAlert("Server Error", "Failed to update weight. Please try again later.", "ERROR");
+//                LOGGER.warning("Update failed: " + ex.getMessage());
+//                // Restore original value
+//                paquete.setWeight(originalValue);
+//                weightColumn.getTableView().refresh();
+//            } catch (IllegalArgumentException ex) {
+//                // Handle validation failure
+//                UtilsMethods.showAlert("Validation Error", ex.getMessage(), "ERROR");
+//                LOGGER.warning("Invalid weight input: " + newWeightValue);
+//                paquete.setWeight(originalValue);
+//                weightColumn.getTableView().refresh();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, null, ex.getMessage());
-                UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+                paquete.setWeight(originalValue);
+                weightColumn.getTableView().refresh();
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
 
             }
         });
@@ -681,16 +690,19 @@ public class PaqueteController {
                 paquete.setSize(newSize);
                 LOGGER.info("Size updated successfully for package with ID: " + paquete.getId());
 
-            } catch (UpdateException ex) {
-                String errorMessage = "Failed to update package size. Please try again later.";
-                UtilsMethods.showAlert("Server Error", errorMessage, "ERROR");
-                LOGGER.warning("Update failed: " + ex.getMessage());
+//            } catch (UpdateException ex) {
+//                String errorMessage = "Failed to update package size. Please try again later.";
+//                UtilsMethods.showAlert("Server Error", errorMessage, "ERROR");
+//                LOGGER.warning("Update failed: " + ex.getMessage());
+//                // Restore original value
+//                paquete.setSize(originalSize);
+//                sizeColumn.getTableView().refresh();
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, null, ex.getMessage());
                 // Restore original value
                 paquete.setSize(originalSize);
                 sizeColumn.getTableView().refresh();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex.getMessage());
-                UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
 
             }
         });
@@ -720,7 +732,7 @@ public class PaqueteController {
             try {
                 // Validate date range (15 days)
                 long daysDifference = Math.abs((newDate.getTime() - originalDate.getTime())
-                                / (24 * 60 * 60 * 1000));
+                        / (24 * 60 * 60 * 1000));
 
                 if (daysDifference > 15) {
                     throw new IllegalArgumentException("Date modification cannot exceed 15 days from the original date.");
@@ -735,30 +747,28 @@ public class PaqueteController {
                 paquete.setCreationDate(newDate);
                 LOGGER.info("Date updated successfully for package with ID: " + paquete.getId());
 
-            } catch (IllegalArgumentException ex) {
-                String errorMessage = "Invalid date: " + ex.getMessage();
-                UtilsMethods.showAlert("Validation Error", errorMessage, "ERROR");
-                LOGGER.warning("Date validation failed: " + ex.getMessage());
-                // Restore original value
-                paquete.setCreationDate(originalDate);
-                dateColumn.getTableView().refresh();
-            } catch (UpdateException ex) {
-                UtilsMethods.showAlert("Server Error", "Failed to update creation date. Please try again.", "ERROR");
-                LOGGER.warning("Update failed: " + ex.getMessage());
-                // Restore original value
-                paquete.setCreationDate(originalDate);
-                dateColumn.getTableView().refresh();
-
+//            } catch (IllegalArgumentException ex) {
+//                String errorMessage = "Invalid date: " + ex.getMessage();
+//                UtilsMethods.showAlert("Validation Error", errorMessage, "ERROR");
+//                LOGGER.warning("Date validation failed: " + ex.getMessage());
+//                // Restore original value
+//                paquete.setCreationDate(originalDate);
+//                dateColumn.getTableView().refresh();
+//            } catch (UpdateException ex) {
+//                UtilsMethods.showAlert("Server Error", "Failed to update creation date. Please try again.", "ERROR");
+//                LOGGER.warning("Update failed: " + ex.getMessage());
+//                // Restore original value
+//                paquete.setCreationDate(originalDate);
+//                dateColumn.getTableView().refresh();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, null, ex.getMessage());
-                UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
                 // Restore original value
                 paquete.setCreationDate(originalDate);
                 dateColumn.getTableView().refresh();
             }
         });
     }
-
 
     /**
      * Validates and updates the "Fragile" column in the TableView.
@@ -790,15 +800,18 @@ public class PaqueteController {
                 paquete.setFragile(newFragile);
                 LOGGER.info("Fragile status updated successfully for package with ID: " + paquete.getId());
 
-            } catch ( UpdateException ex) {
-                String errorMessage = "Failed to update fragile status. Please try again.";
-                UtilsMethods.showAlert("Server Error", errorMessage, "ERROR");
-                LOGGER.warning("Update failed: " + ex.getMessage());
+//            } catch (UpdateException ex) {
+//                String errorMessage = "Failed to update fragile status. Please try again.";
+//                UtilsMethods.showAlert("Server Error", errorMessage, "ERROR");
+//                LOGGER.warning("Update failed: " + ex.getMessage());
+//                // Restore original value
+//                paquete.setFragile(originalFragile);
+//                fragileColumn.getTableView().refresh();
+            } catch (Exception ex) {
                 // Restore original value
                 paquete.setFragile(originalFragile);
                 fragileColumn.getTableView().refresh();
-            } catch (Exception ex) {
-                UtilsMethods.showAlert("Error", "An unexpected error occurred. Please try again.", "ERROR");
+                UtilsMethods.showAlert("Error", ex.getMessage(), "ERROR");
                 LOGGER.log(Level.SEVERE, null, ex.getMessage());
             }
         });
@@ -1217,12 +1230,12 @@ public class PaqueteController {
         try {
             // Initialize with empty values instead of placeholders
             Paquete defaultPaquete = new Paquete(
-                            "", // Empty sender
-                            "", // Empty receiver
-                            0.0,
-                            PackageSize.MEDIUM,
-                            new Date(),
-                            false
+                    "", // Empty sender
+                    "", // Empty receiver
+                    0.0,
+                    PackageSize.MEDIUM,
+                    new Date(),
+                    false
             );
 
             Paquete savedPackage = PaqueteFactory.getPackageInstance().addPackage(defaultPaquete);
@@ -1259,7 +1272,7 @@ public class PaqueteController {
         if (selectedPaquetes != null && !selectedPaquetes.isEmpty()) {
             // Show confirmation alert
             String confirmMessage = "Are you sure you want to delete " + selectedPaquetes.size()
-                            + " selected package(s)? This action cannot be undone.";
+                    + " selected package(s)? This action cannot be undone.";
             Alert alert = UtilsMethods.showAlert("Confirm Deletion", confirmMessage, "CONFIRMATION");
 
             if (alert.getResult() == ButtonType.OK) {
