@@ -11,6 +11,7 @@ import exception.SelectException;
 import factories.EnvioRutaVehiculoFactory;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
@@ -237,7 +239,23 @@ public class RutaController {
             distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
             tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
             numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+          //  fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+            
+             fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+        fechaColumn.setCellFactory(column -> new TableCell<Ruta, Date>() {
+            private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MMMMM.dd", Locale.US);
+
+            @Override
+            protected void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(item));
+                }
+            }
+        });
+
             
             
            // DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, yourLocale);
