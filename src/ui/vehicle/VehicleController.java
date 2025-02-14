@@ -333,7 +333,6 @@ public class VehicleController {
 
                 VehicleFactory.getVehicleInstance().updateVehiculo(vehiculoActualizado);
 
-                // Si la actualización es exitosa, actualizar el objeto en la tabla
                 vehiculo.setMatricula(nuevaMatricula);
                 Logger.getLogger(VehicleController.class.getName()).info("Matrícula actualizada correctamente para el vehículo con ID: " + vehiculo.getId());
             } catch (Exception ex) {
@@ -461,7 +460,7 @@ public class VehicleController {
                 Logger.getLogger(VehicleController.class.getName()).info("Estado actualizado correctamente para el vehículo con ID: " + vehiculo.getId());
             } catch (Exception ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar el estado del vehículo con ID: " + vehiculo.getId(), ex);
-                UtilsMethods.showAlert("Error al actualizar el estado", "No se pudo actualizar el estado del vehículo. Inténtalo más tarde.", "ERROR");
+                UtilsMethods.showAlert("Error al actualizar el estado", ex.getMessage(), "ERROR");
                 vehiculo.setActivo(estadoOriginal); // Restaurar el valor original en caso de error
                 activeColumn.getTableView().refresh();
             }
