@@ -239,33 +239,25 @@ public class RutaController {
             distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
             tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
             numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
-          //  fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
-            
-             fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
-        fechaColumn.setCellFactory(column -> new TableCell<Ruta, Date>() {
-            private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MMMMM.dd", Locale.US);
 
-            @Override
-            protected void updateItem(Date item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(formatter.format(item));
+            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+            fechaColumn.setCellFactory(column -> new TableCell<Ruta, Date>() {
+                private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MMMMM.dd", Locale.US);
+
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                    } else {
+                        setText(formatter.format(item));
+                    }
                 }
-            }
-        });
+            });
 
-            
-            
-           // DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, yourLocale);
 
-            
+            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MMMMM.dd", Locale.US);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MMMMM.dd", Locale.US);
-            
-           
-            
             rutaTable.setItems(rutaData);
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error cargando datos de rutas", e);
