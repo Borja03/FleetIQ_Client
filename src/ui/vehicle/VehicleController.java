@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -267,7 +268,7 @@ public class VehicleController {
         // Configuración para registrationDateColumn
         registrationDateColumn.setCellValueFactory(new PropertyValueFactory<>("registrationDate"));
         registrationDateColumn.setCellFactory(column -> new TableCell<Vehiculo, Date>() {
-            private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            private final SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM d, ''yy", Locale.US);
 
             @Override
             protected void updateItem(Date item, boolean empty) {
@@ -283,7 +284,7 @@ public class VehicleController {
         // Configuración para itvDateColumn
         itvDateColumn.setCellValueFactory(new PropertyValueFactory<>("itvDate"));
         itvDateColumn.setCellFactory(column -> new TableCell<Vehiculo, Date>() {
-            private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            private final SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM d, ''yy", Locale.US);
 
             @Override
             protected void updateItem(Date item, boolean empty) {
@@ -315,7 +316,6 @@ public class VehicleController {
 // Manejar la edición de la celda
         matriculaColumn.setOnEditCommit(event -> {
             Vehiculo vehiculo = event.getRowValue();
-
             String nuevaMatricula = event.getNewValue();
             String matriculaOriginal = vehiculo.getMatricula(); // Guardar valor original
             Logger.getLogger(VehicleController.class.getName()).info("Matrícula original: " + matriculaOriginal);
@@ -336,38 +336,27 @@ public class VehicleController {
                 // Si la actualización es exitosa, actualizar el objeto en la tabla
                 vehiculo.setMatricula(nuevaMatricula);
                 Logger.getLogger(VehicleController.class.getName()).info("Matrícula actualizada correctamente para el vehículo con ID: " + vehiculo.getId());
-            } catch (IllegalArgumentException ex) {
-                // Manejo de validación fallida
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Entrada no válida");
-                alert.setHeaderText(ex.getMessage());
-                alert.setContentText("Introduce una matrícula válida.");
-                alert.showAndWait();
-                Logger.getLogger(VehicleController.class.getName()).warning("Matrícula inválida: " + nuevaMatricula);
-                vehiculo.setMatricula(matriculaOriginal);
-                vehicleTableView.refresh();
-            } catch (UpdateException ex) {
-                // Manejo de fallo en la actualización de la base de datos
+            } catch (Exception ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar la matrícula del vehículo con ID: " + vehiculo.getId(), ex);
+
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error de actualización");
-                alert.setHeaderText("No se pudo actualizar la matrícula");
-                alert.setContentText("Inténtalo de nuevo más tarde.");
+                alert.setTitle("Error");
+                alert.setHeaderText("Ocurrió un error");
+                alert.setContentText(ex.getMessage());
                 alert.showAndWait();
+
+                // Restaurar el valor original en caso de error
                 vehiculo.setMatricula(matriculaOriginal);
                 vehicleTableView.refresh();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
         // Permitir edición en la columna
         modelColumn.setCellFactory(TextFieldTableCell.forTableColumn());
 
-// Manejar la edición de la celda
+        // Manejar la edición de la celda
         modelColumn.setOnEditCommit(event -> {
             Vehiculo vehiculo = event.getRowValue();
-
             String nuevoModelo = event.getNewValue();
             String modeloOriginal = vehiculo.getModelo(); // Guardar valor original
             Logger.getLogger(VehicleController.class.getName()).info("Modelo original: " + modeloOriginal);
@@ -388,20 +377,15 @@ public class VehicleController {
                 // Si la actualización es exitosa, actualizar el objeto en la tabla
                 vehiculo.setModelo(nuevoModelo);
                 Logger.getLogger(VehicleController.class.getName()).info("Modelo actualizado correctamente para el vehículo con ID: " + vehiculo.getId());
-            } catch (IllegalArgumentException ex) {
-                // Manejo de validación fallida
-                UtilsMethods.showAlert("Error al actualizar el modelo", "Inténtalo más tarde", "ERROR");
-                Logger.getLogger(VehicleController.class.getName()).warning("Modelo inválido: " + nuevoModelo);
-                vehiculo.setModelo(modeloOriginal);
-                vehicleTableView.refresh();
-            } catch (UpdateException ex) {
-                // Manejo de fallo en la actualización de la base de datos
+            } catch (Exception ex) {
+                // Capturar cualquier excepción y mostrar su mensaje en la alerta y el log
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar el modelo del vehículo con ID: " + vehiculo.getId(), ex);
-                UtilsMethods.showAlert("Error al actualizar el modelo", "Inténtalo más tarde", "ERROR");
+
+                UtilsMethods.showAlert("Error al actualizar el modelo", ex.getMessage(), "ERROR");
+
+                // Restaurar el valor original en caso de error
                 vehiculo.setModelo(modeloOriginal);
                 vehicleTableView.refresh();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
@@ -456,30 +440,30 @@ public class VehicleController {
 
                 vehiculo.setCapacidadCarga(newValue);
                 Logger.getLogger(VehicleController.class.getName()).info("Capacidad actualizada correctamente para el vehículo con ID: " + vehiculo.getId());
-            } catch (IllegalArgumentException ex) {
-                UtilsMethods.showAlert("Capacidad no valida", "Prueba con una capacidad diferente", "ERROR");
-                Logger.getLogger(VehicleController.class.getName()).warning("Capacidad inválida: " + event.getNewValue());
-                vehiculo.setCapacidadCarga(capacidadOriginal);
-                tableView.refresh();
-            } catch (UpdateException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar la capacidad del vehículo con ID: " + vehiculo.getId(), ex);
-                UtilsMethods.showAlert("Error al actualizar la capacidad", "Inténtalo más tarde", "ERROR");
+                UtilsMethods.showAlert("Error al actualizar la capacidad", ex.getMessage(), "ERROR");
                 vehiculo.setCapacidadCarga(capacidadOriginal);
                 tableView.refresh();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+
         //Habilita la edición del campo activo
         activeColumn.setCellFactory(column -> new VehicleActiveEditingCell());
         activeColumn.setOnEditCommit(event -> {
             Vehiculo vehiculo = event.getRowValue();
+            Boolean nuevoEstado = event.getNewValue();
+            Boolean estadoOriginal = vehiculo.isActivo(); // Guardar el valor original
 
-            vehiculo.setActivo(event.getNewValue());
             try {
+                vehiculo.setActivo(nuevoEstado);
                 VehicleFactory.getVehicleInstance().updateVehiculo(vehiculo);
-            } catch (UpdateException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(VehicleController.class.getName()).info("Estado actualizado correctamente para el vehículo con ID: " + vehiculo.getId());
+            } catch (Exception ex) {
+                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar el estado del vehículo con ID: " + vehiculo.getId(), ex);
+                UtilsMethods.showAlert("Error al actualizar el estado", "No se pudo actualizar el estado del vehículo. Inténtalo más tarde.", "ERROR");
+                vehiculo.setActivo(estadoOriginal); // Restaurar el valor original en caso de error
+                activeColumn.getTableView().refresh();
             }
         });
 
@@ -513,23 +497,15 @@ public class VehicleController {
 
                 vehiculo.setItvDate(newValue); // Aplicar la actualización en la UI
                 Logger.getLogger(VehicleController.class.getName()).info("Fecha ITV actualizada correctamente para el vehículo con ID: " + vehiculo.getId());
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(VehicleController.class.getName()).warning("Entrada inválida para la fecha ITV: " + ex.getMessage());
-                UtilsMethods.showAlert("Entrada no valida para la fecha ITV", "Prueba con una fecha diferente", "ERROR");
-
-                vehiculo.setItvDate(originalValue); // Restaurar valor original
-                itvDateColumn.getTableView().refresh();
-            } catch (UpdateException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, "Error al actualizar la fecha ITV para el vehículo con ID: " + vehiculo.getId(), ex);
-
-                UtilsMethods.showAlert("No se pudo actualizar la fecha ITV", "Inténtalo de nuevo más tarde", "ERROR");
+                UtilsMethods.showAlert("Error al actualizar la fecha ITV", ex.getMessage(), "ERROR");
 
                 vehiculo.setItvDate(originalValue); // Restaurar valor original
                 itvDateColumn.getTableView().refresh();
-            } catch (CloneNotSupportedException ex) {
-                Logger.getLogger(VehicleController.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+
     }
 
     /**
@@ -673,15 +649,15 @@ public class VehicleController {
         }
     }
 
-   /**
- * Filters and displays vehicles that were registered before the specified date.
- * If vehicles are found, they are displayed in the table view. If no vehicles
- * match the criteria, an information alert is shown. In case of an error, an 
- * error alert is displayed.
- *
- * @param toDate the date to filter vehicles by registration date. Vehicles 
- *               registered before this date will be displayed.
- */
+    /**
+     * Filters and displays vehicles that were registered before the specified
+     * date. If vehicles are found, they are displayed in the table view. If no
+     * vehicles match the criteria, an information alert is shown. In case of an
+     * error, an error alert is displayed.
+     *
+     * @param toDate the date to filter vehicles by registration date. Vehicles
+     * registered before this date will be displayed.
+     */
     private void filterVehiclesBeforeDateRegistration(String toDate) {
 
         try {
@@ -705,18 +681,20 @@ public class VehicleController {
         }
     }
 
-/**
- * Filters vehicles that were registered between the specified dates.
- *
- * This method retrieves a list of vehicles from the database that were registered 
- * within the given date range and updates the TableView accordingly.
- *
- * @param fromDate The starting date of the registration period (inclusive).
- * @param toDate   The ending date of the registration period (inclusive).
- *
- * @throws SelectException If there is an error retrieving the filtered vehicle data.
- * @throws Exception If an unexpected error occurs during filtering.
- */
+    /**
+     * Filters vehicles that were registered between the specified dates.
+     *
+     * This method retrieves a list of vehicles from the database that were
+     * registered within the given date range and updates the TableView
+     * accordingly.
+     *
+     * @param fromDate The starting date of the registration period (inclusive).
+     * @param toDate The ending date of the registration period (inclusive).
+     *
+     * @throws SelectException If there is an error retrieving the filtered
+     * vehicle data.
+     * @throws Exception If an unexpected error occurs during filtering.
+     */
     private void filterVehiclesBetweenDatesRegistration(String fromDate, String toDate) {
 
         try {
@@ -739,17 +717,21 @@ public class VehicleController {
             alert.showAndWait();
         }
     }
-/**
- * Filters vehicles that have passed their ITV (technical inspection) after the specified date.
- *
- * This method retrieves a list of vehicles from the database that have undergone 
- * their ITV after the given date and updates the TableView accordingly.
- *
- * @param fromDate The date in string format used as the filter criterion.
- *
- * @throws SelectException If there is an error retrieving the filtered vehicle data.
- * @throws Exception If an unexpected error occurs during filtering.
- */
+
+    /**
+     * Filters vehicles that have passed their ITV (technical inspection) after
+     * the specified date.
+     *
+     * This method retrieves a list of vehicles from the database that have
+     * undergone their ITV after the given date and updates the TableView
+     * accordingly.
+     *
+     * @param fromDate The date in string format used as the filter criterion.
+     *
+     * @throws SelectException If there is an error retrieving the filtered
+     * vehicle data.
+     * @throws Exception If an unexpected error occurs during filtering.
+     */
     private void filterVehiclesAfterDateITV(String fromDate) {
 
         try {
@@ -773,15 +755,16 @@ public class VehicleController {
         }
     }
 
-  /**
- * Filters and displays vehicles that have an ITV (Inspección Técnica de Vehículos) date 
- * before the specified date. If vehicles are found, they are displayed in the table view. 
- * If no vehicles match the criteria, an information alert is shown. In case of an error, 
- * an error alert is displayed.
- *
- * @param toDate the date to filter vehicles by ITV date. Vehicles with an ITV date 
- *               before this date will be displayed.
- */
+    /**
+     * Filters and displays vehicles that have an ITV (Inspección Técnica de
+     * Vehículos) date before the specified date. If vehicles are found, they
+     * are displayed in the table view. If no vehicles match the criteria, an
+     * information alert is shown. In case of an error, an error alert is
+     * displayed.
+     *
+     * @param toDate the date to filter vehicles by ITV date. Vehicles with an
+     * ITV date before this date will be displayed.
+     */
     private void filterVehiclesBeforeDateITV(String toDate) {
 
         try {
@@ -806,16 +789,17 @@ public class VehicleController {
     }
 
     /**
- * Filters and displays vehicles that have an ITV (Inspección Técnica de Vehículos) date 
- * between the specified date range. If vehicles are found, they are displayed in the table view. 
- * If no vehicles match the criteria, an information alert is shown. In case of an error, 
- * an error alert is displayed.
- *
- * @param fromDate the starting date of the range. Vehicles with an ITV date greater than or equal 
- *                 to this date will be included in the filter.
- * @param toDate the ending date of the range. Vehicles with an ITV date less than or equal to 
- *               this date will be included in the filter.
- */
+     * Filters and displays vehicles that have an ITV (Inspección Técnica de
+     * Vehículos) date between the specified date range. If vehicles are found,
+     * they are displayed in the table view. If no vehicles match the criteria,
+     * an information alert is shown. In case of an error, an error alert is
+     * displayed.
+     *
+     * @param fromDate the starting date of the range. Vehicles with an ITV date
+     * greater than or equal to this date will be included in the filter.
+     * @param toDate the ending date of the range. Vehicles with an ITV date
+     * less than or equal to this date will be included in the filter.
+     */
     private void filterVehiclesBetweenDatesITV(String fromDate, String toDate) {
 
         try {
