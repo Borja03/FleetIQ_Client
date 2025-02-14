@@ -11,6 +11,8 @@ import exception.SelectException;
 import factories.EnvioRutaVehiculoFactory;
 import factories.RutaManagerFactory;
 import factories.VehicleFactory;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 
 import java.util.Set;
@@ -19,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,7 +86,7 @@ import utils.UtilsMethods;
  * to routes and vehicles.</li>
  * <li>{@code ThemeManager} - Applies a visual theme to the user interface.</li>
  * </ul>
-
+ *
  * <p>
  * The controller is integrated with FXML, and its UI components are injected
  * via the {@code @FXML} annotation. The stage is configured with a fixed size,
@@ -226,6 +229,7 @@ public class RutaController {
             }
 
             rutaData = FXCollections.observableArrayList(rutas);
+            // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MMMMM dd", Locale.US);
 
             localizadorColumn.setCellValueFactory(new PropertyValueFactory<>("localizador"));
             origenColumn.setCellValueFactory(new PropertyValueFactory<>("origen"));
@@ -233,7 +237,17 @@ public class RutaController {
             distanciaColumn.setCellValueFactory(new PropertyValueFactory<>("distancia"));
             tiempoColumn.setCellValueFactory(new PropertyValueFactory<>("tiempo"));
             numeroVehiculosColumn.setCellValueFactory(new PropertyValueFactory<>("numVehiculos"));
+            fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+            
+            
+           // DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, yourLocale);
 
+            
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MMMMM.dd", Locale.US);
+            
+           
+            
             rutaTable.setItems(rutaData);
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error cargando datos de rutas", e);
@@ -350,13 +364,13 @@ public class RutaController {
      * Aplica un filtro de tiempo a la lista de rutas basado en un operador de
      * comparación.
      * <p>
-     * Dependiendo del operador seleccionado  consulta el servicio
-     * REST para obtener las rutas que cumplen con la condición y actualiza la
-     * tabla con los resultados. Si el operador no es válido, se registra una
-     * advertencia en los logs.
+     * Dependiendo del operador seleccionado consulta el servicio REST para
+     * obtener las rutas que cumplen con la condición y actualiza la tabla con
+     * los resultados. Si el operador no es válido, se registra una advertencia
+     * en los logs.
      *
-     * @param comparisonOperator El operador de comparación 
-     * aram filterValue El valor de tiempo a filtrar.
+     * @param comparisonOperator El operador de comparación aram filterValue El
+     * valor de tiempo a filtrar.
      */
     private void applyTimeFilter(String comparisonOperator, String filterValue) {
         switch (comparisonOperator) {
@@ -386,13 +400,13 @@ public class RutaController {
      * Aplica un filtro de distancia a la lista de rutas basado en un operador
      * de comparación.
      * <p>
-     * Dependiendo del operador seleccionado  consulta el servicio
-     * REST para obtener las rutas que cumplen con la condición y actualiza la
-     * tabla con los resultados. Si el operador no es válido, se registra una
-     * advertencia en los logs.
+     * Dependiendo del operador seleccionado consulta el servicio REST para
+     * obtener las rutas que cumplen con la condición y actualiza la tabla con
+     * los resultados. Si el operador no es válido, se registra una advertencia
+     * en los logs.
      *
-     * @param comparisonOperator El operador de comparación 
-     * aram filterValue El valor de distancia a filtrar.
+     * @param comparisonOperator El operador de comparación aram filterValue El
+     * valor de distancia a filtrar.
      */
     private void applyDistanceFilter(String comparisonOperator, String filterValue) {
         switch (comparisonOperator) {
@@ -592,11 +606,14 @@ public class RutaController {
         origenColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         origenColumn.setOnEditCommit(event -> {
             Ruta originalRuta = event.getRowValue();
-
             String newOrigen = event.getNewValue();
             String originalOrigen = originalRuta.getOrigen();
 
             try {
+                if (newOrigen == null || newOrigen.trim().isEmpty()) {
+                    throw new IllegalArgumentException("El origen no puede estar vacio.");
+                }
+
                 Ruta clonedRuta = originalRuta.clone();
                 clonedRuta.setOrigen(newOrigen);
 
@@ -604,9 +621,9 @@ public class RutaController {
                 logger.info("Origen actualizado en el servidor: " + newOrigen);
 
                 originalRuta.setOrigen(newOrigen);
-            } catch (CloneNotSupportedException | WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error al actualizar origen en el servidor", e);
-                showAlert("Error del servidor", "No se pudo actualizar el origen.");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error al actualizar origen en el servidor: " + e.getMessage(), e);
+                showAlert("Error del servidor", e.getMessage());
                 originalRuta.setOrigen(originalOrigen);
                 rutaTable.refresh();
             }
@@ -619,6 +636,11 @@ public class RutaController {
             String originalDestino = originalRuta.getDestino();
 
             try {
+
+                if (newDestino == null || newDestino.trim().isEmpty()) {
+                    throw new IllegalArgumentException("El destino no puede estar vacio.");
+                }
+
                 Ruta clonedRuta = (Ruta) originalRuta.clone();
                 clonedRuta.setDestino(newDestino);
 
@@ -626,11 +648,12 @@ public class RutaController {
                 logger.info("Destino actualizado en el servidor: " + newDestino);
 
                 originalRuta.setDestino(newDestino);
-            } catch (CloneNotSupportedException | WebApplicationException e) {
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error al actualizar destino en el servidor", e);
                 showAlert("Error del servidor", "No se pudo actualizar el destino.");
                 originalRuta.setDestino(originalDestino);
                 event.getTableView().refresh();
+                rutaTable.refresh();
             }
         });
 
@@ -649,22 +672,23 @@ public class RutaController {
 
         distanciaColumn.setCellFactory(TextFieldTableCell.forTableColumn(customFloatConverter));
         distanciaColumn.setOnEditCommit(event -> {
-            if (event.getNewValue() == null) {
-                event.getTableView().refresh();
-                return;
-            }
-
-            Float nuevaDistancia = event.getNewValue();
-            if (nuevaDistancia < 0) {
-                showAlert("Error", "La distancia no puede ser negativa.");
-                event.getTableView().refresh();
-                return;
-            }
 
             Ruta originalRuta = event.getRowValue();
             Float originalDistancia = originalRuta.getDistancia();
 
             try {
+                if (event.getNewValue() == null) {
+                    event.getTableView().refresh();
+                    throw new IllegalArgumentException("La distancia no puede estar vacia.");
+                }
+
+                Float nuevaDistancia = event.getNewValue();
+                if (nuevaDistancia < 0) {
+                    showAlert("Error", "La distancia no puede ser negativa.");
+                    event.getTableView().refresh();
+                    throw new IllegalArgumentException("La distancia no puede ser negativa.");
+                }
+
                 Ruta clonedRuta = (Ruta) originalRuta.clone();
                 clonedRuta.setDistancia(nuevaDistancia);
 
@@ -672,11 +696,12 @@ public class RutaController {
                 logger.info("Distancia actualizada en el servidor: " + nuevaDistancia);
 
                 originalRuta.setDistancia(nuevaDistancia);
-            } catch (CloneNotSupportedException | WebApplicationException e) {
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error al actualizar distancia en el servidor", e);
                 showAlert("Error del servidor", "No se pudo actualizar la distancía.");
                 originalRuta.setDistancia(originalDistancia);
                 event.getTableView().refresh();
+                rutaTable.refresh();
             }
         });
 
@@ -695,22 +720,23 @@ public class RutaController {
 
         tiempoColumn.setCellFactory(TextFieldTableCell.forTableColumn(customIntegerConverter));
         tiempoColumn.setOnEditCommit(event -> {
-            if (event.getNewValue() == null) {
-                event.getTableView().refresh();
-                return;
-            }
-
-            Integer nuevoTiempo = event.getNewValue();
-            if (nuevoTiempo < 0) {
-                showAlert("Error", "El tiempo no puede ser negativo.");
-                event.getTableView().refresh();
-                return;
-            }
 
             Ruta originalRuta = event.getRowValue();
             Integer originalTiempo = originalRuta.getTiempo();
 
             try {
+                if (event.getNewValue() == null) {
+                    event.getTableView().refresh();
+                    throw new IllegalArgumentException("El tiempo no puede estar vacio.");
+                }
+
+                Integer nuevoTiempo = event.getNewValue();
+                if (nuevoTiempo < 0) {
+                    showAlert("Error", "El tiempo no puede ser negativo.");
+                    event.getTableView().refresh();
+                    throw new IllegalArgumentException("El tiempo no puede ser negativo.");
+                }
+
                 Ruta clonedRuta = (Ruta) originalRuta.clone();
                 clonedRuta.setTiempo(nuevoTiempo);
 
@@ -718,15 +744,16 @@ public class RutaController {
                 logger.info("Tiempo actualizado en el servidor: " + nuevoTiempo);
 
                 originalRuta.setTiempo(nuevoTiempo);
-            } catch (CloneNotSupportedException | WebApplicationException e) {
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error al actualizar tiempo en el servidor", e);
                 showAlert("Error del servidor", "No se pudo actualizar el tiempo.");
                 originalRuta.setTiempo(originalTiempo);
                 event.getTableView().refresh();
+                rutaTable.refresh();
             }
         });
 
-        fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
+        //  fechaColumn.setCellValueFactory(new PropertyValueFactory<>("FechaCreacion"));
         fechaColumn.setCellFactory(column -> new RutaDateEditingCell());
         fechaColumn.setOnEditCommit(event -> {
             Ruta originalRuta = event.getRowValue();
@@ -741,11 +768,12 @@ public class RutaController {
                 logger.info("Fecha actualizada en el servidor: " + newDate);
 
                 originalRuta.setFechaCreacion(newDate);
-            } catch (CloneNotSupportedException | WebApplicationException e) {
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error al actualizar fecha en el servidor", e);
                 showAlert("Error del servidor", "No se pudo actualizar la fecha.");
                 originalRuta.setFechaCreacion(originalDate);
                 event.getTableView().refresh();
+                rutaTable.refresh();
             }
         });
     }

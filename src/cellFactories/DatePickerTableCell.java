@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
 
 public class DatePickerTableCell<S> extends TableCell<S, Date> {
 
@@ -17,7 +18,7 @@ public class DatePickerTableCell<S> extends TableCell<S, Date> {
 
     public DatePickerTableCell() {
         this.datePicker = new DatePicker();
-        this.dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Configurar el formato de fecha
+        this.dateFormatter =  DateTimeFormatter.ofPattern("yyyy.MMMMM.dd", Locale.US); // Configurar el formato de fecha
 
         // Configurar el cellFactory para el DatePicker
         datePicker.setDayCellFactory(createDayCellFactory());
